@@ -46,14 +46,29 @@ describe('업데이트 내역', () => {
     expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개발', '설계']);
   });
 
-  it('앱 콘텐츠 하단 여백에 safe-area 하단 inset을 포함한다', async () => {
+  it('앱 콘텐츠와 업데이트 버튼이 모든 safe-area 계약을 지킨다', async () => {
     const styles = await readFile(
       resolve(import.meta.dirname, '../../src/styles/components.css'),
       'utf8',
     );
-    const appShellBlock = styles.match(/\.app-shell\s*\{([\s\S]*?)\n\}/)?.[1] ?? '';
+    const appShellBlocks = [...styles.matchAll(/\.app-shell\s*\{([^{}]*)\}/g)]
+      .map((match) => match[1] ?? '');
+    const buttonBlock = styles.match(/\.update-history-button\s*\{([^{}]*)\}/)?.[1] ?? '';
 
-    expect(appShellBlock).toContain('env(safe-area-inset-bottom, 0px)');
+    expect(appShellBlocks).toHaveLength(2);
+    expect(appShellBlocks[0]).toContain(
+      'padding-block-end: calc(var(--space-page) + 4.5rem + env(safe-area-inset-bottom, 0px));',
+    );
+    expect(appShellBlocks[1]).toContain(
+      'padding-block-end: calc(5rem + env(safe-area-inset-bottom, 0px));',
+    );
+    expect(buttonBlock).toContain(
+      'inset-inline-end: calc(env(safe-area-inset-right, 0px) + 12px);',
+    );
+    expect(buttonBlock).toContain(
+      'inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 12px);',
+    );
+    expect(buttonBlock).toContain('min-block-size: 48px;');
   });
 
   it('열린 모달에서 Tab이 내부에 순환하고 닫기 버튼으로 trigger에 돌아온다', async () => {
