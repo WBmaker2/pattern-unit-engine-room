@@ -5,7 +5,7 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PrimaryAction } from '../../components/PrimaryAction';
-import { COPY } from '../../content/copy';
+import { COPY, formatFindCandidate } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
 import type { FindMission } from '../../content/missions/types';
 import type { PatternUnit } from '../../domain/pattern/types';
@@ -18,17 +18,6 @@ export interface FindUnitScreenProps {
   readonly onSubmit: (candidate: PatternUnit) => void;
   readonly onHint: () => void;
   readonly onContinue: () => void;
-}
-
-const COUNT_WORDS: Record<number, string> = { 1: '한', 2: '두', 3: '세' };
-
-function countWord(count: number): string {
-  return COUNT_WORDS[count] ?? `${count}`;
-}
-
-function formatUnit(unit: PatternUnit, themeId: FindMission['themeId']): string {
-  const labels = unit.map((token) => getTokenVisual(themeId, token).labelKo);
-  return `${labels.join(', ')} ${countWord(unit.length)} 칸`;
 }
 
 function feedbackMessage(feedback: FeedbackState): string {
@@ -60,13 +49,13 @@ export function FindUnitScreen({
       <InstructionCard title={COPY.findTitle} text={COPY.findInstruction} />
       <PatternBoard slots={mission.sequence} themeId={mission.themeId} />
       <ChoiceGrid
-        label="후보 묶음 선택"
+        label={COPY.findChoicesLabel}
         choices={mission.candidates}
         selectedId={selectedId}
         getId={(candidate) => candidate.join('')}
         getAccessibleName={(candidate) => {
           const index = mission.candidates.indexOf(candidate);
-          return `후보 ${index + 1}: ${formatUnit(candidate, mission.themeId)}`;
+          return formatFindCandidate(index, candidate.map((token) => getTokenVisual(mission.themeId, token).labelKo));
         }}
         onSelect={(candidate) => setSelectedId(candidate.join(''))}
         renderChoice={(candidate) => (
@@ -95,7 +84,9 @@ export function FindUnitScreen({
         </button>
       ) : null}
       {isSuccess ? (
-        <PrimaryAction onClick={onContinue}>{COPY.nextStage}</PrimaryAction>
+        <button onClick={onContinue} type="button">
+          {COPY.nextStage}
+        </button>
       ) : (
         <PrimaryAction
           disabled={selected === undefined}

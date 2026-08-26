@@ -5,7 +5,7 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PrimaryAction } from '../../components/PrimaryAction';
-import { COPY } from '../../content/copy';
+import { COPY, formatUnitChoice } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
 import type { ContinueMission } from '../../content/missions/types';
 import type { PatternUnit } from '../../domain/pattern/types';
@@ -18,11 +18,9 @@ export interface ContinuePatternScreenProps {
   readonly onContinue: () => void;
 }
 
-const COUNT_WORDS: Record<number, string> = { 1: '한', 2: '두', 3: '세' };
-
-function formatUnit(unit: PatternUnit, themeId: ContinueMission['themeId']): string {
+function formatTokenUnit(unit: PatternUnit, themeId: ContinueMission['themeId']): string {
   const labels = unit.map((token) => getTokenVisual(themeId, token).labelKo);
-  return `${labels.join(', ')} ${COUNT_WORDS[unit.length] ?? unit.length} 칸`;
+  return formatUnitChoice(labels);
 }
 
 function feedbackMessage(feedback: FeedbackState): string {
@@ -50,11 +48,11 @@ export function ContinuePatternScreen({
       <InstructionCard title={COPY.continueTitle} text={COPY.continueInstruction} />
       <PatternBoard slots={mission.slots} themeId={mission.themeId} />
       <ChoiceGrid
-        label="다음 칸 선택"
+        label={COPY.continueChoicesLabel}
         choices={mission.choices}
         selectedId={selectedId}
         getId={(choice) => choice.join('')}
-        getAccessibleName={(choice) => formatUnit(choice, mission.themeId)}
+        getAccessibleName={(choice) => formatTokenUnit(choice, mission.themeId)}
         onSelect={(choice) => setSelectedId(choice.join(''))}
         renderChoice={(choice) => <PatternBoard slots={choice} themeId={mission.themeId} />}
       />
@@ -62,7 +60,9 @@ export function ContinuePatternScreen({
         <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} />
       ) : null}
       {isSuccess ? (
-        <PrimaryAction onClick={onContinue}>{COPY.nextStage}</PrimaryAction>
+        <button onClick={onContinue} type="button">
+          {COPY.nextStage}
+        </button>
       ) : (
         <PrimaryAction
           disabled={selected === undefined}

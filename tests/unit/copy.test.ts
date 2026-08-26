@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { COPY } from '../../src/content/copy';
+import {
+  COPY,
+  formatFindCandidate,
+  formatUnitChoice,
+} from '../../src/content/copy';
 
 describe('학습 문구', () => {
   it('핵심 안내 문구를 정확히 제공한다', () => {
@@ -14,6 +18,13 @@ describe('학습 문구', () => {
       continueSubmit: '이어 붙이기',
       nextStage: '다음 칸',
       findHintAction: '테두리 도움 보기',
+      findChoicesLabel: '후보 묶음 선택',
+      continueChoicesLabel: '다음 칸 선택',
+      candidatePrefix: '후보',
+      unitCountOne: '한',
+      unitCountTwo: '두',
+      unitCountThree: '세',
+      unitCountSuffix: '칸',
       findInstruction: '가장 짧게 되풀이되는 한 묶음을 골라요.',
       continueInstruction: '한 묶음을 보고 다음 칸을 이어 보세요.',
       repairInstruction: '규칙을 깨뜨린 칸을 찾아 고쳐요.',
@@ -29,6 +40,14 @@ describe('학습 문구', () => {
       strategyUsed: '테두리 도움을 사용해 규칙을 찾았어요.',
       complete: '찾고, 잇고, 고치고, 바꾸고, 만들었어요.',
     });
+  });
+
+  it('선택지 이름 formatter가 토큰 이름과 칸 수를 조합한다', () => {
+    expect(formatUnitChoice(['나사못'])).toBe('나사못 한 칸');
+    expect(formatUnitChoice(['깃발', '깃발'])).toBe('깃발, 깃발 두 칸');
+    expect(formatFindCandidate(2, ['톱니바퀴', '나사못'])).toBe(
+      '후보 3: 톱니바퀴, 나사못 두 칸',
+    );
   });
 
   it('안내 문구는 짧고 경쟁을 부추기지 않는다', () => {

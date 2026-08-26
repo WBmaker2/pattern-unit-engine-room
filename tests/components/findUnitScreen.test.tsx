@@ -36,11 +36,13 @@ describe('FindUnitScreen', () => {
     render(<FindHarness />);
     const submit = screen.getByRole('button', { name: '한 묶음 찾기' });
     expect(submit).toBeDisabled();
+    expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(0);
     expect(screen.getByRole('button', { name: /후보 1: 톱니바퀴 한 칸/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /후보 2: 톱니바퀴, 나사못 두 칸/ })).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /후보 2:/ }));
     expect(submit).toBeEnabled();
     expect(submit).toHaveClass('gi-pulse');
+    expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(1);
     expect(screen.getAllByRole('button', { name: /후보/ })).toHaveLength(3);
   });
 
@@ -61,6 +63,19 @@ describe('FindUnitScreen', () => {
     expect(screen.getByText('테두리 도움을 사용해 규칙을 찾았어요.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '다음 칸' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '한 묶음 찾기' })).not.toBeInTheDocument();
+    expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(0);
+  });
+
+  it('후보와 제출을 Enter·Space로 조작한다', async () => {
+    const user = userEvent.setup();
+    render(<FindHarness />);
+    const candidate = screen.getByRole('button', { name: /후보 2:/ });
+    candidate.focus();
+    await user.keyboard('{Enter}');
+    const submit = screen.getByRole('button', { name: '한 묶음 찾기' });
+    submit.focus();
+    await user.keyboard(' ');
+    expect(screen.getByText('가장 짧은 한 묶음을 찾았어요.')).toBeInTheDocument();
   });
 
   it('잘못 이어지지 않는 후보도 별도 피드백을 표시한다', async () => {

@@ -53,6 +53,18 @@ describe('ContinuePatternScreen', () => {
     expect(screen.queryByRole('button', { name: '다음 칸' })).not.toBeInTheDocument();
   });
 
+  it('선택과 제출을 Enter·Space로 조작한다', async () => {
+    const user = userEvent.setup();
+    render(<ContinueHarness missionId="continue-aab-tools" />);
+    const choice = screen.getByRole('button', { name: /나사못 한 칸/ });
+    choice.focus();
+    await user.keyboard('{Enter}');
+    const submit = screen.getByRole('button', { name: '이어 붙이기' });
+    submit.focus();
+    await user.keyboard(' ');
+    expect(screen.getByText('한 묶음으로 다음 칸을 이었어요.')).toBeInTheDocument();
+  });
+
   it('각 화면에서 활성 주 행동은 하나를 넘지 않는다', async () => {
     const user = userEvent.setup();
     render(<ContinueHarness missionId="continue-aab-tools" />);

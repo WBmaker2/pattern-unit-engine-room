@@ -8,6 +8,13 @@ export const COPY = Object.freeze({
   continueSubmit: '이어 붙이기',
   nextStage: '다음 칸',
   findHintAction: '테두리 도움 보기',
+  findChoicesLabel: '후보 묶음 선택',
+  continueChoicesLabel: '다음 칸 선택',
+  candidatePrefix: '후보',
+  unitCountOne: '한',
+  unitCountTwo: '두',
+  unitCountThree: '세',
+  unitCountSuffix: '칸',
   findInstruction: '가장 짧게 되풀이되는 한 묶음을 골라요.',
   continueInstruction: '한 묶음을 보고 다음 칸을 이어 보세요.',
   repairInstruction: '규칙을 깨뜨린 칸을 찾아 고쳐요.',
@@ -25,3 +32,16 @@ export const COPY = Object.freeze({
 } as const);
 
 export type CopyKey = keyof typeof COPY;
+
+export function formatUnitChoice(labels: readonly string[]): string {
+  const countWord = {
+    1: COPY.unitCountOne,
+    2: COPY.unitCountTwo,
+    3: COPY.unitCountThree,
+  }[labels.length] ?? String(labels.length);
+  return `${labels.join(', ')} ${countWord} ${COPY.unitCountSuffix}`;
+}
+
+export function formatFindCandidate(index: number, labels: readonly string[]): string {
+  return `${COPY.candidatePrefix} ${index + 1}: ${formatUnitChoice(labels)}`;
+}
