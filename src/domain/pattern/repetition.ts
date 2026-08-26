@@ -56,6 +56,17 @@ export function validateUnitChoice(
     return { ok: false, reason: 'does-not-repeat' };
   }
 
+  const canReconstructSequence =
+    candidate.length > 0 &&
+    sequence.length % candidate.length === 0 &&
+    repeatUnit(candidate, sequence.length / candidate.length).every(
+      (token, index) => token === sequence[index],
+    );
+
+  if (!canReconstructSequence) {
+    return { ok: false, reason: 'does-not-repeat', expectedUnit };
+  }
+
   const isExpected =
     candidate.length === expectedUnit.length &&
     candidate.every((token, index) => token === expectedUnit[index]);

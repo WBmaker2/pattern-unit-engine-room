@@ -47,6 +47,19 @@ describe('반복 단위', () => {
     });
   });
 
+  it('후보를 반복해 전체 수열을 재구성하지 못하면 반복되지 않음으로 판정한다', () => {
+    expect(
+      validateUnitChoice(
+        ['A', 'B', 'A', 'B', 'A', 'B', 'A', 'B'],
+        ['A'],
+      ),
+    ).toMatchObject({
+      ok: false,
+      reason: 'does-not-repeat',
+      expectedUnit: ['A', 'B'],
+    });
+  });
+
   it('최소 반복 단위 선택은 정답이다', () => {
     expect(validateUnitChoice(['A', 'B', 'A', 'B'], ['A', 'B'])).toEqual({
       ok: true,
