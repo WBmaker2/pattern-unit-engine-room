@@ -16,6 +16,7 @@ export interface ContinuePatternScreenProps {
   readonly feedback: FeedbackState | null;
   readonly onSubmit: (answer: PatternUnit) => void;
   readonly onContinue: () => void;
+  readonly audioEnabled?: boolean;
 }
 
 function formatTokenUnit(unit: PatternUnit, themeId: ContinueMission['themeId']): string {
@@ -34,6 +35,7 @@ export function ContinuePatternScreen({
   feedback,
   onSubmit,
   onContinue,
+  audioEnabled = false,
 }: ContinuePatternScreenProps): JSX.Element {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = mission.choices.find((choice) => choice.join('') === selectedId);
@@ -45,7 +47,7 @@ export function ContinuePatternScreen({
 
   return (
     <section aria-label={COPY.continueTitle} className="continue-screen">
-      <InstructionCard title={COPY.continueTitle} text={COPY.continueInstruction} />
+      <InstructionCard title={COPY.continueTitle} cue="continue" audioEnabled={audioEnabled} />
       <PatternBoard slots={mission.slots} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.continueChoicesLabel}

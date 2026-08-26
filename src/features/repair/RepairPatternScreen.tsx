@@ -18,6 +18,7 @@ export interface RepairPatternScreenProps {
   readonly onSelectIndex: (index: number) => void;
   readonly onSubmit: (replacement: PatternTokenId) => void;
   readonly onContinue: () => void;
+  readonly audioEnabled?: boolean;
 }
 
 function feedbackMessage(feedback: FeedbackState): string {
@@ -34,6 +35,7 @@ export function RepairPatternScreen({
   onSelectIndex,
   onSubmit,
   onContinue,
+  audioEnabled = false,
 }: RepairPatternScreenProps): JSX.Element {
   const [replacement, setReplacement] = useState<PatternTokenId | null>(null);
   const isSuccess = feedback?.status === 'success';
@@ -47,7 +49,7 @@ export function RepairPatternScreen({
 
   return (
     <section aria-label={COPY.repairTitle} className="repair-screen">
-      <InstructionCard title={COPY.repairTitle} text={COPY.repairInstruction} />
+      <InstructionCard title={COPY.repairTitle} cue="repair" audioEnabled={audioEnabled} />
       <PatternBoard
         slots={mission.brokenSequence}
         themeId={mission.themeId}

@@ -21,6 +21,7 @@ export interface CreatePatternScreenProps {
   readonly onReset: () => void;
   readonly onRun: () => void;
   readonly onContinue: () => void;
+  readonly audioEnabled?: boolean;
 }
 
 const TOKEN_IDS: readonly PatternTokenId[] = ['A', 'B', 'C'];
@@ -45,7 +46,7 @@ function UnitMode({ props }: { readonly props: CreatePatternScreenProps }): JSX.
   const { unit, feedback } = props;
   return (
     <>
-      <InstructionCard title={COPY.createUnitTitle} text={COPY.createInstruction} />
+      <InstructionCard title={COPY.createUnitTitle} cue="create" audioEnabled={props.audioEnabled ?? false} />
       <fieldset>
         <legend>{COPY.createTokenChoices}</legend>
         {TOKEN_IDS.map((token) => (
@@ -76,7 +77,7 @@ function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX
   const isSuccess = feedback?.status === 'success';
   return (
     <>
-      <InstructionCard title={COPY.createTrackTitle} text={COPY.createInstruction} />
+      <InstructionCard title={COPY.createTrackTitle} cue="create" audioEnabled={props.audioEnabled ?? false} />
       <Board label={COPY.freeUnitBoardLabel} tokens={props.unit} />
       <Board label={COPY.freeTrackBoardLabel} tokens={track} />
       <button onClick={props.onAppendUnit} type="button">

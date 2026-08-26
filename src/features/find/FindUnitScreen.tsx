@@ -18,6 +18,7 @@ export interface FindUnitScreenProps {
   readonly onSubmit: (candidate: PatternUnit) => void;
   readonly onHint: () => void;
   readonly onContinue: () => void;
+  readonly audioEnabled?: boolean;
 }
 
 function feedbackMessage(feedback: FeedbackState): string {
@@ -32,6 +33,7 @@ export function FindUnitScreen({
   onSubmit,
   onHint,
   onContinue,
+  audioEnabled = false,
 }: FindUnitScreenProps): JSX.Element {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = mission.candidates.find((candidate) => candidate.join('') === selectedId);
@@ -46,7 +48,7 @@ export function FindUnitScreen({
 
   return (
     <section aria-label={COPY.findTitle} className="find-screen">
-      <InstructionCard title={COPY.findTitle} text={COPY.findInstruction} />
+      <InstructionCard title={COPY.findTitle} cue="find" audioEnabled={audioEnabled} />
       <PatternBoard slots={mission.sequence} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.findChoicesLabel}

@@ -1,21 +1,24 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { AUDIO_GUIDES } from '../../src/content/audioGuides';
+import { AUDIO_GUIDES, getAudioGuideEntry } from '../../src/content/audioGuides';
 import { createAudioGuide } from '../../src/services/audioGuide';
 
 interface MockAudio {
   readonly element: HTMLAudioElement;
   readonly play: ReturnType<typeof vi.fn>;
   readonly pause: ReturnType<typeof vi.fn>;
+  readonly addEventListener: ReturnType<typeof vi.fn>;
 }
 
 function createMockAudio(): MockAudio {
   const element = document.createElement('audio');
   const play = vi.fn().mockResolvedValue(undefined);
   const pause = vi.fn();
+  const addEventListener = vi.fn();
   element.play = play;
   element.pause = pause;
-  return { element, play, pause };
+  element.addEventListener = addEventListener;
+  return { element, play, pause, addEventListener };
 }
 
 function createRejectingMockAudio(): MockAudio {
@@ -53,11 +56,38 @@ describe('로컬 음성 안내 서비스', () => {
     expect(audio.element.currentTime).toBe(0);
   });
 
+  it('하나의 HTMLAudioElement를 늦게 만들고 cue를 바꿔 재사용한다', async () => {
+    const audio = createMockAudio();
+    const factory = vi.fn(() => audio.element);
+    const guide = createAudioGuide(factory);
+
+    expect(factory).not.toHaveBeenCalled();
+    await guide.play('find');
+    await guide.play('repair');
+    expect(factory).toHaveBeenCalledTimes(1);
+    expect(audio.pause).toHaveBeenCalledTimes(2);
+    expect(audio.element.src).toContain('/audio/ko/repair.mp3');
+  });
+
+  it('manifest 경계에서 잘못된 cue를 즉시 거부한다', () => {
+    expect(() => getAudioGuideEntry('unknown' as never)).toThrow(/unknown/);
+  });
+
   it('7개 안내는 모두 로컬 MP3와 COPY transcript 키를 가진다', () => {
     expect(Object.keys(AUDIO_GUIDES)).toHaveLength(7);
     for (const entry of Object.values(AUDIO_GUIDES)) {
       expect(entry.src).toMatch(/^\.?\/audio\/ko\/[a-z-]+\.mp3$/);
       expect(entry.transcriptKey).toBeTruthy();
+      expect(entry.src).not.toMatch(/:\/\//);
+      expect(entry.src).not.toContain('//audio');
     }
+  });
+
+  it('manifest와 파일 항목은 깊게 얼어 있고 cue와 경로가 중복되지 않는다', () => {
+    expect(Object.isFrozen(AUDIO_GUIDES)).toBe(true);
+    expect(Object.values(AUDIO_GUIDES).every((entry) => Object.isFrozen(entry))).toBe(true);
+    expect(new Set(Object.keys(AUDIO_GUIDES)).size).toBe(7);
+    expect(new Set(Object.values(AUDIO_GUIDES).map((entry) => entry.cue)).size).toBe(7);
+    expect(new Set(Object.values(AUDIO_GUIDES).map((entry) => entry.src)).size).toBe(7);
   });
 });

@@ -36,6 +36,7 @@ export default function App(): JSX.Element {
           settings={state.settings}
           onStart={() => dispatch({ type: 'START_JOURNEY' })}
           onOpenSettings={() => dispatch({ type: 'UPDATE_SETTINGS', settings: state.settings })}
+          audioEnabled={state.settings.audioEnabled}
         />
       ) : null}
       {state.stage === 'find' && mission?.kind === 'find' ? (
@@ -46,6 +47,7 @@ export default function App(): JSX.Element {
           onSubmit={(candidate) => dispatch({ type: 'SUBMIT_FIND', candidate })}
           onHint={() => dispatch({ type: 'USE_HINT' })}
           onContinue={continueStage}
+          audioEnabled={state.settings.audioEnabled}
         />
       ) : null}
       {state.stage === 'continue' && mission?.kind === 'continue' ? (
@@ -54,6 +56,7 @@ export default function App(): JSX.Element {
           feedback={state.feedback}
           onSubmit={(answer) => dispatch({ type: 'SUBMIT_CONTINUATION', answer })}
           onContinue={continueStage}
+          audioEnabled={state.settings.audioEnabled}
         />
       ) : null}
       {state.stage === 'repair' && mission?.kind === 'repair' ? (
@@ -64,6 +67,7 @@ export default function App(): JSX.Element {
           onSelectIndex={(index) => dispatch({ type: 'SELECT_REPAIR_INDEX', index })}
           onSubmit={(replacement) => dispatch({ type: 'SUBMIT_REPAIR', replacement })}
           onContinue={continueStage}
+          audioEnabled={state.settings.audioEnabled}
         />
       ) : null}
       {state.stage === 'translate' && mission?.kind === 'translate' ? (
@@ -77,6 +81,7 @@ export default function App(): JSX.Element {
           ])}
           onSubmit={(pairs, translated) => dispatch({ type: 'SUBMIT_TRANSLATION', pairs, translated })}
           onContinue={continueStage}
+          audioEnabled={state.settings.audioEnabled}
         />
       ) : null}
       {state.stage === 'create-unit' ? (
@@ -92,6 +97,7 @@ export default function App(): JSX.Element {
           onReset={() => dispatch({ type: 'RESET_FREE_PATTERN' })}
           onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
           onContinue={continueStage}
+          audioEnabled={state.settings.audioEnabled}
         />
       ) : null}
       {state.stage === 'create-track' ? (
@@ -107,6 +113,7 @@ export default function App(): JSX.Element {
           onReset={() => dispatch({ type: 'RESET_FREE_PATTERN' })}
           onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
           onContinue={continueStage}
+          audioEnabled={state.settings.audioEnabled}
         />
       ) : null}
       {state.stage === 'summary' ? (
@@ -115,6 +122,7 @@ export default function App(): JSX.Element {
           journeyIndex={state.journeyIndex}
           onNextJourney={() => dispatch({ type: 'NEXT_JOURNEY' })}
           onReturnHome={() => dispatch({ type: 'RETURN_HOME' })}
+          audioEnabled={state.settings.audioEnabled}
         />
       ) : null}
     </AppShell>

@@ -2,6 +2,7 @@ import type { JSX, ReactNode } from 'react';
 
 import { AudioGuideButton } from './AudioGuideButton';
 import { getAudioTranscript, type AudioCue } from '../content/audioGuides';
+import { COPY } from '../content/copy';
 
 export interface InstructionCardProps {
   readonly children?: ReactNode;
@@ -37,7 +38,9 @@ export function InstructionCard({
   audioEnabled = false,
 }: InstructionCardProps): JSX.Element {
   const transcript = cue === undefined ? undefined : getAudioTranscript(cue);
-  const visibleText = hasVisibleContent(children)
+  const visibleText = transcript !== undefined
+    ? transcript
+    : hasVisibleContent(children)
     ? children
     : hasVisibleContent(text)
       ? text
@@ -47,7 +50,12 @@ export function InstructionCard({
     <section aria-label={title} className="instruction-card">
       {title !== undefined ? <h2>{title}</h2> : null}
       <p>{visibleText}</p>
-      {audioEnabled && cue !== undefined ? <AudioGuideButton cue={cue} /> : null}
+      {audioEnabled && cue !== undefined ? (
+        <>
+          <AudioGuideButton cue={cue} />
+          <p>{COPY.audioDisclosure}</p>
+        </>
+      ) : null}
     </section>
   );
 }

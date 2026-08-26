@@ -27,6 +27,7 @@ export interface TranslatePatternScreenProps {
     translated: readonly DisplayTokenId[],
   ) => void;
   readonly onContinue: () => void;
+  readonly audioEnabled?: boolean;
 }
 
 function feedbackMessage(feedback: FeedbackState): string {
@@ -49,6 +50,7 @@ export function TranslatePatternScreen({
   onChangePair,
   onSubmit,
   onContinue,
+  audioEnabled = false,
 }: TranslatePatternScreenProps): JSX.Element {
   const [selectedSource, setSelectedSource] = useState<PatternTokenId | null>(null);
   const sourceTokens = useMemo(() => uniqueTokens(mission.sourceSequence), [mission.sourceSequence]);
@@ -67,7 +69,7 @@ export function TranslatePatternScreen({
 
   return (
     <section aria-label={COPY.translateTitle} className="translate-screen">
-      <InstructionCard title={COPY.translateTitle} text={COPY.translateInstruction} />
+      <InstructionCard title={COPY.translateTitle} cue="translate" audioEnabled={audioEnabled} />
       <PatternBoard slots={mission.sourceSequence} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.translationSourceLabel}

@@ -52,4 +52,21 @@ describe('PrimaryAction', () => {
     rerender(<InstructionCard>{'   '}</InstructionCard>);
     expect(screen.getByText('안내를 읽고 차례로 해 보세요.')).toBeInTheDocument();
   });
+
+  it('cue transcript가 충돌하는 children과 text보다 우선한다', () => {
+    render(
+      <InstructionCard cue="find" audioEnabled text="다른 안내">
+        다른 children
+      </InstructionCard>,
+    );
+    expect(screen.getByText('가장 짧게 되풀이되는 한 묶음을 골라요.')).toBeInTheDocument();
+    expect(screen.queryByText('다른 children')).not.toBeInTheDocument();
+    expect(screen.getByText('AI 합성 음성으로 만든 안내예요.')).toBeInTheDocument();
+  });
+
+  it('cue 없이 기존 fallback을 유지하고 audio disabled에서는 control을 숨긴다', () => {
+    render(<InstructionCard cue="find" audioEnabled={false} />);
+    expect(screen.queryByRole('button', { name: '안내 듣기' })).not.toBeInTheDocument();
+    expect(screen.queryByText('AI 합성 음성으로 만든 안내예요.')).not.toBeInTheDocument();
+  });
 });

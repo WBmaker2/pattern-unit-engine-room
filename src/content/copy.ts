@@ -76,6 +76,10 @@ export const COPY = Object.freeze({
   evidenceRepair: '규칙을 깨뜨린 칸 고치기',
   evidenceTranslate: '다른 모습으로 같은 순서 만들기',
   evidenceCreate: '내 반복 규칙 만들기',
+  audioListen: '안내 듣기',
+  audioStop: '안내 멈추기',
+  audioUnavailable: '음성이 없어도 글을 보며 계속할 수 있어요.',
+  audioDisclosure: 'AI 합성 음성으로 만든 안내예요.',
 } as const);
 
 export type CopyKey = keyof typeof COPY;
