@@ -74,7 +74,7 @@ export function PatternCell({
           {content}
         </button>
       ) : (
-        <span aria-label={ariaLabel} className={controlClassName} {...dataAttributes}>
+        <span aria-label={ariaLabel} className={controlClassName} role="img" {...dataAttributes}>
           {content}
         </span>
       )}

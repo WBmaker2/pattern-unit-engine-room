@@ -47,7 +47,7 @@ export function InstructionCard({
       : transcript ?? DEFAULT_INSTRUCTION;
 
   return (
-    <section aria-label={title} className="instruction-card">
+    <div className="instruction-card">
       {title !== undefined ? <h2>{title}</h2> : null}
       <p>{visibleText}</p>
       {audioEnabled && cue !== undefined ? (
@@ -56,6 +56,6 @@ export function InstructionCard({
           <p>{COPY.audioDisclosure}</p>
         </>
       ) : null}
-    </section>
+    </div>
   );
 }
