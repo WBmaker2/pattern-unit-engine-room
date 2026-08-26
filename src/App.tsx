@@ -1,10 +1,14 @@
-import { useReducer, type JSX } from 'react';
+import { useEffect, useReducer, useState, type JSX } from 'react';
 
 import { AppShell } from './components/AppShell';
 import { COPY } from './content/copy';
 import { ContinuePatternScreen } from './features/continue/ContinuePatternScreen';
 import { FindUnitScreen } from './features/find/FindUnitScreen';
+import { RepairPatternScreen } from './features/repair/RepairPatternScreen';
 import { StartScreen } from './features/start/StartScreen';
+import { TranslatePatternScreen } from './features/translate/TranslatePatternScreen';
+import type { DisplayTokenId } from './content/tokenThemes';
+import type { TranslationPair } from './domain/pattern/types';
 import { createInitialSession, sessionReducer } from './features/session/reducer';
 import { selectCanContinue, selectCurrentMission } from './features/session/selectors';
 
@@ -12,6 +16,11 @@ export default function App(): JSX.Element {
   const [state, dispatch] = useReducer(sessionReducer, undefined, createInitialSession);
   const mission = selectCurrentMission(state);
   const canContinue = selectCanContinue(state);
+  const [translationPairs, setTranslationPairs] = useState<readonly TranslationPair<DisplayTokenId>[]>([]);
+
+  useEffect(() => {
+    if (state.stage !== 'translate') setTranslationPairs([]);
+  }, [state.stage, mission?.id]);
 
   const continueStage = () => {
     if (canContinue) dispatch({ type: 'CONTINUE_STAGE' });
@@ -19,7 +28,7 @@ export default function App(): JSX.Element {
 
   return (
     <AppShell>
-      <h1>규칙 단위 기관실</h1>
+      <h1>{COPY.appTitle}</h1>
       {state.stage === 'start' ? (
         <StartScreen
           settings={state.settings}
@@ -45,8 +54,31 @@ export default function App(): JSX.Element {
           onContinue={continueStage}
         />
       ) : null}
-      {state.stage !== 'start' && state.stage !== 'find' && state.stage !== 'continue' ? (
-        <section aria-label="다음 학습 단계">
+      {state.stage === 'repair' && mission?.kind === 'repair' ? (
+        <RepairPatternScreen
+          mission={mission}
+          feedback={state.feedback}
+          selectedIndex={state.selectedRepairIndex}
+          onSelectIndex={(index) => dispatch({ type: 'SELECT_REPAIR_INDEX', index })}
+          onSubmit={(replacement) => dispatch({ type: 'SUBMIT_REPAIR', replacement })}
+          onContinue={continueStage}
+        />
+      ) : null}
+      {state.stage === 'translate' && mission?.kind === 'translate' ? (
+        <TranslatePatternScreen
+          mission={mission}
+          feedback={state.feedback}
+          draftPairs={translationPairs}
+          onChangePair={(source, target) => setTranslationPairs((pairs) => [
+            ...pairs.filter((item) => item.source !== source),
+            { source, target },
+          ])}
+          onSubmit={(pairs, translated) => dispatch({ type: 'SUBMIT_TRANSLATION', pairs, translated })}
+          onContinue={continueStage}
+        />
+      ) : null}
+      {state.stage === 'create-unit' || state.stage === 'create-track' || state.stage === 'summary' ? (
+        <section aria-label={COPY.nextStageSectionLabel}>
           <h2>{COPY.nextStage}</h2>
           <p>{COPY.complete}</p>
         </section>

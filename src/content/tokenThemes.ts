@@ -109,3 +109,16 @@ export function getTokenVisual(themeId: TokenThemeId, tokenId: PatternTokenId): 
   }
   return visual;
 }
+
+export function getDisplayTokenVisual(themeId: TokenThemeId, displayTokenId: DisplayTokenId): TokenVisual {
+  const selectedTheme = TOKEN_THEMES.find((candidate) => candidate.id === themeId);
+  const visual = selectedTheme === undefined
+    ? undefined
+    : Object.values(selectedTheme.tokens).find((candidate) => candidate.displayTokenId === displayTokenId);
+  if (visual === undefined) {
+    throw new RangeError(`Unknown display token visual: ${themeId}/${displayTokenId}`);
+  }
+  return visual;
+}
+
+export const getTokenVisualByDisplayId = getDisplayTokenVisual;

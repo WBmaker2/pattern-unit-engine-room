@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { getTokenVisual, TOKEN_THEMES } from '../../src/content/tokenThemes';
+import {
+  getDisplayTokenVisual,
+  getTokenVisual,
+  TOKEN_THEMES,
+} from '../../src/content/tokenThemes';
 
 describe('시각 토큰 테마', () => {
   it('각 토큰은 고정된 표시 ID·아이콘 ID·이름·무늬·색 토큰을 가진다', () => {
@@ -38,6 +42,23 @@ describe('시각 토큰 테마', () => {
     });
     expect(() => getTokenVisual('unknown' as never, 'A')).toThrowError(RangeError);
     expect(() => getTokenVisual('shapes', 'Z' as never)).toThrowError(RangeError);
+  });
+
+  it('이름이 지정된 테마 안에서만 display token을 역조회한다', () => {
+    const visual = getDisplayTokenVisual('shapes', 'circle');
+    expect(visual).toBe(getTokenVisual('shapes', 'A'));
+    expect(visual).toMatchObject({ displayTokenId: 'circle', labelKo: '동그라미' });
+    expect(() => getDisplayTokenVisual('engine', 'circle')).toThrowError(RangeError);
+    expect(() => getDisplayTokenVisual('shapes', 'train')).toThrowError(RangeError);
+  });
+
+  it('역조회 결과도 frozen 시각 객체를 그대로 유지한다', () => {
+    const visual = getDisplayTokenVisual('cars', 'wheel');
+    expect(Object.isFrozen(visual)).toBe(true);
+    expect(() => {
+      (visual as { labelKo: string }).labelKo = '변경';
+    }).toThrowError(TypeError);
+    expect(getDisplayTokenVisual('cars', 'wheel').labelKo).toBe('바퀴');
   });
 
   it('테마·토큰 맵·각 시각 객체는 런타임에서 변경되지 않는다', () => {

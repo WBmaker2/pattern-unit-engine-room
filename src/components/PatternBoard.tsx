@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { JSX } from 'react';
 import type { PatternSlot } from '../domain/pattern/types';
+import { COPY, formatTokenShape } from '../content/copy';
 import { getTokenVisual, type TokenThemeId, type TokenVisual } from '../content/tokenThemes';
 
 import { PatternCell } from './PatternCell';
@@ -11,9 +12,10 @@ export interface PatternBoardProps {
   readonly activeIndices?: readonly number[];
   readonly selectedIndex?: number | null;
   readonly onSelect?: (index: number) => void;
+  readonly formatAriaLabel?: (index: number, visual: TokenVisual) => string;
 }
 
-const ORDINALS = [
+export const ORDINALS = [
   '첫째',
   '둘째',
   '셋째',
@@ -25,14 +27,16 @@ const ORDINALS = [
   '아홉째',
 ] as const;
 
+export function formatOrdinal(index: number): string {
+  return ORDINALS[index] ?? `${index + 1}번째`;
+}
+
 export function formatCellAriaLabel(index: number, visual: TokenVisual): string {
-  const ordinal = ORDINALS[index] ?? `${index + 1}번째`;
-  return `${ordinal} 칸, ${visual.labelKo} 모양, ${visual.patternLabelKo}`;
+  return `${formatOrdinal(index)} ${COPY.cellSuffix}, ${formatTokenShape(visual.labelKo)}, ${visual.patternLabelKo}`;
 }
 
 export function formatEmptyCellAriaLabel(index: number): string {
-  const ordinal = ORDINALS[index] ?? `${index + 1}번째`;
-  return `${ordinal} 칸, 빈칸`;
+  return `${formatOrdinal(index)} ${COPY.cellSuffix}, ${COPY.emptyCellLabel}`;
 }
 
 export function PatternBoard({
@@ -41,14 +45,15 @@ export function PatternBoard({
   activeIndices = [],
   selectedIndex = null,
   onSelect,
+  formatAriaLabel,
 }: PatternBoardProps): JSX.Element {
   return (
-    <ol aria-label="규칙 배열" className="pattern-board">
+    <ol aria-label={COPY.patternBoardLabel} className="pattern-board">
       {slots.map((tokenId, index) => {
         const visual = tokenId === null ? null : getTokenVisual(themeId, tokenId);
         const ariaLabel = visual === null
           ? formatEmptyCellAriaLabel(index)
-          : formatCellAriaLabel(index, visual);
+          : formatAriaLabel?.(index, visual) ?? formatCellAriaLabel(index, visual);
 
         return (
           <PatternCell

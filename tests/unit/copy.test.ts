@@ -3,12 +3,20 @@ import { describe, expect, it } from 'vitest';
 import {
   COPY,
   formatFindCandidate,
+  formatOriginalToken,
+  formatTokenShape,
   formatUnitChoice,
 } from '../../src/content/copy';
 
 describe('학습 문구', () => {
   it('핵심 안내 문구를 정확히 제공한다', () => {
     expect(COPY).toMatchObject({
+      appTitle: '규칙 단위 기관실',
+      cellSuffix: '칸',
+      shapeSuffix: '모양',
+      originalTokenSuffix: '원래 항',
+      emptyCellLabel: '빈칸',
+      patternBoardLabel: '규칙 배열',
       startAction: '운행 시작',
       settingsAction: '접근성 설정',
       startTitle: '기관실 문을 열어 볼까요?',
@@ -16,6 +24,19 @@ describe('학습 문구', () => {
       continueTitle: '다음 칸 이어 붙이기',
       findSubmit: '한 묶음 찾기',
       continueSubmit: '이어 붙이기',
+      repairTitle: '규칙 수리하기',
+      repairChoicesLabel: '새 모양 선택',
+      repairSubmit: '고치기',
+      repairSuccess: '규칙을 깨뜨린 칸을 고쳤어요.',
+      retryWrongPosition: '규칙을 깨뜨린 칸을 다시 찾아봐요.',
+      retryWrongReplacement: '선택한 칸에 들어갈 모양을 다시 골라요.',
+      translateTitle: '새 모양으로 바꾸기',
+      translationSourceLabel: '바꿀 원래 항',
+      translationTargetLabel: '새 모양 선택',
+      translateSubmit: '같은 규칙 확인',
+      translateSuccess: '모양은 달라도 같은 순서예요.',
+      retryMappingNotBijective: '서로 다른 항에는 서로 다른 새 모양을 골라요.',
+      retryOrderChanged: '새 모양의 순서를 다시 살펴봐요.',
       nextStage: '다음 칸',
       findHintAction: '테두리 도움 보기',
       findChoicesLabel: '후보 묶음 선택',
@@ -40,6 +61,11 @@ describe('학습 문구', () => {
       strategyUsed: '테두리 도움을 사용해 규칙을 찾았어요.',
       complete: '찾고, 잇고, 고치고, 바꾸고, 만들었어요.',
     });
+  });
+
+  it('Task 9 learner-facing suffix formatter를 제공한다', () => {
+    expect(formatTokenShape('동그라미')).toBe('동그라미 모양');
+    expect(formatOriginalToken('톱니바퀴')).toBe('톱니바퀴 원래 항');
   });
 
   it('선택지 이름 formatter가 토큰 이름과 칸 수를 조합한다', () => {
