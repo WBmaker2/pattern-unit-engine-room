@@ -170,6 +170,9 @@ export function createProgressStore(storage: Storage): ProgressStore {
 
 function savedKinds(state: SessionState): LearningEvidenceKind[] {
   const kinds = new Set(state.evidence.map((item) => item.kind));
+  if (state.stage === 'create-track' && EVIDENCE_ORDER.every((kind) => kinds.has(kind))) {
+    return [...EVIDENCE_ORDER];
+  }
   const required = expectedKinds(state.stage);
   if (state.stage === 'summary') return [...EVIDENCE_ORDER];
   return EVIDENCE_ORDER.filter((kind) => required.includes(kind) && kinds.has(kind));

@@ -42,6 +42,40 @@ function validProgress(overrides: Partial<PersistedProgressV1['snapshot']> = {})
   };
 }
 
+function createTrackState(includeSuccess: boolean): SessionState {
+  let state = createInitialSession();
+  state = sessionReducer(state, {
+    type: 'UPDATE_SETTINGS',
+    settings: { ...state.settings, persistenceEnabled: true },
+  });
+  state = sessionReducer(state, { type: 'START_JOURNEY' });
+  state = sessionReducer(state, { type: 'SUBMIT_FIND', candidate: ['A', 'B'] });
+  state = sessionReducer(state, { type: 'CONTINUE_STAGE' });
+  state = sessionReducer(state, { type: 'SUBMIT_CONTINUATION', answer: ['B'] });
+  state = sessionReducer(state, { type: 'CONTINUE_STAGE' });
+  state = sessionReducer(state, { type: 'SELECT_REPAIR_INDEX', index: 4 });
+  state = sessionReducer(state, { type: 'SUBMIT_REPAIR', replacement: 'B' });
+  state = sessionReducer(state, { type: 'CONTINUE_STAGE' });
+  state = sessionReducer(state, {
+    type: 'SUBMIT_TRANSLATION',
+    pairs: [
+      { source: 'A', target: 'wheel' },
+      { source: 'B', target: 'window' },
+      { source: 'C', target: 'train' },
+    ],
+    translated: ['wheel', 'window', 'train', 'wheel', 'window', 'train'],
+  });
+  state = sessionReducer(state, { type: 'CONTINUE_STAGE' });
+  state = sessionReducer(state, { type: 'ADD_FREE_TOKEN', token: 'A' });
+  state = sessionReducer(state, { type: 'ADD_FREE_TOKEN', token: 'B' });
+  state = sessionReducer(state, { type: 'LOCK_FREE_UNIT' });
+  state = sessionReducer(state, { type: 'APPEND_FREE_UNIT' });
+  state = sessionReducer(state, { type: 'APPEND_FREE_UNIT' });
+  return includeSuccess
+    ? sessionReducer(state, { type: 'SUBMIT_FREE_TRACK' })
+    : state;
+}
+
 describe('동의 기반 로컬 진행 저장소', () => {
   it('동의를 켜기 전에는 아무것도 저장하지 않는다', () => {
     const storage = createMemoryStorage();
@@ -142,6 +176,40 @@ describe('동의 기반 로컬 진행 저장소', () => {
       { kind: 'created', missionId: 'create-journey-0', hintUsed: false },
     ]);
     expect(state.feedback).toBeNull();
+  });
+
+  it('실제 create-track 성공 state를 저장하고 reload하면 다섯 증거 summary가 된다', () => {
+    const storage = createMemoryStorage();
+    const store = createProgressStore(storage);
+    const state = createTrackState(true);
+    expect(state.stage).toBe('create-track');
+    expect(state.evidence).toHaveLength(5);
+    persistSession(state, store);
+    const loaded = store.load();
+    expect(loaded?.snapshot.completedKinds).toEqual([
+      'unit-recognized', 'continued', 'repaired', 'translated', 'created',
+    ]);
+    if (loaded === null) throw new Error('expected valid progress');
+    const hydrated = createInitialSession(loaded);
+    expect(hydrated.stage).toBe('summary');
+    expect(hydrated.journeyIndex).toBe(state.journeyIndex);
+    expect(hydrated.evidence).toHaveLength(5);
+    expect(hydrated.evidence.at(-1)?.kind).toBe('created');
+  });
+
+  it('실제 성공 전 create-track state를 저장하면 네 증거만 유지한다', () => {
+    const storage = createMemoryStorage();
+    const store = createProgressStore(storage);
+    const state = createTrackState(false);
+    persistSession(state, store);
+    const loaded = store.load();
+    expect(loaded?.snapshot.completedKinds).toEqual([
+      'unit-recognized', 'continued', 'repaired', 'translated',
+    ]);
+    if (loaded === null) throw new Error('expected valid progress');
+    const hydrated = createInitialSession(loaded);
+    expect(hydrated.stage).toBe('create-track');
+    expect(hydrated.evidence.some((item) => item.kind === 'created')).toBe(false);
   });
 
   it.each([
