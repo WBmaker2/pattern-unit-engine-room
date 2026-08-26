@@ -1,7 +1,7 @@
 {
   "name": "pattern-unit-engine-room",
   "version": "1.0.0",
-  "description": "초등학교 3~4학년을 위한 규칙 단위 학습 앱",
+  "description": "초등학교 1~2학년을 위한 규칙 단위 학습 앱",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
