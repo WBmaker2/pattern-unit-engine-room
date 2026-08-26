@@ -16,6 +16,7 @@ import { selectCanContinue, selectCurrentMission } from './features/session/sele
 import { AccessibilitySettings } from './features/settings/AccessibilitySettings';
 import type { AccessibilitySettings as AccessibilitySettingsState, ProgressStore } from './features/session/types';
 import { createProgressStore, disablePersistence, persistSession } from './services/progressStore';
+import { useEffectiveReducedMotion } from './hooks/useEffectiveReducedMotion';
 
 function createNoopStorage(): Storage {
   return {
@@ -58,6 +59,7 @@ export default function App(): JSX.Element {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const mission = selectCurrentMission(state);
   const canContinue = selectCanContinue(state);
+  const reducedMotion = useEffectiveReducedMotion(state.settings.motionPreference);
   const [translationPairs, setTranslationPairs] = useState<readonly TranslationPair<DisplayTokenId>[]>([]);
 
   useEffect(() => {
@@ -85,7 +87,10 @@ export default function App(): JSX.Element {
   };
 
   return (
-    <AppShell>
+    <AppShell
+      motion={reducedMotion ? 'reduce' : 'full'}
+      patternContrast={state.settings.patternContrast}
+    >
       <h1>{COPY.appTitle}</h1>
       {state.stage === 'start' ? (
         <StartScreen

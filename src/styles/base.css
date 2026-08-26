@@ -12,6 +12,7 @@ body {
   margin: 0;
   background: var(--color-page);
   color: var(--color-ink);
+  line-height: 1.5;
 }
 
 button,
@@ -19,6 +20,36 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+button {
+  min-block-size: 48px;
+  border: 2px solid var(--color-border-strong);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-block: 0;
 }
 
 #root {

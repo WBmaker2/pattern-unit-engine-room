@@ -3,7 +3,25 @@
   --color-page: #fffaf0;
   --color-ink: #24324a;
   --color-accent: #116466;
+  --color-accent-strong: #0b4f51;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4f1e8;
+  --color-border: #a9b6bb;
+  --color-border-strong: #24324a;
+  --color-focus: #b54800;
+  --color-success: #176b4d;
+  --color-retry: #8a3b12;
   --space-page: clamp(1rem, 4vw, 3rem);
+  --space-1: 0.5rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
   --radius-card: 1.25rem;
+  --focus-ring: 3px solid var(--color-focus);
   font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+}
+
+[data-pattern-contrast='strong'] {
+  --color-border: var(--color-border-strong);
 }

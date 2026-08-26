@@ -1,0 +1,47 @@
+@keyframes gi-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 45%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 0.6rem transparent;
+  }
+}
+
+@keyframes train-track-move {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(0.5rem);
+  }
+}
+
+.gi-pulse {
+  animation: gi-pulse 1.8s ease-in-out infinite;
+}
+
+.train-track--moving {
+  animation: train-track-move 1.2s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gi-pulse,
+  .train-track--moving {
+    animation: none;
+    transform: none;
+  }
+}
+
+[data-motion='reduce'] .gi-pulse,
+[data-motion='reduce'] .train-track--moving {
+  animation: none;
+  transform: none;
+}
+
+[data-motion='reduce'] .pattern-cell--active {
+  outline: 4px solid currentColor;
+  outline-offset: 3px;
+}

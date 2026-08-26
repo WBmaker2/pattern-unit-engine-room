@@ -1,0 +1,135 @@
+.app-shell {
+  min-block-size: 100vh;
+  padding: var(--space-page);
+}
+
+.app-shell__content {
+  display: grid;
+  gap: var(--space-4);
+  max-inline-size: 64rem;
+  margin-inline: auto;
+}
+
+.app-shell__content > h1 {
+  color: var(--color-accent-strong);
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+}
+
+.instruction-card,
+.feedback-panel,
+.settings-panel {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.instruction-card h2,
+.settings-panel h2 {
+  font-size: 1.35rem;
+}
+
+.pattern-board,
+.choice-grid__list,
+.translation-pairs,
+.translated-board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pattern-board {
+  align-items: center;
+}
+
+.choice-grid {
+  min-inline-size: 0;
+  margin: 0;
+  padding: var(--space-3);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.choice-grid legend {
+  padding-inline: var(--space-1);
+  font-weight: 700;
+}
+
+.choice-grid__list > li {
+  flex: 1 1 10rem;
+}
+
+.choice-button,
+.primary-action,
+.icon-button,
+.pattern-cell--selectable {
+  min-inline-size: 48px;
+  min-block-size: 48px;
+}
+
+.choice-button {
+  display: grid;
+  justify-items: center;
+  inline-size: 100%;
+  gap: var(--space-1);
+}
+
+.primary-action {
+  border-color: var(--color-accent-strong);
+  background: var(--color-accent);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.start-screen,
+.find-screen,
+.continue-screen,
+.repair-screen,
+.translate-screen,
+.create-screen,
+.summary-screen {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.start-screen__actions,
+.settings-panel__switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.settings-panel__switch {
+  justify-content: space-between;
+  min-block-size: 48px;
+  padding: var(--space-1) 0;
+}
+
+.settings-panel__switch input {
+  inline-size: 2.75rem;
+  block-size: 1.75rem;
+}
+
+.feedback-panel--success {
+  border-color: var(--color-success);
+}
+
+.feedback-panel--retry {
+  border-color: var(--color-retry);
+}
+
+@media (max-width: 36rem) {
+  .app-shell {
+    padding: 1rem;
+  }
+
+  .choice-grid__list > li {
+    flex-basis: 100%;
+  }
+}
