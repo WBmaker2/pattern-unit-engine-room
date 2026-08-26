@@ -29,7 +29,17 @@ function nextJourneyIndex(index: number): 0 | 1 | 2 | 3 | 4 {
 }
 
 function hydrateProgress(progress: PersistedProgressV1): SessionState {
-  const snapshot = progress.snapshot.stage === 'summary'
+  const completedCreateTrack = progress.snapshot.stage === 'create-track'
+    && progress.snapshot.completedKinds.length === 5;
+  const snapshot = completedCreateTrack
+    ? {
+        journeyIndex: progress.snapshot.journeyIndex,
+        stage: 'summary' as const,
+        completedKinds: [...progress.snapshot.completedKinds],
+        freeUnit: [] as const,
+        freeTrack: [] as const,
+      }
+    : progress.snapshot.stage === 'summary'
     ? {
         journeyIndex: nextJourneyIndex(progress.snapshot.journeyIndex),
         stage: 'start' as const,

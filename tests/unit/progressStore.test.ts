@@ -125,6 +125,25 @@ describe('동의 기반 로컬 진행 저장소', () => {
     expect(state.settings.persistenceEnabled).toBe(true);
   });
 
+  it('create-track에서 다섯 행동을 마친 저장값은 현재 journey summary로 복원한다', () => {
+    const state = createInitialSession(validProgress({
+      stage: 'create-track',
+      completedKinds: ['unit-recognized', 'continued', 'repaired', 'translated', 'created'],
+      freeUnit: ['A', 'B'],
+      freeTrack: ['A', 'B', 'A', 'B'],
+    }));
+    expect(state.stage).toBe('summary');
+    expect(state.journeyIndex).toBe(0);
+    expect(state.evidence).toEqual([
+      { kind: 'unit-recognized', missionId: 'find-ab-engine', hintUsed: false },
+      { kind: 'continued', missionId: 'continue-aab-tools', hintUsed: false },
+      { kind: 'repaired', missionId: 'repair-abb-lamps', hintUsed: false },
+      { kind: 'translated', missionId: 'translate-abc-cars', hintUsed: false },
+      { kind: 'created', missionId: 'create-journey-0', hintUsed: false },
+    ]);
+    expect(state.feedback).toBeNull();
+  });
+
   it.each([
     ['missing top key', { version: 1, consent: true, snapshot: validProgress().snapshot }],
     ['extra top key', { ...validProgress(), extra: true }],

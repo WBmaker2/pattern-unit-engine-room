@@ -75,7 +75,7 @@ export function AccessibilitySettings({
         onChange={(event) => update('motionPreference', event.currentTarget.checked ? 'reduce' : 'system')}
       />
       <p>{COPY.systemMotionNotice}</p>
-      <p aria-live="polite">{effectiveReducedMotion ? '모션을 줄여서 보여 줘요.' : '기본 모션으로 보여 줘요.'}</p>
+      <p aria-live="polite">{effectiveReducedMotion ? COPY.motionReducedNotice : COPY.motionDefaultNotice}</p>
       <SettingSwitch
         checked={settings.patternContrast === 'strong'}
         name={COPY.patternContrastSetting}

@@ -30,16 +30,31 @@ function createNoopStorage(): Storage {
 
 function getAvailableStorage(): Storage {
   if (typeof window === 'undefined') return createNoopStorage();
+  let candidate: unknown;
   try {
-    return window.localStorage;
+    candidate = window.localStorage;
+    if (candidate === null || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+      return createNoopStorage();
+    }
+    const storage = candidate as Partial<Storage>;
+    if (typeof storage.getItem !== 'function'
+      || typeof storage.setItem !== 'function'
+      || typeof storage.removeItem !== 'function') {
+      return createNoopStorage();
+    }
+    return candidate as Storage;
   } catch {
     return createNoopStorage();
   }
 }
 
+function initializeSession(progressStore: ProgressStore) {
+  return createInitialSession(progressStore.load());
+}
+
 export default function App(): JSX.Element {
   const [progressStore] = useState<ProgressStore>(() => createProgressStore(getAvailableStorage()));
-  const [state, dispatch] = useReducer(sessionReducer, progressStore.load(), createInitialSession);
+  const [state, dispatch] = useReducer(sessionReducer, progressStore, initializeSession);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const mission = selectCurrentMission(state);
   const canContinue = selectCanContinue(state);
