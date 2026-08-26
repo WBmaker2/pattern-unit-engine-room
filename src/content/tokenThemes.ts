@@ -22,10 +22,12 @@ export type DisplayTokenId =
 export type PatternMarkId = 'dots' | 'stripes' | 'crosshatch';
 
 export interface TokenVisual {
-  readonly id: DisplayTokenId;
+  readonly displayTokenId: DisplayTokenId;
   readonly labelKo: string;
-  readonly iconId: string;
+  readonly iconId: DisplayTokenId;
   readonly patternMarkId: PatternMarkId;
+  readonly patternLabelKo: '점무늬' | '줄무늬' | '격자무늬';
+  readonly colorToken: string;
 }
 
 export interface TokenTheme {
@@ -38,14 +40,35 @@ const theme = (
   visuals: readonly [DisplayTokenId, DisplayTokenId, DisplayTokenId],
 ): TokenTheme => {
   const [a, b, c] = visuals;
-  return {
+  return Object.freeze({
     id,
     tokens: Object.freeze({
-      A: Object.freeze({ id: a, labelKo: labelFor(a), iconId: `${id}-${a}-svg`, patternMarkId: 'dots' }),
-      B: Object.freeze({ id: b, labelKo: labelFor(b), iconId: `${id}-${b}-svg`, patternMarkId: 'stripes' }),
-      C: Object.freeze({ id: c, labelKo: labelFor(c), iconId: `${id}-${c}-svg`, patternMarkId: 'crosshatch' }),
+      A: Object.freeze({
+        displayTokenId: a,
+        labelKo: labelFor(a),
+        iconId: a,
+        patternMarkId: 'dots',
+        patternLabelKo: '점무늬',
+        colorToken: 'color-a',
+      }),
+      B: Object.freeze({
+        displayTokenId: b,
+        labelKo: labelFor(b),
+        iconId: b,
+        patternMarkId: 'stripes',
+        patternLabelKo: '줄무늬',
+        colorToken: 'color-b',
+      }),
+      C: Object.freeze({
+        displayTokenId: c,
+        labelKo: labelFor(c),
+        iconId: c,
+        patternMarkId: 'crosshatch',
+        patternLabelKo: '격자무늬',
+        colorToken: 'color-c',
+      }),
     }),
-  };
+  });
 };
 
 const labelFor = (id: DisplayTokenId): string => {
