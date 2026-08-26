@@ -223,6 +223,17 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         : state;
     case 'SUBMIT_FREE_TRACK':
       return submitFreeTrack(state);
+    case 'RESET_FREE_PATTERN':
+      return state.stage === 'create-track'
+        ? {
+            ...state,
+            stage: 'create-unit',
+            feedback: null,
+            freeUnit: [],
+            freeTrack: [],
+            currentHintUsed: false,
+          }
+        : state;
     case 'NEXT_JOURNEY': {
       if (state.stage !== 'summary') return state;
       const nextIndex = state.journeyIndex === 4 ? 0 : (state.journeyIndex + 1) as 0 | 1 | 2 | 3 | 4;

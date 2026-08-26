@@ -216,4 +216,32 @@ describe('guided learning session reducer', () => {
     expect(updated.stage).toBe('start');
     expect(updated.settings.motionPreference).toBe('reduce');
   });
+
+  it('resets only a free pattern from track mode and preserves journey evidence and settings', () => {
+    const initial = createInitialSession();
+    const state: SessionState = {
+      ...initial,
+      stage: 'create-track',
+      journeyIndex: 3,
+      freeUnit: ['A', 'B'],
+      freeTrack: ['A', 'B', 'A'],
+      feedback: { status: 'retry', reason: 'needs-second-repeat', hintVisible: false },
+      currentHintUsed: true,
+      evidence: [{ kind: 'translated', missionId: 'kept', hintUsed: false }],
+      settings: { ...initial.settings, audioEnabled: true },
+    };
+    const reset = sessionReducer(state, { type: 'RESET_FREE_PATTERN' });
+    expect(reset).toMatchObject({
+      stage: 'create-unit',
+      journeyIndex: 3,
+      freeUnit: [],
+      freeTrack: [],
+      feedback: null,
+      currentHintUsed: false,
+      evidence: state.evidence,
+      settings: state.settings,
+    });
+    const wrongStage = { ...state, stage: 'create-unit' as const };
+    expect(sessionReducer(wrongStage, { type: 'RESET_FREE_PATTERN' })).toBe(wrongStage);
+  });
 });

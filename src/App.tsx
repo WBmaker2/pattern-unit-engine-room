@@ -3,10 +3,12 @@ import { useEffect, useReducer, useState, type JSX } from 'react';
 import { AppShell } from './components/AppShell';
 import { COPY } from './content/copy';
 import { ContinuePatternScreen } from './features/continue/ContinuePatternScreen';
+import { CreatePatternScreen } from './features/create/CreatePatternScreen';
 import { FindUnitScreen } from './features/find/FindUnitScreen';
 import { RepairPatternScreen } from './features/repair/RepairPatternScreen';
 import { StartScreen } from './features/start/StartScreen';
 import { TranslatePatternScreen } from './features/translate/TranslatePatternScreen';
+import { SummaryScreen } from './features/summary/SummaryScreen';
 import type { DisplayTokenId } from './content/tokenThemes';
 import type { TranslationPair } from './domain/pattern/types';
 import { createInitialSession, sessionReducer } from './features/session/reducer';
@@ -77,11 +79,43 @@ export default function App(): JSX.Element {
           onContinue={continueStage}
         />
       ) : null}
-      {state.stage === 'create-unit' || state.stage === 'create-track' || state.stage === 'summary' ? (
-        <section aria-label={COPY.nextStageSectionLabel}>
-          <h2>{COPY.nextStage}</h2>
-          <p>{COPY.complete}</p>
-        </section>
+      {state.stage === 'create-unit' ? (
+        <CreatePatternScreen
+          mode="unit"
+          unit={state.freeUnit}
+          track={state.freeTrack}
+          feedback={state.feedback}
+          onAddToken={(token) => dispatch({ type: 'ADD_FREE_TOKEN', token })}
+          onRemoveToken={() => dispatch({ type: 'REMOVE_FREE_TOKEN' })}
+          onLockUnit={() => dispatch({ type: 'LOCK_FREE_UNIT' })}
+          onAppendUnit={() => dispatch({ type: 'APPEND_FREE_UNIT' })}
+          onReset={() => dispatch({ type: 'RESET_FREE_PATTERN' })}
+          onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
+          onContinue={continueStage}
+        />
+      ) : null}
+      {state.stage === 'create-track' ? (
+        <CreatePatternScreen
+          mode="track"
+          unit={state.freeUnit}
+          track={state.freeTrack}
+          feedback={state.feedback}
+          onAddToken={(token) => dispatch({ type: 'ADD_FREE_TOKEN', token })}
+          onRemoveToken={() => dispatch({ type: 'REMOVE_FREE_TOKEN' })}
+          onLockUnit={() => dispatch({ type: 'LOCK_FREE_UNIT' })}
+          onAppendUnit={() => dispatch({ type: 'APPEND_FREE_UNIT' })}
+          onReset={() => dispatch({ type: 'RESET_FREE_PATTERN' })}
+          onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
+          onContinue={continueStage}
+        />
+      ) : null}
+      {state.stage === 'summary' ? (
+        <SummaryScreen
+          evidence={state.evidence}
+          journeyIndex={state.journeyIndex}
+          onNextJourney={() => dispatch({ type: 'NEXT_JOURNEY' })}
+          onReturnHome={() => dispatch({ type: 'RETURN_HOME' })}
+        />
       ) : null}
     </AppShell>
   );

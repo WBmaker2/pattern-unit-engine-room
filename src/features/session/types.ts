@@ -73,6 +73,7 @@ export type SessionAction =
   | { readonly type: 'LOCK_FREE_UNIT' }
   | { readonly type: 'APPEND_FREE_UNIT' }
   | { readonly type: 'SUBMIT_FREE_TRACK' }
+  | { readonly type: 'RESET_FREE_PATTERN' }
   | { readonly type: 'NEXT_JOURNEY' }
   | { readonly type: 'RETURN_HOME' }
   | { readonly type: 'UPDATE_SETTINGS'; readonly settings: AccessibilitySettings };
