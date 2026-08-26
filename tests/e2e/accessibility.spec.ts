@@ -76,6 +76,18 @@ async function interactiveBoundingBoxes(page: Page): Promise<Array<{ width: numb
     }));
 }
 
+async function assert320Layout(page: Page): Promise<void> {
+  const viewport = await page.evaluate(() => ({
+    clientWidth: document.documentElement.clientWidth,
+    scrollWidth: document.documentElement.scrollWidth,
+  }));
+  expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.clientWidth);
+  for (const box of await interactiveBoundingBoxes(page)) {
+    expect(box.width).toBeGreaterThanOrEqual(48);
+    expect(box.height).toBeGreaterThanOrEqual(48);
+  }
+}
+
 async function assertStageAxe(page: Page): Promise<void> {
   const result = await new AxeBuilder({ page }).analyze();
   expect(result.violations, result.violations.map((violation) => `${violation.id}: ${violation.help}`).join('\n'))
@@ -86,25 +98,58 @@ test.describe('모바일·확대·모션 접근성', () => {
   test('320px에서 가로 스크롤과 작은 조작 대상이 없다', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 720 });
     await page.goto('/');
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
-    for (const box of await interactiveBoundingBoxes(page)) {
-      expect(box.width).toBeGreaterThanOrEqual(48);
-      expect(box.height).toBeGreaterThanOrEqual(48);
-    }
+    await assert320Layout(page);
+    await page.getByRole('button', { name: '접근성 설정' }).click();
+    await assert320Layout(page);
+    await page.getByRole('button', { name: '설정 닫기' }).click();
+    await page.getByRole('button', { name: '업데이트 내역' }).click();
+    await assert320Layout(page);
+    await page.getByRole('button', { name: '업데이트 내역 닫기' }).click();
+    await page.getByRole('button', { name: '운행 시작' }).click();
+    await assert320Layout(page);
+    await page.getByRole('button', { name: /후보 2:/ }).click();
+    await page.getByRole('button', { name: '한 묶음 찾기' }).click();
+    await page.getByRole('button', { name: '다음 칸' }).click();
+    await assert320Layout(page);
+    await page.getByRole('button', { name: '나사못 한 칸' }).click();
+    await page.getByRole('button', { name: '이어 붙이기' }).click();
+    await page.getByRole('button', { name: '다음 칸' }).click();
+    await assert320Layout(page);
+    await page.getByRole('button', { name: /다섯째 칸/ }).click();
+    await page.getByRole('button', { name: '깃발 모양', exact: true }).click();
+    await page.getByRole('button', { name: '고치기' }).click();
+    await page.getByRole('button', { name: '다음 칸' }).click();
+    await assert320Layout(page);
+    await completeTranslate(page);
+    await assert320Layout(page);
+    await page.getByRole('button', { name: '톱니바퀴 모양', exact: true }).click();
+    await page.getByRole('button', { name: '나사못 모양', exact: true }).click();
+    await assert320Layout(page);
+    await page.getByRole('button', { name: '묶음 정하기' }).click();
+    await assert320Layout(page);
+    await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
+    await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
+    await page.getByRole('button', { name: '운행하기' }).click();
+    await page.getByRole('button', { name: '다음 칸' }).click();
+    await assert320Layout(page);
   });
 
   test('640px viewport의 2배 페이지 배율에서도 핵심 요소가 겹치거나 잘리지 않는다', async ({ page }) => {
     await page.setViewportSize({ width: 640, height: 720 });
+    await startJourney(page);
+    await page.getByRole('button', { name: /후보 2:/ }).click();
+    expect(await page.locator('[data-primary-action="true"]').count()).toBeGreaterThan(0);
+    expect(await page.locator('h2').count()).toBeGreaterThan(0);
+    expect(await page.locator('.find-screen > ol[aria-label="규칙 배열"]').count()).toBeGreaterThan(0);
+    expect(await page.locator('button[data-primary-action="true"]').count()).toBeGreaterThan(0);
     const cdp = await page.context().newCDPSession(page);
     await cdp.send('Emulation.setDeviceMetricsOverride', {
-      // 물리 viewport는 640px로 두고, 확대된 페이지에서 사용할 CSS 폭을 절반으로 제한합니다.
-      width: 320,
+      width: 640,
       height: 720,
-      deviceScaleFactor: 2,
+      deviceScaleFactor: 1,
       mobile: false,
     });
     await cdp.send('Emulation.setPageScaleFactor', { pageScaleFactor: 2 });
-    await startJourney(page);
     await expect(page.locator('h2')).toBeVisible();
     await expect(page.locator('ol[aria-label="규칙 배열"]').first()).toBeVisible();
     const viewport = await page.evaluate(() => ({
@@ -112,19 +157,43 @@ test.describe('모바일·확대·모션 접근성', () => {
       scrollWidth: document.documentElement.scrollWidth,
       visualScale: window.visualViewport?.scale ?? 1,
       visualWidth: window.visualViewport?.width ?? document.documentElement.clientWidth,
-      devicePixelRatio: window.devicePixelRatio,
     }));
-    expect(viewport.devicePixelRatio).toBe(2);
-    expect(viewport.visualWidth).toBeLessThanOrEqual(320);
+    expect(viewport.visualScale).toBe(2);
+    expect(viewport.visualWidth).toBe(320);
     expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.clientWidth);
-    const boxes = await page.locator('h2, ol[aria-label="규칙 배열"], button[data-primary-action="true"]')
+    const boxes = await page.locator('h2, .find-screen > ol[aria-label="규칙 배열"], button[data-primary-action="true"]')
       .evaluateAll((elements) => elements.map((element) => {
         const rect = element.getBoundingClientRect();
-        return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
+        const style = getComputedStyle(element);
+        return {
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          clientWidth: element.clientWidth,
+          scrollWidth: element.scrollWidth,
+          clientHeight: element.clientHeight,
+          scrollHeight: element.scrollHeight,
+          overflowX: style.overflowX,
+          overflowY: style.overflowY,
+        };
       }));
+    const documentBounds = await page.evaluate(() => ({
+      height: document.documentElement.scrollHeight,
+    }));
     for (const box of boxes) {
       expect(box.left).toBeGreaterThanOrEqual(0);
       expect(box.right).toBeLessThanOrEqual(viewport.clientWidth);
+      expect(box.top).toBeGreaterThanOrEqual(0);
+      expect(box.bottom).toBeLessThanOrEqual(documentBounds.height);
+      expect(box.scrollWidth).toBeLessThanOrEqual(box.clientWidth);
+      expect(box.scrollHeight).toBeLessThanOrEqual(box.clientHeight);
+      if (box.overflowX === 'hidden' || box.overflowX === 'clip') {
+        expect(box.scrollWidth).toBeLessThanOrEqual(box.clientWidth);
+      }
+      if (box.overflowY === 'hidden' || box.overflowY === 'clip') {
+        expect(box.scrollHeight).toBeLessThanOrEqual(box.clientHeight);
+      }
     }
     for (let index = 0; index < boxes.length; index += 1) {
       for (let next = index + 1; next < boxes.length; next += 1) {
@@ -140,18 +209,31 @@ test.describe('모바일·확대·모션 접근성', () => {
   test('모션 감소에서는 pulse·열차 애니메이션을 끄고 활성 칸은 정적 4px 테두리다', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await startJourney(page);
+    await page.evaluate(() => {
+      const probe = document.createElement('span');
+      probe.className = 'train-track--moving';
+      probe.setAttribute('aria-hidden', 'true');
+      document.querySelector('#root')?.append(probe);
+    });
     await page.getByRole('button', { name: /후보 1:/ }).click();
     await page.getByRole('button', { name: '한 묶음 찾기' }).click();
     await page.getByRole('button', { name: '테두리 도움 보기' }).click();
     const motion = await page.evaluate(() => ({
+      trainProbeCount: document.querySelectorAll('.train-track--moving').length,
+      pulseCount: document.querySelectorAll('.gi-pulse').length,
       animationNames: Array.from(document.querySelectorAll('.gi-pulse, .train-track--moving'))
         .map((element) => getComputedStyle(element).animationName),
+      transforms: Array.from(document.querySelectorAll('.gi-pulse, .train-track--moving'))
+        .map((element) => getComputedStyle(element).transform),
       activeOutlineWidths: Array.from(document.querySelectorAll('.pattern-cell--active'))
         .map((element) => getComputedStyle(element).outlineWidth),
       appMotion: document.querySelector('.app-shell')?.getAttribute('data-motion'),
     }));
     expect(motion.appMotion).toBe('reduce');
+    expect(motion.trainProbeCount).toBe(1);
+    expect(motion.pulseCount).toBeGreaterThan(0);
     expect(motion.animationNames.every((name) => name === 'none')).toBe(true);
+    expect(motion.transforms.every((transform) => transform === 'none')).toBe(true);
     expect(motion.activeOutlineWidths.length).toBeGreaterThan(0);
     expect(motion.activeOutlineWidths.every((width) => width === '4px')).toBe(true);
   });

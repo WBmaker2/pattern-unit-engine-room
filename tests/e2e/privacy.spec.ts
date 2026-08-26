@@ -2,6 +2,16 @@ import { expect, test, type Page } from '@playwright/test';
 
 const PROGRESS_KEY = 'pattern-unit-engine-room:v1';
 
+function isAllowedDevPath(pathname: string): boolean {
+  return pathname === '/'
+    || pathname === '/@vite/client'
+    || pathname === '/@react-refresh'
+    || pathname.startsWith('/src/')
+    || pathname.startsWith('/node_modules/.vite/deps/')
+    || pathname.startsWith('/node_modules/vite/dist/client/')
+    || pathname.startsWith('/audio/ko/');
+}
+
 async function installPrivacyProbe(page: Page): Promise<void> {
   await page.addInitScript(() => {
     const probe = {
@@ -92,18 +102,40 @@ test('앱 요청은 앱 origin과 로컬 한국어 음원 경로만 사용한다
   const requests: string[] = [];
   page.on('request', (request) => requests.push(request.url()));
   await page.goto('/');
-  await page.getByRole('button', { name: '운행 시작' }).click();
-  await expect(page.getByRole('heading', { name: '한 묶음 찾기' })).toBeVisible();
+  await page.getByRole('button', { name: '접근성 설정' }).click();
+  await page.getByRole('switch', { name: '안내 음성' }).check();
+  await page.getByRole('button', { name: '설정 닫기' }).click();
+  const audioRequestPromise = page.waitForRequest((request) => {
+    const url = new URL(request.url());
+    return url.pathname === '/audio/ko/start.mp3';
+  });
+  const audioResponsePromise = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.pathname === '/audio/ko/start.mp3';
+  });
+  await page.getByRole('button', { name: '안내 듣기' }).click();
+  const audioRequest = await audioRequestPromise;
+  const audioResponse = await audioResponsePromise;
+  expect(new URL(audioRequest.url()).pathname).toBe('/audio/ko/start.mp3');
+  expect([200, 206]).toContain(audioResponse.status());
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(300);
   const appOrigin = new URL(page.url()).origin;
-  const external = requests.filter((requestUrl) => new URL(requestUrl).origin !== appOrigin);
-  expect(external).toEqual([]);
+  const disallowed = requests.filter((requestUrl) => {
+    const url = new URL(requestUrl);
+    return url.origin !== appOrigin || !isAllowedDevPath(url.pathname);
+  });
+  expect(disallowed).toEqual([]);
   const probe = await page.evaluate(() => (window as unknown as {
     __privacyProbe: { getUserMedia: number; mediaRecorder: number; webSockets: Array<{ isVite: boolean }>; fetches: string[] };
   }).__privacyProbe);
   expect(probe.getUserMedia).toBe(0);
   expect(probe.mediaRecorder).toBe(0);
   expect(probe.webSockets.filter((socket) => !socket.isVite)).toEqual([]);
-  expect(probe.fetches.filter((requestUrl) => new URL(requestUrl, appOrigin).origin !== appOrigin)).toEqual([]);
+  expect(probe.fetches.filter((requestUrl) => {
+    const url = new URL(requestUrl, appOrigin);
+    return url.origin !== appOrigin || !isAllowedDevPath(url.pathname);
+  })).toEqual([]);
 });
 
 test('기본 저장은 꺼져 있고 동의하면 최소 PersistedProgressV1만 저장한다', async ({ page }) => {

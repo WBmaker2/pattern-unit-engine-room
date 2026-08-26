@@ -72,4 +72,31 @@ test('활동 도장에서 다음 Journey를 순환한다', async ({ page }) => {
   await completeJourneyZeroByVisibleLabels(page);
   await page.getByRole('button', { name: '다음 운행' }).click();
   await expect(page.getByRole('heading', { name: '한 묶음 찾기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /후보 2: 전등, 전등, 깃발 세 칸/ })).toBeVisible();
+});
+
+test('Journey 4 다음 운행은 Journey 0으로 돌아온다', async ({ page }) => {
+  await page.addInitScript((progress) => {
+    window.localStorage.setItem('pattern-unit-engine-room:v1', JSON.stringify(progress));
+  }, {
+    version: 1,
+    consent: true,
+    snapshot: {
+      journeyIndex: 4,
+      stage: 'create-track',
+      completedKinds: ['unit-recognized', 'continued', 'repaired', 'translated', 'created'],
+      freeUnit: ['A', 'B'],
+      freeTrack: ['A', 'B', 'A', 'B'],
+    },
+    settings: {
+      audioEnabled: false,
+      motionPreference: 'system',
+      patternContrast: 'standard',
+    },
+  });
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: '활동 도장' })).toBeVisible();
+  await page.getByRole('button', { name: '다음 운행' }).click();
+  await expect(page.getByRole('heading', { name: '한 묶음 찾기' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /후보 2: 톱니바퀴, 나사못 두 칸/ })).toBeVisible();
 });
