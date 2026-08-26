@@ -10,6 +10,8 @@ import type {
   AccessibilitySettings,
   FeedbackState,
   LearningEvidence,
+  LearningEvidenceKind,
+  PersistedProgressV1,
   SessionAction,
   SessionStage,
   SessionState,
@@ -22,7 +24,54 @@ const INITIAL_SETTINGS: AccessibilitySettings = {
   persistenceEnabled: false,
 };
 
-export function createInitialSession(): SessionState {
+function nextJourneyIndex(index: number): 0 | 1 | 2 | 3 | 4 {
+  return index === 4 ? 0 : (index + 1) as 0 | 1 | 2 | 3 | 4;
+}
+
+function hydrateProgress(progress: PersistedProgressV1): SessionState {
+  const snapshot = progress.snapshot.stage === 'summary'
+    ? {
+        journeyIndex: nextJourneyIndex(progress.snapshot.journeyIndex),
+        stage: 'start' as const,
+        completedKinds: [] as const,
+        freeUnit: [] as const,
+        freeTrack: [] as const,
+      }
+    : progress.snapshot;
+  const journey = getJourney(snapshot.journeyIndex);
+  const missionIds: Record<LearningEvidenceKind, string> = {
+    'unit-recognized': journey.findId,
+    continued: journey.continueId,
+    repaired: journey.repairId,
+    translated: journey.translateId,
+    created: `create-journey-${snapshot.journeyIndex}`,
+  };
+  const evidence = snapshot.completedKinds.map((kind) => ({
+    kind,
+    missionId: missionIds[kind]!,
+    hintUsed: false,
+  }));
+
+  return {
+    stage: snapshot.stage,
+    journeyIndex: snapshot.journeyIndex,
+    feedback: null,
+    selectedRepairIndex: null,
+    freeUnit: [...snapshot.freeUnit],
+    freeTrack: [...snapshot.freeTrack],
+    evidence,
+    currentHintUsed: false,
+    settings: {
+      ...progress.settings,
+      persistenceEnabled: progress.consent === true,
+    },
+  };
+}
+
+export function createInitialSession(progress?: PersistedProgressV1 | null): SessionState {
+  if (progress?.consent === true && progress.version === 1) {
+    return hydrateProgress(progress);
+  }
   return {
     stage: 'start',
     journeyIndex: 0,
@@ -236,7 +285,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
         : state;
     case 'NEXT_JOURNEY': {
       if (state.stage !== 'summary') return state;
-      const nextIndex = state.journeyIndex === 4 ? 0 : (state.journeyIndex + 1) as 0 | 1 | 2 | 3 | 4;
+      const nextIndex = nextJourneyIndex(state.journeyIndex);
       return resetTransient(state, 'find', nextIndex);
     }
     case 'RETURN_HOME':

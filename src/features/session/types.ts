@@ -37,6 +37,27 @@ export interface AccessibilitySettings {
   readonly persistenceEnabled: boolean;
 }
 
+export interface ResumeSnapshotV1 {
+  readonly journeyIndex: JourneyIndex;
+  readonly stage: SessionStage;
+  readonly completedKinds: readonly LearningEvidenceKind[];
+  readonly freeUnit: readonly PatternTokenId[];
+  readonly freeTrack: readonly PatternTokenId[];
+}
+
+export interface PersistedProgressV1 {
+  readonly version: 1;
+  readonly consent: true;
+  readonly snapshot: ResumeSnapshotV1;
+  readonly settings: Omit<AccessibilitySettings, 'persistenceEnabled'>;
+}
+
+export interface ProgressStore {
+  load(): PersistedProgressV1 | null;
+  save(value: PersistedProgressV1): void;
+  clear(): void;
+}
+
 export interface FeedbackState {
   readonly status: 'retry' | 'success';
   readonly reason: ValidationReason;

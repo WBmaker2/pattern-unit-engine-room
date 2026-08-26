@@ -80,6 +80,15 @@ export const COPY = Object.freeze({
   audioStop: '안내 멈추기',
   audioUnavailable: '음성이 없어도 글을 보며 계속할 수 있어요.',
   audioDisclosure: 'AI 합성 음성으로 만든 안내예요.',
+  settingsTitle: '접근성 설정',
+  settingsClose: '설정 닫기',
+  audioSetting: '안내 음성',
+  motionSetting: '모션 줄이기',
+  patternContrastSetting: '무늬 대비 높이기',
+  persistenceSetting: '이 기기에서 이어 하기',
+  storageExplanation: '운행 위치와 접근성 설정만 이 기기에 저장해요.',
+  storageOffExplanation: '끄면 이 앱의 저장 내용을 바로 지워요.',
+  systemMotionNotice: '기기에서 모션 줄이기를 켜면 함께 줄어들어요.',
 } as const);
 
 export type CopyKey = keyof typeof COPY;

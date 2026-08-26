@@ -13,9 +13,34 @@ import type { DisplayTokenId } from './content/tokenThemes';
 import type { TranslationPair } from './domain/pattern/types';
 import { createInitialSession, sessionReducer } from './features/session/reducer';
 import { selectCanContinue, selectCurrentMission } from './features/session/selectors';
+import { AccessibilitySettings } from './features/settings/AccessibilitySettings';
+import type { AccessibilitySettings as AccessibilitySettingsState, ProgressStore } from './features/session/types';
+import { createProgressStore, disablePersistence, persistSession } from './services/progressStore';
+
+function createNoopStorage(): Storage {
+  return {
+    get length() { return 0; },
+    clear() {},
+    getItem() { return null; },
+    key() { return null; },
+    removeItem() {},
+    setItem() {},
+  };
+}
+
+function getAvailableStorage(): Storage {
+  if (typeof window === 'undefined') return createNoopStorage();
+  try {
+    return window.localStorage;
+  } catch {
+    return createNoopStorage();
+  }
+}
 
 export default function App(): JSX.Element {
-  const [state, dispatch] = useReducer(sessionReducer, undefined, createInitialSession);
+  const [progressStore] = useState<ProgressStore>(() => createProgressStore(getAvailableStorage()));
+  const [state, dispatch] = useReducer(sessionReducer, progressStore.load(), createInitialSession);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const mission = selectCurrentMission(state);
   const canContinue = selectCanContinue(state);
   const [translationPairs, setTranslationPairs] = useState<readonly TranslationPair<DisplayTokenId>[]>([]);
@@ -23,6 +48,22 @@ export default function App(): JSX.Element {
   useEffect(() => {
     if (state.stage !== 'translate') setTranslationPairs([]);
   }, [state.stage, mission?.id]);
+
+  useEffect(() => {
+    persistSession(state, progressStore);
+  }, [progressStore, state]);
+
+  const updateSettings = (settings: AccessibilitySettingsState): void => {
+    if (state.settings.persistenceEnabled && !settings.persistenceEnabled) {
+      disablePersistence(progressStore);
+    }
+    dispatch({ type: 'UPDATE_SETTINGS', settings });
+  };
+
+  const startJourney = (): void => {
+    setSettingsOpen(false);
+    dispatch({ type: 'START_JOURNEY' });
+  };
 
   const continueStage = () => {
     if (canContinue) dispatch({ type: 'CONTINUE_STAGE' });
@@ -34,9 +75,16 @@ export default function App(): JSX.Element {
       {state.stage === 'start' ? (
         <StartScreen
           settings={state.settings}
-          onStart={() => dispatch({ type: 'START_JOURNEY' })}
-          onOpenSettings={() => dispatch({ type: 'UPDATE_SETTINGS', settings: state.settings })}
+          onStart={startJourney}
+          onOpenSettings={() => setSettingsOpen(true)}
           audioEnabled={state.settings.audioEnabled}
+        />
+      ) : null}
+      {state.stage === 'start' && settingsOpen ? (
+        <AccessibilitySettings
+          settings={state.settings}
+          onChange={updateSettings}
+          onClose={() => setSettingsOpen(false)}
         />
       ) : null}
       {state.stage === 'find' && mission?.kind === 'find' ? (
