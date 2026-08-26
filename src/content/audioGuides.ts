@@ -11,7 +11,9 @@ export interface AudioGuideEntry {
 const configuredBase = import.meta.env.BASE_URL;
 
 export function buildAudioSrc(base: string, cue: AudioCue): string {
-  const safeBase = /^(?:\.\/|\.\.\/|\/(?!\/))/.test(base) ? base : './';
+  const localBasePattern = /^(?:\.\/|\/)(?:[A-Za-z0-9._~-]+(?:\/[A-Za-z0-9._~-]+)*)?\/?$/;
+  const hasTraversalSegment = base.split('/').includes('..');
+  const safeBase = localBasePattern.test(base) && !hasTraversalSegment ? base : './';
   const normalizedBase = safeBase.replace(/\/+$/, '');
   return `${normalizedBase}/audio/ko/${cue}.mp3`;
 }

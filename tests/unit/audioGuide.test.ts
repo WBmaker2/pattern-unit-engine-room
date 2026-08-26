@@ -93,10 +93,26 @@ describe('로컬 음성 안내 서비스', () => {
 
   it('정상 base만 보존하고 protocol-relative·외부 scheme은 로컬 기본 경로로 격리한다', () => {
     expect(buildAudioSrc('./', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('./pattern-unit-engine-room/', 'find')).toBe(
+      './pattern-unit-engine-room/audio/ko/find.mp3',
+    );
+    expect(buildAudioSrc('/', 'find')).toBe('/audio/ko/find.mp3');
     expect(buildAudioSrc('/pattern/', 'find')).toBe('/pattern/audio/ko/find.mp3');
+    expect(buildAudioSrc('/pattern-unit-engine-room/', 'find')).toBe(
+      '/pattern-unit-engine-room/audio/ko/find.mp3',
+    );
     expect(buildAudioSrc('//cdn.example/', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('/\\cdn.example/', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('\\cdn.example/', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('/%2fcdn.example/', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('/%5Ccdn.example/', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('../audio/', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('./../audio/', 'find')).toBe('./audio/ko/find.mp3');
     expect(buildAudioSrc('https://cdn.example/', 'find')).toBe('./audio/ko/find.mp3');
     expect(buildAudioSrc('ftp://cdn.example/', 'find')).toBe('./audio/ko/find.mp3');
     expect(buildAudioSrc('javascript:alert(1)', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('/pattern?x=1', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('/pattern#hash', 'find')).toBe('./audio/ko/find.mp3');
+    expect(buildAudioSrc('/pattern unit/', 'find')).toBe('./audio/ko/find.mp3');
   });
 });
