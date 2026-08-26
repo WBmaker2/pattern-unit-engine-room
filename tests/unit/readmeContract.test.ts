@@ -81,8 +81,14 @@ describe('README 문서 계약', () => {
     }
     expect(accessibilityChecklist).toMatch(/사람.*듣기 전.*PASS.*아니|PASS.*표시하지 않습니다/);
 
-    // 로컬 실행 범위
-    expect(readme).toMatch(/배포하지 않았습니다/);
+    // 로컬 실행과 GitHub Pages 배포 범위
+    expect(readme).toContain('https://wbmaker2.github.io/pattern-unit-engine-room/');
+    expect(readme).toContain('배포 예정 공개 주소');
+    expect(readme).toContain('main');
+    expect(readme).toContain('workflow_dispatch');
+    expect(readme).toContain('GitHub Actions');
+    expect(readme).toContain('dist');
+    expect(readme).toContain('github-pages');
     expect(readme).toMatch(/로컬 실행/);
   });
 });

@@ -20,14 +20,23 @@ describe('업데이트 내역', () => {
 
     const dialog = screen.getByRole('dialog', { name: '업데이트 내역' });
     expect(within(dialog).getAllByText('2026-08-26')).toHaveLength(2);
+    expect(within(dialog).getByText('2026-08-27')).toBeInTheDocument();
+    expect(
+      within(dialog).getByText('GitHub Pages 배포 구성 추가'),
+    ).toBeInTheDocument();
     expect(within(dialog).getByText('MVP 학습 흐름과 접근성 검증 추가')).toBeInTheDocument();
     expect(within(dialog).getByText('최초 설계 문서 작성')).toBeInTheDocument();
     await user.keyboard('{Escape}');
     expect(trigger).toHaveFocus();
   });
 
-  it('최신 날짜와 같은 날짜의 개발 우선 순서를 지키며 중복이 없다', () => {
+  it('최신 개선 기록과 기존 기록의 순서를 지키며 중복이 없다', () => {
     expect(UPDATE_HISTORY).toEqual([
+      {
+        date: '2026-08-27',
+        kind: '개선',
+        summary: 'GitHub Pages 배포 구성 추가',
+      },
       {
         date: '2026-08-26',
         kind: '개발',
@@ -42,8 +51,12 @@ describe('업데이트 내역', () => {
 
     const keys = UPDATE_HISTORY.map(({ date, kind, summary }) => `${date}:${kind}:${summary}`);
     expect(new Set(keys).size).toBe(keys.length);
-    expect(UPDATE_HISTORY.map((entry) => entry.date)).toEqual(['2026-08-26', '2026-08-26']);
-    expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개발', '설계']);
+    expect(UPDATE_HISTORY.map((entry) => entry.date)).toEqual([
+      '2026-08-27',
+      '2026-08-26',
+      '2026-08-26',
+    ]);
+    expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개선', '개발', '설계']);
   });
 
   it('앱 콘텐츠와 업데이트 버튼이 모든 safe-area 계약을 지킨다', async () => {

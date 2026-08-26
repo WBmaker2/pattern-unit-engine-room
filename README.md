@@ -64,7 +64,7 @@ npx playwright install --with-deps chromium
 npm run test:e2e
 ```
 
-아직 배포하지 않았습니다. 이 문서와 위 명령이 설명하는 범위는 로컬 실행과 로컬 품질 검증입니다. GitHub Actions는 외부 secrets나 배포 단계를 사용하지 않고 `contents: read` 권한으로 품질만 검사합니다.
+GitHub Pages 배포 예정 공개 주소는 [https://wbmaker2.github.io/pattern-unit-engine-room/](https://wbmaker2.github.io/pattern-unit-engine-room/)입니다. `main` push 또는 `workflow_dispatch`로 GitHub Actions의 Pages workflow가 Node.js 22 환경에서 `npm ci`와 `npm run build`를 실행하고, `dist` artifact를 `github-pages` 환경에 배포합니다. 로컬 실행과 품질 검증은 위 명령으로 수행합니다.
 
 ## local-only 개인정보 경계
 
@@ -101,4 +101,4 @@ Task 15에서 Chromium 자동 E2E 12건, unit/component 포함 테스트 167건�
 
 ## 범위
 
-이 프로젝트는 반복 구조를 찾고 표현하는 저학년 수학 활동의 MVP입니다. 모든 정답 판정은 화면 외형과 분리되어 있으며, 드래그·시간 제한·빠른 더블 클릭을 요구하지 않습니다. 배포·공개 갤러리 등록·학생 데이터 서버 저장은 이 구현 범위에 포함하지 않습니다.
+이 프로젝트는 반복 구조를 찾고 표현하는 저학년 수학 활동의 MVP입니다. 모든 정답 판정은 화면 외형과 분리되어 있으며, 드래그·시간 제한·빠른 더블 클릭을 요구하지 않습니다. 별도 서버·계정·학생 데이터 서버 저장·공개 갤러리 등록은 이 구현 범위에 포함하지 않습니다.
