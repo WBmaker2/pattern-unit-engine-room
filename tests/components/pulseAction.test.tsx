@@ -28,7 +28,7 @@ describe('PrimaryAction', () => {
     expect(screen.getByRole('button', { name: '운행하기' })).toHaveClass('gi-pulse');
   });
 
-  it('비활성화된 주 행동은 pulse와 primary marker를 모두 제거한다', () => {
+  it('비활성화된 주 행동도 base class를 유지하고 pulse와 primary marker만 제거한다', () => {
     render(
       <PrimaryAction pulseKind="run" disabled onClick={vi.fn()}>
         운행하기
@@ -37,7 +37,7 @@ describe('PrimaryAction', () => {
 
     const button = screen.getByRole('button', { name: '운행하기' });
     expect(button).toBeDisabled();
-    expect(button).not.toHaveClass('primary-action');
+    expect(button).toHaveClass('primary-action');
     expect(button).not.toHaveClass('gi-pulse');
     expect(button).not.toHaveAttribute('data-primary-action');
   });

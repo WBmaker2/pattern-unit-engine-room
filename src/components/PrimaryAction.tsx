@@ -16,11 +16,9 @@ export function PrimaryAction({
   pulseKind,
 }: PrimaryActionProps): JSX.Element {
   const enabled = !disabled;
-  const className = enabled
-    ? ['primary-action', pulseKind === undefined ? '' : 'gi-pulse']
-        .filter(Boolean)
-        .join(' ')
-    : undefined;
+  const className = ['primary-action', enabled && pulseKind !== undefined ? 'gi-pulse' : '']
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <button
