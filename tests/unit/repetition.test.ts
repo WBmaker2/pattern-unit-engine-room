@@ -30,6 +30,13 @@ describe('반복 단위', () => {
     expect(repeatUnit(['A', 'B'], 0)).toEqual([]);
   });
 
+  it.each([Number.POSITIVE_INFINITY, Number.NaN, 0, -1, 1.5])(
+    '양의 유한 정수가 아닌 반복 횟수(%s)는 빈 배열을 반환한다',
+    (repeatCount) => {
+      expect(repeatUnit(['A', 'B'], repeatCount)).toEqual([]);
+    },
+  );
+
   it('더 긴 반복 후보를 정답으로 인정하지 않는다', () => {
     expect(
       validateUnitChoice(['A', 'B', 'A', 'B'], ['A', 'B', 'A', 'B']),

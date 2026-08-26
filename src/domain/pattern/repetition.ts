@@ -29,10 +29,17 @@ export function repeatUnit(
   unit: PatternUnit,
   repeatCount: number,
 ): PatternTokenId[] {
-  const normalizedCount = Math.max(0, Math.floor(repeatCount));
+  if (
+    !Number.isFinite(repeatCount) ||
+    !Number.isInteger(repeatCount) ||
+    repeatCount <= 0
+  ) {
+    return [];
+  }
+
   const repeated: PatternTokenId[] = [];
 
-  for (let count = 0; count < normalizedCount; count += 1) {
+  for (let count = 0; count < repeatCount; count += 1) {
     repeated.push(...unit);
   }
 
