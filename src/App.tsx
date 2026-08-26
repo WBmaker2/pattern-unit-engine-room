@@ -102,6 +102,7 @@ export default function App(): JSX.Element {
       ) : null}
       {state.stage === 'start' && settingsOpen ? (
         <AccessibilitySettings
+          effectiveReducedMotion={reducedMotion}
           settings={state.settings}
           onChange={updateSettings}
           onClose={() => setSettingsOpen(false)}

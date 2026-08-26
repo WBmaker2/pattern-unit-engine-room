@@ -1,4 +1,4 @@
-import { useMemo, type ChangeEvent, type JSX } from 'react';
+import { type ChangeEvent, type JSX } from 'react';
 
 import { COPY } from '../../content/copy';
 import type { AccessibilitySettings as Settings } from '../session/types';
@@ -7,6 +7,7 @@ export interface AccessibilitySettingsProps {
   readonly settings: Settings;
   readonly onChange: (settings: Settings) => void;
   readonly onClose: () => void;
+  readonly effectiveReducedMotion?: boolean;
   readonly systemPrefersReduce?: boolean;
 }
 
@@ -16,14 +17,6 @@ export function resolveReducedMotion(
   systemPrefersReduce: boolean,
 ): boolean {
   return preference === 'reduce' || (preference === 'system' && systemPrefersReduce);
-}
-
-function useSystemMotionPreference(override: boolean | undefined): boolean {
-  return useMemo(() => {
-    if (override !== undefined) return override;
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false;
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  }, [override]);
 }
 
 interface SwitchProps {
@@ -51,10 +44,11 @@ export function AccessibilitySettings({
   settings,
   onChange,
   onClose,
+  effectiveReducedMotion: effectiveReducedMotionProp,
   systemPrefersReduce,
 }: AccessibilitySettingsProps): JSX.Element {
-  const prefersReduce = useSystemMotionPreference(systemPrefersReduce);
-  const effectiveReducedMotion = resolveReducedMotion(settings.motionPreference, prefersReduce);
+  const effectiveReducedMotion = effectiveReducedMotionProp
+    ?? resolveReducedMotion(settings.motionPreference, systemPrefersReduce ?? false);
   const update = (key: keyof Settings, value: boolean | Settings['motionPreference'] | Settings['patternContrast']): void => {
     onChange({ ...settings, [key]: value });
   };

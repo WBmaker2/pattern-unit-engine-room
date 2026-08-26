@@ -1,6 +1,8 @@
 import { act, cleanup, render, renderHook, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import App from '../../src/App';
 import { useEffectiveReducedMotion } from '../../src/hooks/useEffectiveReducedMotion';
@@ -104,5 +106,28 @@ describe('useEffectiveReducedMotion 및 앱 모션 표지', () => {
     await user.click(screen.getByRole('switch', { name: '무늬 대비 높이기' }));
     expect(appRoot).toHaveAttribute('data-motion', 'reduce');
     expect(appRoot).toHaveAttribute('data-pattern-contrast', 'strong');
+  });
+
+  it('OS motion change가 root와 열린 설정 패널에 함께 반영된다', async () => {
+    const user = userEvent.setup();
+    const controller = mockMatchMedia(false);
+    render(<App />);
+    await user.click(screen.getByRole('button', { name: '접근성 설정' }));
+    expect(screen.getByText('기본 모션으로 보여 줘요.')).toBeInTheDocument();
+
+    act(() => controller.change(true));
+    expect(screen.getByRole('main', { name: '규칙 단위 기관실' })).toHaveAttribute('data-motion', 'reduce');
+    expect(screen.getByText('모션을 줄여서 보여 줘요.')).toBeInTheDocument();
+
+    act(() => controller.change(false));
+    expect(screen.getByRole('main', { name: '규칙 단위 기관실' })).toHaveAttribute('data-motion', 'full');
+    expect(screen.getByText('기본 모션으로 보여 줘요.')).toBeInTheDocument();
+  });
+
+  it('설정 switch 자체가 48px 이상 hit area CSS 계약을 갖는다', () => {
+    const css = readFileSync(resolve(process.cwd(), 'src/styles/components.css'), 'utf8');
+    const inputRule = css.match(/\.settings-panel__switch input\s*\{([^}]*)\}/)?.[1] ?? '';
+    expect(inputRule).toMatch(/min-inline-size:\s*48px/);
+    expect(inputRule).toMatch(/min-block-size:\s*48px/);
   });
 });
