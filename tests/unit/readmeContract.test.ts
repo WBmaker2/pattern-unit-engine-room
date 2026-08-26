@@ -4,6 +4,10 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const readme = readFileSync(resolve(import.meta.dirname, '../../README.md'), 'utf8');
+const accessibilityChecklist = readFileSync(
+  resolve(import.meta.dirname, '../../docs/qa/2026-08-26-accessibility-checklist.md'),
+  'utf8',
+);
 
 describe('README 문서 계약', () => {
   it('필수 섹션과 경계를 모두 설명한다', () => {
@@ -65,8 +69,17 @@ describe('README 문서 계약', () => {
       expect(readme).toContain(phrase);
     }
     expect(readme).toMatch(/전체 수동 PASS.*아니|전체 수동 PASS.*주장하지/);
+    expect(readme).toContain('사람의 청취 검수 대기');
     expect(readme).toMatch(/docs\/qa\/.*accessibility-checklist\.md/);
     expect(readme).toMatch(/\.\.\/docs\/qa\/|\[.*접근성.*\]\(docs\/qa\//);
+
+    // Safari VoiceOver와 별개인 로컬 안내 음성의 사람 청취 검수
+    expect(accessibilityChecklist).toContain('## 로컬 안내 음성 사람 청취 검수');
+    expect(accessibilityChecklist).toContain('사람의 청취 검수 대기');
+    for (const criterion of ['발음', '속도', '명료도', '아동 적합성', '볼륨']) {
+      expect(accessibilityChecklist).toContain(criterion);
+    }
+    expect(accessibilityChecklist).toMatch(/사람.*듣기 전.*PASS.*아니|PASS.*표시하지 않습니다/);
 
     // 로컬 실행 범위
     expect(readme).toMatch(/배포하지 않았습니다/);
