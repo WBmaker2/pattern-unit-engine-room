@@ -68,6 +68,7 @@ describe('업데이트 내역', () => {
     expect(buttonBlock).toContain(
       'inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 12px);',
     );
+    expect(buttonBlock).toContain('min-inline-size: 48px;');
     expect(buttonBlock).toContain('min-block-size: 48px;');
   });
 
