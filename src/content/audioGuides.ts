@@ -9,11 +9,15 @@ export interface AudioGuideEntry {
 }
 
 const configuredBase = import.meta.env.BASE_URL;
-const safeBase = /^(?:\.{0,2}\/|\/)/.test(configuredBase) ? configuredBase : './';
-const AUDIO_ROOT = `${safeBase.replace(/\/+$/, '')}/audio/ko/`;
+
+export function buildAudioSrc(base: string, cue: AudioCue): string {
+  const safeBase = /^(?:\.\/|\.\.\/|\/(?!\/))/.test(base) ? base : './';
+  const normalizedBase = safeBase.replace(/\/+$/, '');
+  return `${normalizedBase}/audio/ko/${cue}.mp3`;
+}
 
 function createEntry(cue: AudioCue, transcriptKey: CopyKey): AudioGuideEntry {
-  return Object.freeze({ cue, src: `${AUDIO_ROOT}${cue}.mp3`, transcriptKey });
+  return Object.freeze({ cue, src: buildAudioSrc(configuredBase, cue), transcriptKey });
 }
 
 export const AUDIO_GUIDES: Readonly<Record<AudioCue, AudioGuideEntry>> = Object.freeze({

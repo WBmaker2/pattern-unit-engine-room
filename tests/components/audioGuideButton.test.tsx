@@ -88,4 +88,35 @@ describe('선택형 음성 안내 버튼', () => {
     unmount();
     expect(guide.stop).toHaveBeenCalledTimes(2);
   });
+
+  it('cue가 바뀐 뒤 늦게 도착한 재생 결과를 무시한다', async () => {
+    let resolvePlay: ((result: 'played') => void) | undefined;
+    const guide: AudioGuide = {
+      play: vi.fn(() => new Promise((resolve) => { resolvePlay = resolve; })),
+      stop: vi.fn().mockReturnValue('stopped'),
+    };
+    const { rerender } = render(<AudioGuideButton cue="find" guide={guide} />);
+    await userEvent.click(screen.getByRole('button', { name: COPY.audioListen }));
+    rerender(<AudioGuideButton cue="repair" guide={guide} />);
+    resolvePlay?.('played');
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: COPY.audioListen })).toHaveAttribute(
+        'aria-pressed',
+        'false',
+      );
+    });
+  });
+
+  it('unmount 뒤 늦게 도착한 재생 결과를 반영하지 않는다', async () => {
+    let resolvePlay: ((result: 'played') => void) | undefined;
+    const guide: AudioGuide = {
+      play: vi.fn(() => new Promise((resolve) => { resolvePlay = resolve; })),
+      stop: vi.fn().mockReturnValue('stopped'),
+    };
+    const { unmount } = render(<AudioGuideButton cue="find" guide={guide} />);
+    await userEvent.click(screen.getByRole('button', { name: COPY.audioListen }));
+    unmount();
+    expect(() => resolvePlay?.('played')).not.toThrow();
+    expect(guide.stop).toHaveBeenCalled();
+  });
 });
