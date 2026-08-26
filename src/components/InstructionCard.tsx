@@ -1,10 +1,13 @@
 import type { JSX, ReactNode } from 'react';
 
+import { AudioGuideButton } from './AudioGuideButton';
+import { getAudioTranscript, type AudioCue } from '../content/audioGuides';
+
 export interface InstructionCardProps {
   readonly children?: ReactNode;
   readonly text?: string;
   readonly title?: string;
-  readonly cue?: string;
+  readonly cue?: AudioCue;
   readonly audioEnabled?: boolean;
 }
 
@@ -30,17 +33,21 @@ export function InstructionCard({
   children,
   text,
   title,
+  cue,
+  audioEnabled = false,
 }: InstructionCardProps): JSX.Element {
+  const transcript = cue === undefined ? undefined : getAudioTranscript(cue);
   const visibleText = hasVisibleContent(children)
     ? children
     : hasVisibleContent(text)
       ? text
-      : DEFAULT_INSTRUCTION;
+      : transcript ?? DEFAULT_INSTRUCTION;
 
   return (
     <section aria-label={title} className="instruction-card">
       {title !== undefined ? <h2>{title}</h2> : null}
       <p>{visibleText}</p>
+      {audioEnabled && cue !== undefined ? <AudioGuideButton cue={cue} /> : null}
     </section>
   );
 }
