@@ -64,7 +64,7 @@ npx playwright install --with-deps chromium
 npm run test:e2e
 ```
 
-GitHub Pages 배포 예정 공개 주소는 [https://wbmaker2.github.io/pattern-unit-engine-room/](https://wbmaker2.github.io/pattern-unit-engine-room/)입니다. `main` push 또는 `workflow_dispatch`로 GitHub Actions의 Pages workflow가 Node.js 22 환경에서 `npm ci`와 `npm run build`를 실행하고, `dist` artifact를 `github-pages` 환경에 배포합니다. 로컬 실행과 품질 검증은 위 명령으로 수행합니다.
+GitHub Pages 공개 주소는 [https://wbmaker2.github.io/pattern-unit-engine-room/](https://wbmaker2.github.io/pattern-unit-engine-room/)입니다. `main` push 또는 `workflow_dispatch`로 GitHub Actions의 Pages workflow가 Node.js 22 환경에서 `npm ci`와 `npm run build`를 실행하고, `dist` artifact를 `github-pages` 환경에 배포합니다. 로컬 실행과 품질 검증은 위 명령으로 수행합니다.
 
 ## local-only 개인정보 경계
 
@@ -97,7 +97,7 @@ Task 15에서 Chromium 자동 E2E 12건, unit/component 포함 테스트 167건�
 
 ## 업데이트 내역
 
-화면 오른쪽 아래의 작은 `업데이트 내역` 버튼에서 설계·개발·개선 날짜와 요약을 확인할 수 있습니다. 현재 구현 날짜는 2026-08-26이며, 날짜가 바뀌는 수정은 같은 파일과 관련 테스트의 날짜를 함께 갱신합니다.
+화면 오른쪽 아래의 작은 `업데이트 내역` 버튼에서 설계·개발·개선 날짜와 요약을 확인할 수 있습니다. 현재 구현 날짜는 2026-08-27이며, 날짜가 바뀌는 수정은 같은 파일과 관련 테스트의 날짜를 함께 갱신합니다.
 
 ## 범위
 

@@ -83,7 +83,7 @@ describe('README 문서 계약', () => {
 
     // 로컬 실행과 GitHub Pages 배포 범위
     expect(readme).toContain('https://wbmaker2.github.io/pattern-unit-engine-room/');
-    expect(readme).toContain('배포 예정 공개 주소');
+    expect(readme).toContain('GitHub Pages 공개 주소');
     expect(readme).toContain('main');
     expect(readme).toContain('workflow_dispatch');
     expect(readme).toContain('GitHub Actions');
