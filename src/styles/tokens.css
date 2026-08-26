@@ -1,0 +1,9 @@
+:root {
+  color-scheme: light;
+  --color-page: #fffaf0;
+  --color-ink: #24324a;
+  --color-accent: #116466;
+  --space-page: clamp(1rem, 4vw, 3rem);
+  --radius-card: 1.25rem;
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+}
