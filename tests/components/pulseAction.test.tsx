@@ -2,6 +2,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PrimaryAction } from '../../src/components/PrimaryAction';
+import { InstructionCard } from '../../src/components/InstructionCard';
 
 describe('PrimaryAction', () => {
   afterEach(cleanup);
@@ -12,6 +13,7 @@ describe('PrimaryAction', () => {
         한 묶음 찾기
       </PrimaryAction>,
     );
+    expect(screen.getByRole('button', { name: '한 묶음 찾기' })).toHaveClass('primary-action');
     expect(screen.getByRole('button', { name: '한 묶음 찾기' })).toHaveClass('gi-pulse');
     expect(screen.getByRole('button', { name: '한 묶음 찾기' })).toHaveAttribute(
       'data-primary-action',
@@ -35,7 +37,19 @@ describe('PrimaryAction', () => {
 
     const button = screen.getByRole('button', { name: '운행하기' });
     expect(button).toBeDisabled();
+    expect(button).not.toHaveClass('primary-action');
     expect(button).not.toHaveClass('gi-pulse');
     expect(button).not.toHaveAttribute('data-primary-action');
+  });
+
+  it('빈 문자열이나 공백 안내도 기본 visible instruction으로 대체한다', () => {
+    const { rerender } = render(<InstructionCard text="" />);
+    expect(screen.getByText('안내를 읽고 차례로 해 보세요.')).toBeInTheDocument();
+
+    rerender(<InstructionCard text="   " />);
+    expect(screen.getByText('안내를 읽고 차례로 해 보세요.')).toBeInTheDocument();
+
+    rerender(<InstructionCard>{'   '}</InstructionCard>);
+    expect(screen.getByText('안내를 읽고 차례로 해 보세요.')).toBeInTheDocument();
   });
 });

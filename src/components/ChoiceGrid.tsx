@@ -34,6 +34,7 @@ export function ChoiceGrid<T, TId extends string | number = string>({
               <button
                 aria-label={getAccessibleName(choice)}
                 aria-pressed={selectedId !== null && id === selectedId}
+                className="choice-button"
                 onClick={() => onSelect(choice)}
                 type="button"
               >

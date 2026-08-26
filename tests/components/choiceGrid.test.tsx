@@ -28,6 +28,7 @@ describe('ChoiceGrid', () => {
 
     expect(screen.getByRole('group', { name: '한 묶음 선택' })).toBeInTheDocument();
     expect(screen.getAllByRole('button')).toHaveLength(3);
+    expect(screen.getAllByRole('button').every((button) => button.classList.contains('choice-button'))).toBe(true);
     expect(screen.getByRole('button', { name: 'BA 묶음' })).toHaveAttribute(
       'aria-pressed',
       'true',

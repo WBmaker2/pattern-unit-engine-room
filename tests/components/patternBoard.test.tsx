@@ -50,6 +50,10 @@ describe('PatternBoard', () => {
 
     const buttons = screen.getAllByRole('button');
     expect(buttons).toHaveLength(2);
+    expect(buttons[0]).toHaveClass('pattern-cell--selectable');
+    expect(buttons[1]).toHaveClass('pattern-cell--selectable');
+    expect(buttons[0].parentElement).not.toHaveClass('pattern-cell');
+    expect(buttons[0].parentElement).not.toHaveAttribute('data-pattern-mark');
     expect(buttons[1]).toHaveAttribute('aria-pressed', 'true');
     expect(buttons[0]).toHaveClass('pattern-cell--active');
 
@@ -61,6 +65,17 @@ describe('PatternBoard', () => {
     await user.keyboard(' ');
     expect(onSelect).toHaveBeenCalledWith(1);
     expect(onSelect).toHaveBeenCalledTimes(3);
+  });
+
+  it('읽기 전용 셀의 스타일·데이터 계약은 labelled span 하나에만 둔다', () => {
+    const { container } = render(<PatternBoard slots={['A']} themeId="engine" />);
+    const item = container.querySelector('li');
+    const cell = container.querySelector('li > span[aria-label]');
+
+    expect(item).not.toHaveClass('pattern-cell');
+    expect(item).not.toHaveAttribute('data-icon');
+    expect(cell).toHaveClass('pattern-cell');
+    expect(cell).toHaveAttribute('data-icon', 'gear');
   });
 
   it('읽기 전용 칸은 button 없이 labelled span을 사용한다', () => {

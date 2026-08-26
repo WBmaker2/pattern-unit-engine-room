@@ -35,6 +35,13 @@ export function PatternCell({
   const selectable = onSelect !== undefined;
   const className = cellClasses(active, selected);
   const patternClass = visual === null ? '' : `pattern-mark--${visual.patternMarkId}`;
+  const controlClassName = [
+    className,
+    selectable ? 'pattern-cell--selectable' : '',
+    patternClass,
+  ]
+    .filter(Boolean)
+    .join(' ');
   const dataAttributes = {
     'data-icon': visual?.iconId ?? 'empty',
     'data-icon-id': visual?.iconId ?? 'empty',
@@ -54,12 +61,12 @@ export function PatternCell({
   );
 
   return (
-    <li className={`${className} ${patternClass}`.trim()} {...dataAttributes}>
+    <li className="pattern-cell__item">
       {selectable ? (
         <button
           aria-label={ariaLabel}
           aria-pressed={selected}
-          className={`${className} ${patternClass}`.trim()}
+          className={controlClassName}
           onClick={() => onSelect(index)}
           type="button"
           {...dataAttributes}
@@ -67,7 +74,7 @@ export function PatternCell({
           {content}
         </button>
       ) : (
-        <span aria-label={ariaLabel} className={`${className} ${patternClass}`.trim()} {...dataAttributes}>
+        <span aria-label={ariaLabel} className={controlClassName} {...dataAttributes}>
           {content}
         </span>
       )}
