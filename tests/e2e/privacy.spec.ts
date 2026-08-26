@@ -1,6 +1,15 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const PROGRESS_KEY = 'pattern-unit-engine-room:v1';
+const ALLOWED_AUDIO_PATHS = new Set([
+  '/audio/ko/start.mp3',
+  '/audio/ko/find.mp3',
+  '/audio/ko/continue.mp3',
+  '/audio/ko/repair.mp3',
+  '/audio/ko/translate.mp3',
+  '/audio/ko/create.mp3',
+  '/audio/ko/complete.mp3',
+]);
 
 function isAllowedDevPath(pathname: string): boolean {
   return pathname === '/'
@@ -9,7 +18,7 @@ function isAllowedDevPath(pathname: string): boolean {
     || pathname.startsWith('/src/')
     || pathname.startsWith('/node_modules/.vite/deps/')
     || pathname.startsWith('/node_modules/vite/dist/client/')
-    || pathname.startsWith('/audio/ko/');
+    || ALLOWED_AUDIO_PATHS.has(pathname);
 }
 
 async function installPrivacyProbe(page: Page): Promise<void> {
@@ -99,6 +108,8 @@ test.beforeEach(async ({ page }) => {
 
 test('앱 요청은 앱 origin과 로컬 한국어 음원 경로만 사용한다', async ({ page }) => {
   await installPrivacyProbe(page);
+  expect(isAllowedDevPath('/audio/ko/start.mp3')).toBe(true);
+  expect(isAllowedDevPath('/audio/ko/unknown.mp3')).toBe(false);
   const requests: string[] = [];
   page.on('request', (request) => requests.push(request.url()));
   await page.goto('/');
@@ -117,7 +128,7 @@ test('앱 요청은 앱 origin과 로컬 한국어 음원 경로만 사용한다
   const audioRequest = await audioRequestPromise;
   const audioResponse = await audioResponsePromise;
   expect(new URL(audioRequest.url()).pathname).toBe('/audio/ko/start.mp3');
-  expect([200, 206]).toContain(audioResponse.status());
+  expect(audioResponse.status()).toBe(206);
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(300);
   const appOrigin = new URL(page.url()).origin;

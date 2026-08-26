@@ -18,11 +18,11 @@
 - Journey 0을 드래그 없이 완료하고 다섯 활동 도장을 확인했습니다.
 - 의도적 오답 → 피드백·힌트 → 재시도를 Find와 Continue/Repair에서 확인했습니다.
 - 320px 가로 overflow 없음과 보이는 interactive target 48×48 CSS px 이상을 확인했습니다.
-- 640px metrics와 CDP `pageScaleFactor=2`를 navigation 이후 적용하여 실제 Chromium `visualViewport.scale=2`, `visualViewport.width=320`을 확인하고 핵심 요소의 좌우·상하 경계, 자체 clipping, 상호 겹침을 검사했습니다.
+- 640px physical metrics와 CDP `pageScaleFactor=2`를 navigation 이후 적용하고, pinch scale만으로 reflow되지 않는 점을 반영해 테스트 harness의 `html`·`body`·`#root`에 명시적 320px CSS surface를 주입했습니다. 실제 Chromium `visualViewport.scale=2`, `visualViewport.width=320`, root width `<=320`을 확인하고 핵심 요소의 visual 좌우·상하 경계, 자체 clipping, 문서 좌표 상호 겹침을 검사했습니다. 이는 native browser page zoom 결과가 아닌 결합 harness입니다.
 - `prefers-reduced-motion: reduce`에서 `gi-pulse`와 명시적으로 주입한 `.train-track--moving` contract probe의 animation이 `none`, transform이 `none`, 도움 칸 outline이 4px임을 확인했습니다. 열차 probe는 현재 앱 runtime 요소가 아니라 CSS contract 확인용 테스트 요소입니다.
 - 각 단계의 활성 `data-primary-action`이 최대 하나이고, Tab 포커스 후 Enter/Space로 전체 흐름을 완료함을 확인했습니다.
 - Find, Continue, Repair, Translate, Create, Summary 각 상태의 Axe violations 0개를 확인했습니다.
-- Start에서 안내 음성을 켜고 `안내 듣기`를 눌러 정확한 same-origin `/audio/ko/start.mp3` 요청과 200/206 응답을 확인했습니다. settle window 뒤에도 외부 origin 0개, 허용된 Vite asset prefix·로컬 audio 외 경로 0개, 앱의 녹음 API 호출 0개였습니다. Vite HMR WebSocket은 앱 호출과 분리해 기록했습니다.
+- Start에서 안내 음성을 켜고 `안내 듣기`를 눌러 정확한 same-origin `/audio/ko/start.mp3` 요청과 HTTP 206 Range 응답을 확인했습니다. 허용 음원은 `start.mp3`, `find.mp3`, `continue.mp3`, `repair.mp3`, `translate.mp3`, `create.mp3`, `complete.mp3` 7개로만 제한했습니다. settle window 뒤에도 외부 origin 0개, 허용된 Vite asset prefix·7개 로컬 audio 외 경로 0개, 앱의 녹음 API 호출 0개였습니다. Vite HMR WebSocket은 앱 호출과 분리해 기록했습니다.
 - 기본 진행 저장은 없고, 동의 후 `pattern-unit-engine-room:v1` 하나만 저장되며 `PersistedProgressV1` allowlist와 금지 개인정보 필드 검사를 통과했습니다.
 - grayscale CSS 주입 후에도 visible label만으로 Journey 0을 완료했습니다.
 

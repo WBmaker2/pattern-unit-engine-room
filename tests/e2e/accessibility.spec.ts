@@ -150,6 +150,18 @@ test.describe('모바일·확대·모션 접근성', () => {
       mobile: false,
     });
     await cdp.send('Emulation.setPageScaleFactor', { pageScaleFactor: 2 });
+    // CDP pinch scale은 자동 reflow가 아니므로, 640px physical surface 안에 320px CSS test surface를 명시합니다.
+    await page.addStyleTag({ content: `
+      html, body {
+        inline-size: 320px !important;
+        max-inline-size: 320px !important;
+        min-inline-size: 0 !important;
+      }
+      #root {
+        inline-size: 320px !important;
+        max-inline-size: 320px !important;
+      }
+    ` });
     await expect(page.locator('h2')).toBeVisible();
     await expect(page.locator('ol[aria-label="규칙 배열"]').first()).toBeVisible();
     const viewport = await page.evaluate(() => ({
@@ -161,9 +173,30 @@ test.describe('모바일·확대·모션 접근성', () => {
     expect(viewport.visualScale).toBe(2);
     expect(viewport.visualWidth).toBe(320);
     expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.clientWidth);
-    const boxes = await page.locator('h2, .find-screen > ol[aria-label="규칙 배열"], button[data-primary-action="true"]')
-      .evaluateAll((elements) => elements.map((element) => {
-        const rect = element.getBoundingClientRect();
+    expect(await page.locator('#root').evaluate((element) => element.getBoundingClientRect().width)).toBeLessThanOrEqual(320);
+    const geometry = await page.evaluate(() => {
+      const elements = Array.from(document.querySelectorAll<HTMLElement>(
+        'h2, .find-screen > ol[aria-label="규칙 배열"], button[data-primary-action="true"]',
+      ));
+      const boxes = elements.map((element) => {
+        element.scrollIntoView({ block: 'center', inline: 'nearest' });
+        const readVisualBounds = () => {
+          const visual = window.visualViewport;
+          return {
+            left: visual?.offsetLeft ?? 0,
+            right: (visual?.offsetLeft ?? 0) + (visual?.width ?? document.documentElement.clientWidth),
+            top: visual?.offsetTop ?? 0,
+            bottom: (visual?.offsetTop ?? 0) + (visual?.height ?? document.documentElement.clientHeight),
+          };
+        };
+        let visualBounds = readVisualBounds();
+        let rect = element.getBoundingClientRect();
+        if (rect.top < visualBounds.top || rect.bottom > visualBounds.bottom) {
+          const desiredTop = rect.top + window.scrollY - (visualBounds.bottom - visualBounds.top - rect.height) / 2;
+          window.scrollTo({ top: Math.max(0, desiredTop), behavior: 'auto' });
+          rect = element.getBoundingClientRect();
+          visualBounds = readVisualBounds();
+        }
         const style = getComputedStyle(element);
         return {
           left: rect.left,
@@ -176,16 +209,23 @@ test.describe('모바일·확대·모션 접근성', () => {
           scrollHeight: element.scrollHeight,
           overflowX: style.overflowX,
           overflowY: style.overflowY,
+          documentLeft: rect.left + window.scrollX,
+          documentTop: rect.top + window.scrollY,
+          documentRight: rect.right + window.scrollX,
+          documentBottom: rect.bottom + window.scrollY,
+          visualLeft: visualBounds.left,
+          visualRight: visualBounds.right,
+          visualTop: visualBounds.top,
+          visualBottom: visualBounds.bottom,
         };
-      }));
-    const documentBounds = await page.evaluate(() => ({
-      height: document.documentElement.scrollHeight,
-    }));
-    for (const box of boxes) {
-      expect(box.left).toBeGreaterThanOrEqual(0);
-      expect(box.right).toBeLessThanOrEqual(viewport.clientWidth);
-      expect(box.top).toBeGreaterThanOrEqual(0);
-      expect(box.bottom).toBeLessThanOrEqual(documentBounds.height);
+      });
+      return { boxes };
+    });
+    for (const box of geometry.boxes) {
+      expect(box.left).toBeGreaterThanOrEqual(box.visualLeft);
+      expect(box.right).toBeLessThanOrEqual(box.visualRight);
+      expect(box.top).toBeGreaterThanOrEqual(box.visualTop);
+      expect(box.bottom).toBeLessThanOrEqual(box.visualBottom);
       expect(box.scrollWidth).toBeLessThanOrEqual(box.clientWidth);
       expect(box.scrollHeight).toBeLessThanOrEqual(box.clientHeight);
       if (box.overflowX === 'hidden' || box.overflowX === 'clip') {
@@ -195,12 +235,12 @@ test.describe('모바일·확대·모션 접근성', () => {
         expect(box.scrollHeight).toBeLessThanOrEqual(box.clientHeight);
       }
     }
-    for (let index = 0; index < boxes.length; index += 1) {
-      for (let next = index + 1; next < boxes.length; next += 1) {
-        const first = boxes[index]!;
-        const second = boxes[next]!;
-        const separated = first.right <= second.left || second.right <= first.left
-          || first.bottom <= second.top || second.bottom <= first.top;
+    for (let index = 0; index < geometry.boxes.length; index += 1) {
+      for (let next = index + 1; next < geometry.boxes.length; next += 1) {
+        const first = geometry.boxes[index]!;
+        const second = geometry.boxes[next]!;
+        const separated = first.documentRight <= second.documentLeft || second.documentRight <= first.documentLeft
+          || first.documentBottom <= second.documentTop || second.documentBottom <= first.documentTop;
         expect(separated).toBe(true);
       }
     }
