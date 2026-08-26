@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -41,6 +44,16 @@ describe('업데이트 내역', () => {
     expect(new Set(keys).size).toBe(keys.length);
     expect(UPDATE_HISTORY.map((entry) => entry.date)).toEqual(['2026-08-26', '2026-08-26']);
     expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개발', '설계']);
+  });
+
+  it('앱 콘텐츠 하단 여백에 safe-area 하단 inset을 포함한다', async () => {
+    const styles = await readFile(
+      resolve(import.meta.dirname, '../../src/styles/components.css'),
+      'utf8',
+    );
+    const appShellBlock = styles.match(/\.app-shell\s*\{([\s\S]*?)\n\}/)?.[1] ?? '';
+
+    expect(appShellBlock).toContain('env(safe-area-inset-bottom, 0px)');
   });
 
   it('열린 모달에서 Tab이 내부에 순환하고 닫기 버튼으로 trigger에 돌아온다', async () => {
