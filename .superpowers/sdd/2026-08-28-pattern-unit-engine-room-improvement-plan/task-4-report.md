@@ -105,7 +105,7 @@
 ### Fix 커밋
 
 - 구현 커밋: `714e1b5 fix: fail closed persistence disable and modal focus`
-- 보고서 전용 커밋: 이 문서 자체를 참조하는 해시는 self-reference를 피하기 위해 보고서에 삽입하지 않고 최종 전달 내용에 기록합니다.
+- 보고서 전용 커밋: `ca10fb5 docs: record task 4 fix round`, `ef21770 docs: finalize task 4 fix report`
 
 ## Fix round 2
 
@@ -145,4 +145,45 @@
 
 ### Fix round 2 커밋
 
-- 구현 및 보고서 커밋: `5bd4c3b fix: make persistence confirmation a page modal`
+- 구현 커밋: `5bd4c3b fix: make persistence confirmation a page modal`
+- 보고서 전용 커밋: `9588637 docs: finalize task 4 modal report`
+
+## Fix round 3
+
+### 리뷰 반영
+
+- 모달 닫힘 effect와 AppShell의 배경 `inert` 해제 effect 순서가 엇갈려 persistence 스위치가 body에 포커스를 잃을 수 있던 문제를 수정했습니다.
+- 확인 패널이 닫힌 뒤 `requestAnimationFrame`에서 스위치를 찾고, 아직 `inert` 조상 아래에 있으면 다음 frame에서 재시도하도록 했습니다. 스위치가 없거나 disabled인 경우에는 포커스하지 않으며, effect cleanup에서 예약 frame을 취소합니다.
+- 컴포넌트 테스트는 비동기 포커스 복구를 `waitFor`로 확인하고, Chromium privacy E2E는 취소와 실제 삭제 확인 모두 `document.activeElement`가 `이 기기에서 이어 하기` 스위치인지 검증합니다.
+
+### Fix round 3 TDD 및 검증
+
+1. RED: `npm run test:e2e -- tests/e2e/privacy.spec.ts -g '이어 하기를 끌 때'`
+   - 구현 전 새 실제 브라우저 포커스 assertion이 취소 후 `document.activeElement`의 `aria-label`을 `null`로 받아 5초 timeout으로 실패했습니다.
+2. 구현 후 집중 설정/저장소 테스트: `npm test -- tests/components/accessibilitySettings.test.tsx tests/unit/progressStore.test.ts`
+   - 2 files passed, 37 tests passed.
+3. 회귀 Chromium 경로: `npm run test:e2e -- tests/e2e/privacy.spec.ts -g '이어 하기를 끌 때'`
+   - 1 test passed. 취소와 확인 후 모두 persistence 스위치로 포커스를 복구했습니다.
+4. 개인정보 E2E 전체: `npm run test:e2e -- tests/e2e/privacy.spec.ts`
+   - Chromium 4 tests passed.
+5. 정적 검사: `npm run lint`
+   - `eslint . --max-warnings=0` 통과.
+6. 빌드: `npm run build`
+   - TypeScript 및 Vite production build 통과.
+7. 파일 크기: `npm run check:size`
+   - architecture source-size test 1 passed.
+8. `git diff --check`
+   - 공백 오류 없음.
+
+### Fix round 3 자체 검토
+
+- 실제 App 경로의 page-level modal blocking(`inert`, `aria-hidden`, tabindex 복원)은 유지했습니다.
+- 포커스 복구는 배경 inert 해제 이후에만 수행되므로 modal close effect 순서에 의존해 focus가 거부되지 않습니다.
+- 취소/확인 모두 스위치 focus 복구를 실제 Chromium과 컴포넌트 테스트에서 확인했습니다.
+- VoiceOver, push, deploy는 수행하지 않았습니다. 이번 검증에서는 MachPortRendezvous 오류도 발생하지 않았습니다.
+- 변경 파일은 모두 500줄 미만입니다.
+
+### Fix round 3 커밋
+
+- 구현 커밋: `f955f58 fix: restore persistence focus after modal cleanup`
+- 보고서 전용 커밋: 이 문서 자체를 참조하는 해시는 self-reference를 피하기 위해 최종 전달 내용에 별도로 기록합니다.
