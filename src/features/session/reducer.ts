@@ -1,7 +1,7 @@
 import { getJourney, getMission } from '../../content/missions';
 import type { Mission } from '../../content/missions/types';
 import { validateContinuation } from '../../domain/pattern/continuation';
-import { validateFreeTrack } from '../../domain/pattern/freePattern';
+import { MAX_FREE_TRACK_TOKENS, validateFreeTrack } from '../../domain/pattern/freePattern';
 import { validateRepair } from '../../domain/pattern/repair';
 import { validateUnitChoice } from '../../domain/pattern/repetition';
 import { validateTranslation } from '../../domain/pattern/translation';
@@ -278,6 +278,7 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
       return { ...state, stage: 'create-track', feedback: null, freeTrack: [] };
     case 'APPEND_FREE_UNIT':
       return state.stage === 'create-track'
+        && state.freeTrack.length + state.freeUnit.length <= MAX_FREE_TRACK_TOKENS
         ? { ...state, freeTrack: [...state.freeTrack, ...state.freeUnit] }
         : state;
     case 'SUBMIT_FREE_TRACK':

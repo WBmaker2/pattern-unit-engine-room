@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { getJourney, getMission } from '../../src/content/missions';
 import { validateContinuation } from '../../src/domain/pattern/continuation';
-import { validateFreeTrack } from '../../src/domain/pattern/freePattern';
+import { MAX_FREE_TRACK_TOKENS, validateFreeTrack } from '../../src/domain/pattern/freePattern';
 import { validateRepair } from '../../src/domain/pattern/repair';
 import { validateUnitChoice } from '../../src/domain/pattern/repetition';
 import { validateTranslation } from '../../src/domain/pattern/translation';
@@ -189,6 +189,19 @@ describe('guided learning session reducer', () => {
     state = sessionReducer(state, { type: 'APPEND_FREE_UNIT' });
     state = sessionReducer(state, { type: 'SUBMIT_FREE_TRACK' });
     expect(state.feedback?.status).toBe('success');
+  });
+
+  it('자유 선로는 화면과 저장소가 같은 최대 길이를 사용한다', () => {
+    const initial = createInitialSession();
+    const state = {
+      ...initial,
+      stage: 'create-track' as const,
+      freeUnit: ['A', 'B'] as const,
+      freeTrack: Array(MAX_FREE_TRACK_TOKENS).fill('A') as SessionState['freeTrack'],
+    };
+    const next = sessionReducer(state, { type: 'APPEND_FREE_UNIT' });
+    expect(next).toBe(state);
+    expect(next.freeTrack).toHaveLength(MAX_FREE_TRACK_TOKENS);
   });
 
   it('supports stage no-ops, journey wrap, and settings/home preservation', () => {

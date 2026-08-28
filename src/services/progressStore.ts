@@ -1,4 +1,4 @@
-import { validateFreeTrack } from '../domain/pattern/freePattern';
+import { MAX_FREE_TRACK_TOKENS, validateFreeTrack } from '../domain/pattern/freePattern';
 import type { PatternTokenId } from '../domain/pattern/types';
 import type {
   LearningEvidenceKind,
@@ -80,7 +80,7 @@ function validSnapshot(value: unknown): value is PersistedProgressV1['snapshot']
     return false;
   }
   if (!isAllowedKinds(stage as SessionStage, value.completedKinds)) return false;
-  if (!isTokenArray(value.freeUnit, 3) || !isTokenArray(value.freeTrack, 12)) return false;
+  if (!isTokenArray(value.freeUnit, 3) || !isTokenArray(value.freeTrack, MAX_FREE_TRACK_TOKENS)) return false;
 
   if (stage !== 'create-unit' && stage !== 'create-track' && (value.freeUnit.length !== 0 || value.freeTrack.length !== 0)) {
     return false;

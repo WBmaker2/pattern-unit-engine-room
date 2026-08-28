@@ -4,6 +4,7 @@ import { AppShell } from './components/AppShell';
 import { COPY } from './content/copy';
 import { ContinuePatternScreen } from './features/continue/ContinuePatternScreen';
 import { CreatePatternScreen } from './features/create/CreatePatternScreen';
+import { MAX_FREE_TRACK_TOKENS } from './domain/pattern/freePattern';
 import { FindUnitScreen } from './features/find/FindUnitScreen';
 import { RepairPatternScreen } from './features/repair/RepairPatternScreen';
 import { StartScreen } from './features/start/StartScreen';
@@ -172,6 +173,7 @@ export default function App(): JSX.Element {
           onContinue={continueStage}
           audioEnabled={state.settings.audioEnabled}
           reducedMotion={reducedMotion}
+          maxTrackTokens={MAX_FREE_TRACK_TOKENS}
         />
       ) : null}
       {state.stage === 'create-track' ? (
@@ -189,6 +191,7 @@ export default function App(): JSX.Element {
           onContinue={continueStage}
           audioEnabled={state.settings.audioEnabled}
           reducedMotion={reducedMotion}
+          maxTrackTokens={MAX_FREE_TRACK_TOKENS}
         />
       ) : null}
       {state.stage === 'summary' ? (

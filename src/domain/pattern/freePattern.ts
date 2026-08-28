@@ -5,6 +5,8 @@ import type {
   PatternUnit,
 } from './types';
 
+export const MAX_FREE_TRACK_TOKENS = 12;
+
 function oneSymbolResult(
   track: readonly PatternTokenId[],
 ): FreePatternValidation {

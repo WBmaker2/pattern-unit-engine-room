@@ -25,6 +25,7 @@ export interface CreatePatternScreenProps {
   readonly onContinue: () => void;
   readonly audioEnabled?: boolean;
   readonly reducedMotion: boolean;
+  readonly maxTrackTokens: number;
 }
 
 const TOKEN_IDS: readonly PatternTokenId[] = ['A', 'B', 'C'];
@@ -78,6 +79,7 @@ function UnitMode({ props }: { readonly props: CreatePatternScreenProps }): JSX.
 function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX.Element {
   const { feedback, track } = props;
   const isSuccess = feedback?.status === 'success';
+  const canAppendUnit = track.length + props.unit.length <= props.maxTrackTokens;
   return (
     <>
       <InstructionCard title={COPY.createTrackTitle} cue="create" audioEnabled={props.audioEnabled ?? false} />
@@ -89,7 +91,11 @@ function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX
         slots={track}
         themeId="engine"
       />
-      <button onClick={props.onAppendUnit} type="button">
+      <p aria-label={`현재 선로 ${track.length} / ${props.maxTrackTokens}`}>
+        {track.length} / {props.maxTrackTokens}
+      </p>
+      {!canAppendUnit ? <p role="status">{COPY.freeTrackLimit}</p> : null}
+      <button disabled={!canAppendUnit} onClick={props.onAppendUnit} type="button">
         {COPY.appendFreeUnit}
       </button>
       <button onClick={props.onReset} type="button">

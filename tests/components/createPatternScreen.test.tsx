@@ -6,6 +6,7 @@ import { COPY } from '../../src/content/copy';
 import { CreatePatternScreen } from '../../src/features/create/CreatePatternScreen';
 import type { FeedbackState } from '../../src/features/session/types';
 import type { PatternTokenId } from '../../src/domain/pattern/types';
+import { MAX_FREE_TRACK_TOKENS } from '../../src/domain/pattern/freePattern';
 
 const props = (overrides: Partial<React.ComponentProps<typeof CreatePatternScreen>> = {}) => ({
   mode: 'unit' as const,
@@ -20,6 +21,7 @@ const props = (overrides: Partial<React.ComponentProps<typeof CreatePatternScree
   onRun: vi.fn(),
   onContinue: vi.fn(),
   reducedMotion: false,
+  maxTrackTokens: MAX_FREE_TRACK_TOKENS,
   ...overrides,
 });
 
@@ -114,6 +116,22 @@ describe('CreatePatternScreen', () => {
     expect(document.querySelectorAll('.gi-pulse')).toHaveLength(0);
     expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(0);
     expect(document.querySelectorAll('.pattern-cell--active')).toHaveLength(0);
+  });
+
+  it('최대 길이에 도달하면 한 묶음 붙이기를 막고 안내한다', () => {
+    render(
+      <CreatePatternScreen
+        {...props({
+          mode: 'track',
+          unit: ['A', 'B'],
+          track: Array(MAX_FREE_TRACK_TOKENS).fill('A'),
+          maxTrackTokens: MAX_FREE_TRACK_TOKENS,
+        })}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: COPY.appendFreeUnit })).toBeDisabled();
+    expect(screen.getByText(COPY.freeTrackLimit)).toBeInTheDocument();
   });
 
   it('reduced motion retry에서도 반복 중인 미운행 트랙은 활성 칸을 표시하지 않는다', () => {

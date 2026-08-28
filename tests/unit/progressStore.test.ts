@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { getJourney } from '../../src/content/missions';
+import { MAX_FREE_TRACK_TOKENS } from '../../src/domain/pattern/freePattern';
 import { createInitialSession, sessionReducer } from '../../src/features/session/reducer';
 import type { PersistedProgressV1, SessionState } from '../../src/features/session/types';
 import {
@@ -127,6 +128,22 @@ describe('동의 기반 로컬 진행 저장소', () => {
     expect(loaded?.snapshot).not.toBe((validProgress()).snapshot);
   });
 
+  it('공유 상한까지의 자유 선로를 새로고침 후 복원한다', () => {
+    const storage = createMemoryStorage();
+    const freeTrack = Array.from({ length: MAX_FREE_TRACK_TOKENS }, (_, index) => (
+      index % 2 === 0 ? 'A' : 'B'
+    ));
+    storage.setItem(PROGRESS_KEY, JSON.stringify(validProgress({
+      stage: 'create-track',
+      completedKinds: ['unit-recognized', 'continued', 'repaired', 'translated'],
+      freeUnit: ['A', 'B'],
+      freeTrack,
+    })));
+
+    const loaded = createProgressStore(storage).load();
+    expect(loaded?.snapshot.freeTrack).toEqual(freeTrack);
+  });
+
   it('hydration은 현재 journey의 evidence ID를 복원하고 transient 값을 비운다', () => {
     const progress = validProgress({
       stage: 'create-track',
@@ -224,7 +241,7 @@ describe('동의 기반 로컬 진행 저장소', () => {
     ['duplicate kinds', validProgress({ completedKinds: ['unit-recognized', 'unit-recognized'] })],
     ['invalid token', validProgress({ freeUnit: ['D' as never] })],
     ['too many unit tokens', validProgress({ freeUnit: ['A', 'B', 'C', 'A'] })],
-    ['too many track tokens', validProgress({ stage: 'create-track', freeUnit: ['A', 'B'], freeTrack: Array(13).fill('A') })],
+    ['too many track tokens', validProgress({ stage: 'create-track', freeUnit: ['A', 'B'], freeTrack: Array(MAX_FREE_TRACK_TOKENS + 1).fill('A') })],
   ])('손상된 %s는 해당 키만 지우고 null을 반환한다', (_label, value) => {
     const storage = createMemoryStorage();
     storage.setItem(PROGRESS_KEY, JSON.stringify(value));

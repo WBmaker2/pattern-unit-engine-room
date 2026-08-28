@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { validateFreeTrack } from '../../src/domain/pattern/freePattern';
+import { MAX_FREE_TRACK_TOKENS, validateFreeTrack } from '../../src/domain/pattern/freePattern';
 
 describe('자유 규칙 판정', () => {
+  it('자유 선로의 공유 최대 길이를 내보낸다', () => {
+    expect(MAX_FREE_TRACK_TOKENS).toBe(12);
+  });
+
   it.each([
     [['A', 'B'], false, 'needs-second-repeat', 1],
     [['A', 'B', 'A', 'B'], true, 'matches', 2],

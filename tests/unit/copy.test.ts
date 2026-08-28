@@ -73,6 +73,7 @@ describe('학습 문구', () => {
       removeFreeToken: '마지막 모양 지우기',
       lockFreeUnit: '묶음 정하기',
       appendFreeUnit: '한 묶음 붙이기',
+      freeTrackLimit: '선로는 12칸까지 만들 수 있어요.',
       resetFreePattern: '다시 만들기',
       runFreePattern: '운행하기',
       createSuccess: '내 규칙이 두 번 되풀이돼요.',
