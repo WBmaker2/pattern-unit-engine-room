@@ -19,6 +19,7 @@ const props = (overrides: Partial<React.ComponentProps<typeof CreatePatternScree
   onReset: vi.fn(),
   onRun: vi.fn(),
   onContinue: vi.fn(),
+  reducedMotion: false,
   ...overrides,
 });
 
@@ -110,5 +111,38 @@ describe('CreatePatternScreen', () => {
     expect(run).not.toHaveClass('gi-pulse');
     expect(document.querySelectorAll('.gi-pulse')).toHaveLength(0);
     expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(0);
+  });
+
+  it('자유 규칙 성공 시 실제 선로에 moving class를 붙인다', () => {
+    render(
+      <CreatePatternScreen
+        {...props({
+          mode: 'track',
+          unit: ['A', 'B'],
+          track: ['A', 'B', 'A', 'B'],
+          feedback: { status: 'success', reason: 'matches', hintVisible: false },
+          reducedMotion: false,
+        })}
+      />,
+    );
+
+    expect(document.querySelector('.train-track--moving')).not.toBeNull();
+  });
+
+  it('reduced motion에서는 moving animation 없이 반복 칸 테두리를 표시한다', () => {
+    render(
+      <CreatePatternScreen
+        {...props({
+          mode: 'track',
+          unit: ['A', 'B'],
+          track: ['A', 'B', 'A', 'B'],
+          feedback: { status: 'success', reason: 'matches', hintVisible: false },
+          reducedMotion: true,
+        })}
+      />,
+    );
+
+    expect(document.querySelector('.train-track--moving')).not.toBeNull();
+    expect(document.querySelectorAll('.pattern-cell--active').length).toBeGreaterThan(0);
   });
 });

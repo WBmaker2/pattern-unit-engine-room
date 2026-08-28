@@ -171,6 +171,7 @@ export default function App(): JSX.Element {
           onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
           onContinue={continueStage}
           audioEnabled={state.settings.audioEnabled}
+          reducedMotion={reducedMotion}
         />
       ) : null}
       {state.stage === 'create-track' ? (
@@ -187,6 +188,7 @@ export default function App(): JSX.Element {
           onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
           onContinue={continueStage}
           audioEnabled={state.settings.audioEnabled}
+          reducedMotion={reducedMotion}
         />
       ) : null}
       {state.stage === 'summary' ? (

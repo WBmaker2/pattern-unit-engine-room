@@ -25,6 +25,7 @@
 
 .train-track--moving {
   animation: train-track-move 1.2s ease-in-out infinite alternate;
+  transform-origin: left center;
 }
 
 @media (prefers-reduced-motion: reduce) {

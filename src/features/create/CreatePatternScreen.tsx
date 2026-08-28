@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 
 import { FeedbackPanel } from '../../components/FeedbackPanel';
+import { AnimatedPatternTrack } from '../../components/AnimatedPatternTrack';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PrimaryAction } from '../../components/PrimaryAction';
@@ -23,6 +24,7 @@ export interface CreatePatternScreenProps {
   readonly onRun: () => void;
   readonly onContinue: () => void;
   readonly audioEnabled?: boolean;
+  readonly reducedMotion: boolean;
 }
 
 const TOKEN_IDS: readonly PatternTokenId[] = ['A', 'B', 'C'];
@@ -80,7 +82,13 @@ function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX
     <>
       <InstructionCard title={COPY.createTrackTitle} cue="create" audioEnabled={props.audioEnabled ?? false} />
       <Board label={COPY.freeUnitBoardLabel} tokens={props.unit} />
-      <Board label={COPY.freeTrackBoardLabel} tokens={track} />
+      <AnimatedPatternTrack
+        isRunning={isSuccess}
+        label={COPY.freeTrackBoardLabel}
+        reducedMotion={props.reducedMotion}
+        slots={track}
+        themeId="engine"
+      />
       <button onClick={props.onAppendUnit} type="button">
         {COPY.appendFreeUnit}
       </button>

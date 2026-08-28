@@ -29,6 +29,11 @@
   outline-offset: 3px;
 }
 
+.train-track {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
 .pattern-cell__icon {
   inline-size: 2.5rem;
   block-size: 2.5rem;

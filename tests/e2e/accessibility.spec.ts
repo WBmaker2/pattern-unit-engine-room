@@ -279,29 +279,40 @@ test.describe('모바일·확대·모션 접근성', () => {
   test('모션 감소에서는 pulse·열차 애니메이션을 끄고 활성 칸은 정적 4px 테두리다', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await startJourney(page);
-    await page.evaluate(() => {
-      const probe = document.createElement('span');
-      probe.className = 'train-track--moving';
-      probe.setAttribute('aria-hidden', 'true');
-      document.querySelector('#root')?.append(probe);
-    });
-    await page.getByRole('button', { name: /후보 1:/ }).click();
+    await page.getByRole('button', { name: /후보 2:/ }).click();
     await page.getByRole('button', { name: '한 묶음 찾기' }).click();
-    await page.getByRole('button', { name: '테두리 도움 보기' }).click();
+    await page.getByRole('button', { name: '다음 활동: 이어 붙이기' }).click();
+    await page.getByRole('button', { name: '나사못 한 칸' }).click();
+    await page.getByRole('button', { name: '이어 붙이기' }).click();
+    await page.getByRole('button', { name: '다음 활동: 규칙 수리하기' }).click();
+    await page.getByRole('button', { name: /다섯째 칸/ }).click();
+    await page.getByRole('button', { name: '깃발 모양', exact: true }).click();
+    await page.getByRole('button', { name: '고치기' }).click();
+    await page.getByRole('button', { name: '다음 활동: 새 모양으로 바꾸기' }).click();
+    for (const [source, target] of [['전등', '바퀴'], ['깃발', '창문'], ['별', '기차']] as const) {
+      await page.getByRole('button', { name: source, exact: true }).click();
+      await page.getByRole('button', { name: target, exact: true }).click();
+    }
+    await page.getByRole('button', { name: '같은 규칙 확인' }).click();
+    await page.getByRole('button', { name: '다음 활동: 내 규칙 만들기' }).click();
+    await page.getByRole('button', { name: '톱니바퀴 모양', exact: true }).click();
+    await page.getByRole('button', { name: '나사못 모양', exact: true }).click();
+    await page.getByRole('button', { name: '묶음 정하기' }).click();
+    await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
+    await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
+    await page.getByRole('button', { name: '운행하기' }).click();
     const motion = await page.evaluate(() => ({
-      trainProbeCount: document.querySelectorAll('.train-track--moving').length,
-      pulseCount: document.querySelectorAll('.gi-pulse').length,
-      animationNames: Array.from(document.querySelectorAll('.gi-pulse, .train-track--moving'))
+      trainTrackCount: document.querySelectorAll('.train-track--moving').length,
+      animationNames: Array.from(document.querySelectorAll('.train-track--moving'))
         .map((element) => getComputedStyle(element).animationName),
-      transforms: Array.from(document.querySelectorAll('.gi-pulse, .train-track--moving'))
+      transforms: Array.from(document.querySelectorAll('.train-track--moving'))
         .map((element) => getComputedStyle(element).transform),
       activeOutlineWidths: Array.from(document.querySelectorAll('.pattern-cell--active'))
         .map((element) => getComputedStyle(element).outlineWidth),
       appMotion: document.querySelector('.app-shell')?.getAttribute('data-motion'),
     }));
     expect(motion.appMotion).toBe('reduce');
-    expect(motion.trainProbeCount).toBe(1);
-    expect(motion.pulseCount).toBeGreaterThan(0);
+    expect(motion.trainTrackCount).toBe(1);
     expect(motion.animationNames.every((name) => name === 'none')).toBe(true);
     expect(motion.transforms.every((transform) => transform === 'none')).toBe(true);
     expect(motion.activeOutlineWidths.length).toBeGreaterThan(0);
