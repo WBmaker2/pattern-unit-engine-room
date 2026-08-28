@@ -145,4 +145,4 @@
 
 ### Fix round 2 커밋
 
-- 구현 및 보고서 커밋: (최종 커밋 후 전달 내용에 기입)
+- 구현 및 보고서 커밋: `5bd4c3b fix: make persistence confirmation a page modal`
