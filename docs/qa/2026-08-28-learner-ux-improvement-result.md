@@ -71,7 +71,7 @@ Task 9 전체 품질 게이트와 HVC 전달용 결과 기록입니다. Task 1�
 
 [https://wbmaker2.github.io/pattern-unit-engine-room/](https://wbmaker2.github.io/pattern-unit-engine-room/)
 
-읽기 전용 `curl -I -L -sS` 확인: `HTTP/2 200`, `last-modified: Wed, 26 Aug 2026 23:06:17 GMT`. 현재 로컬 변경은 아직 push/deploy하지 않았으므로, 위 공개 URL은 이 브랜치 변경이 반영된 주소가 아니라 이전 배포본입니다.
+배포 후 읽기 전용 `curl -I -L -sS` 확인: `HTTP/2 200`, `last-modified: Fri, 28 Aug 2026 07:32:19 GMT`. 공개 HTML은 `규칙 단위 기관실` 제목, `./assets/index-CgWso5GX.js`, `./assets/index-C-tdXe_D.css`, `./favicon.svg`를 제공하며, 공개 URL의 390px 브라우저 점검에서 시작 버튼과 가로 넘침 없는 화면을 확인했습니다.
 
 ## Known limits
 
@@ -89,4 +89,4 @@ Task 9 전체 품질 게이트와 HVC 전달용 결과 기록입니다. Task 1�
 
 ## Release status
 
-로컬 브랜치는 Task 9 evidence 커밋 `f91164f`와 이 검토 수정 커밋을 포함한 현재 HEAD에서 clean입니다(`git status --short` 출력 없음). 이 Task에서는 `git push`, GitHub 설정, Pages 배포를 실행하지 않았습니다. 공개 URL은 이전 배포본이며 로컬 브랜치 변경의 공개 반영을 의미하지 않습니다.
+`main`의 구현 커밋 `c965b5a`를 2026-08-28에 `origin/main`으로 push했습니다. GitHub Actions `Quality` run [33151798274](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33151798274)와 `Deploy to GitHub Pages` run [33151798238](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33151798238)는 모두 `success`로 완료되었습니다. Pages 설정은 `build_type=workflow`, source는 `main`이며, 공개 URL은 현재 `c965b5a` 변경을 반영합니다. 로컬 `main`의 작업 트리도 clean입니다.
