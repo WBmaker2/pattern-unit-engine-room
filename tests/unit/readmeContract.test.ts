@@ -8,12 +8,23 @@ const accessibilityChecklist = readFileSync(
   resolve(import.meta.dirname, '../../docs/qa/2026-08-26-accessibility-checklist.md'),
   'utf8',
 );
+const indexHtml = readFileSync(resolve(import.meta.dirname, '../../index.html'), 'utf8');
+const faviconSvg = readFileSync(resolve(import.meta.dirname, '../../public/favicon.svg'), 'utf8');
 
 describe('README 문서 계약', () => {
   it('README는 현재 자동 검증 범위와 공개 경로를 기록한다', () => {
     expect(readme).toContain('VoiceOver 검증은 이 개선 범위에 포함하지 않습니다');
     expect(readme).toContain('https://wbmaker2.github.io/pattern-unit-engine-room/');
     expect(readme).toContain('favicon.svg');
+  });
+
+  it('index.html은 base 경로 favicon을 동일 출처 SVG로 참조한다', () => {
+    expect(indexHtml).toContain('<link rel="icon" href="%BASE_URL%favicon.svg" type="image/svg+xml">');
+    expect(faviconSvg).toContain('width="24"');
+    expect(faviconSvg).toContain('height="24"');
+    expect(faviconSvg).toContain('viewBox="0 0 24 24"');
+    expect(faviconSvg).not.toMatch(/\b(?:href|xlink:href)\s*=/i);
+    expect(faviconSvg).not.toMatch(/url\(/i);
   });
 
   it('필수 섹션과 경계를 모두 설명한다', () => {
@@ -88,6 +99,13 @@ describe('README 문서 계약', () => {
     expect(accessibilityChecklist).toMatch(/사람.*듣기 전.*PASS.*아니|PASS.*표시하지 않습니다/);
     expect(accessibilityChecklist).not.toContain('## Safari + VoiceOver 수동 검증');
     expect(accessibilityChecklist).not.toContain('VoiceOver 포커스');
+    expect(accessibilityChecklist).toContain('실제 Create 선로');
+    expect(accessibilityChecklist).toContain('운행하기');
+    expect(accessibilityChecklist).toContain('.train-track--moving');
+    expect(accessibilityChecklist).toContain('computed animation과 transform이 `none`');
+    expect(accessibilityChecklist).toContain('.pattern-cell--active` outline이 4px');
+    expect(accessibilityChecklist).not.toContain('contract probe');
+    expect(accessibilityChecklist).not.toContain('주입한 `.train-track--moving`');
 
     // 로컬 실행과 GitHub Pages 배포 범위
     expect(readme).toContain('https://wbmaker2.github.io/pattern-unit-engine-room/');
