@@ -5,6 +5,7 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PatternStrip } from '../../components/PatternStrip';
+import { ProgressIndicator } from '../../components/ProgressIndicator';
 import { PrimaryAction } from '../../components/PrimaryAction';
 import { COPY, formatTokenShape } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
@@ -51,6 +52,7 @@ export function RepairPatternScreen({
   return (
     <section aria-label={COPY.repairTitle} className="repair-screen">
       <InstructionCard title={COPY.repairTitle} cue="repair" audioEnabled={audioEnabled} />
+      <ProgressIndicator current={3} total={5} />
       <PatternBoard
         slots={mission.brokenSequence}
         themeId={mission.themeId}
@@ -73,7 +75,7 @@ export function RepairPatternScreen({
         <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} />
       ) : null}
       {isSuccess ? (
-        <button onClick={onContinue} type="button">{COPY.nextStage}</button>
+        <button onClick={onContinue} type="button">{COPY.nextTranslateStage}</button>
       ) : (
         <PrimaryAction
           disabled={selectedIndex === null || replacement === null}

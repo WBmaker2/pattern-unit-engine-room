@@ -4,6 +4,7 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PrimaryAction } from '../../components/PrimaryAction';
+import { ProgressIndicator } from '../../components/ProgressIndicator';
 import { COPY, formatTokenShape } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
 import type { PatternTokenId, PatternUnit } from '../../domain/pattern/types';
@@ -88,7 +89,7 @@ function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX
       </button>
       {feedback !== null ? <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} /> : null}
       {isSuccess ? (
-        <button onClick={props.onContinue} type="button">{COPY.nextStage}</button>
+        <button onClick={props.onContinue} type="button">{COPY.summaryTitle} 보기</button>
       ) : (
         <PrimaryAction
           disabled={track.length === 0}
@@ -106,6 +107,7 @@ export function CreatePatternScreen(props: CreatePatternScreenProps): JSX.Elemen
   return (
     <section aria-label={COPY.createTitle} className="create-screen">
       <h2>{COPY.createTitle}</h2>
+      <ProgressIndicator current={5} total={5} />
       {props.mode === 'unit' ? <UnitMode props={props} /> : <TrackMode props={props} />}
     </section>
   );

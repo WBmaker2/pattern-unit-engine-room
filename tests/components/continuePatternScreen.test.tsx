@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { useReducer } from 'react';
 
 import { getMission, JOURNEYS } from '../../src/content/missions';
+import { COPY } from '../../src/content/copy';
 import { ContinuePatternScreen } from '../../src/features/continue/ContinuePatternScreen';
 import { createInitialSession, sessionReducer } from '../../src/features/session/reducer';
 
@@ -40,8 +41,8 @@ describe('ContinuePatternScreen', () => {
     expect(screen.getByRole('button', { name: '이어 붙이기' })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: '이어 붙이기' }));
     expect(screen.getByText('한 묶음으로 다음 칸을 이었어요.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '다음 칸' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '다음 칸' })).not.toHaveClass('gi-pulse');
+    expect(screen.getByRole('button', { name: COPY.nextRepairStage })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: COPY.nextRepairStage })).not.toHaveClass('gi-pulse');
   });
 
   it('오답은 다음 칸을 미리 보여 주지 않고 이유별 문구를 표시한다', async () => {
@@ -50,7 +51,7 @@ describe('ContinuePatternScreen', () => {
     await user.click(screen.getByRole('button', { name: /톱니바퀴 한 칸/ }));
     await user.click(screen.getByRole('button', { name: '이어 붙이기' }));
     expect(screen.getByText('한 묶음의 순서를 다시 살펴봐요.')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '다음 칸' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: COPY.nextRepairStage })).not.toBeInTheDocument();
   });
 
   it('선택과 제출을 Enter·Space로 조작한다', async () => {

@@ -5,6 +5,7 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PatternStrip } from '../../components/PatternStrip';
+import { ProgressIndicator } from '../../components/ProgressIndicator';
 import { PrimaryAction } from '../../components/PrimaryAction';
 import { COPY, formatFindCandidate } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
@@ -50,6 +51,7 @@ export function FindUnitScreen({
   return (
     <section aria-label={COPY.findTitle} className="find-screen">
       <InstructionCard title={COPY.findTitle} cue="find" audioEnabled={audioEnabled} />
+      <ProgressIndicator current={1} total={5} />
       <PatternBoard slots={mission.sequence} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.findChoicesLabel}
@@ -86,7 +88,7 @@ export function FindUnitScreen({
       ) : null}
       {isSuccess ? (
         <button onClick={onContinue} type="button">
-          {COPY.nextStage}
+          {COPY.nextContinueStage}
         </button>
       ) : (
         <PrimaryAction

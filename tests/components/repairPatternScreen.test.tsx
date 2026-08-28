@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { useReducer } from 'react';
 
 import { getMission, JOURNEYS } from '../../src/content/missions';
+import { COPY } from '../../src/content/copy';
 import { RepairPatternScreen } from '../../src/features/repair/RepairPatternScreen';
 import { createInitialSession, sessionReducer } from '../../src/features/session/reducer';
 
@@ -38,7 +39,7 @@ describe('RepairPatternScreen', () => {
     await user.click(screen.getByRole('button', { name: '깃발 모양' }));
     await user.click(screen.getByRole('button', { name: '고치기' }));
     expect(screen.getByText('규칙을 깨뜨린 칸을 고쳤어요.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '다음 칸' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: COPY.nextTranslateStage })).toBeInTheDocument();
   });
 
   it('교체 항은 칸을 고른 뒤에만 보이고 키보드로도 수리한다', async () => {
@@ -67,7 +68,7 @@ describe('RepairPatternScreen', () => {
     await user.click(screen.getByRole('button', { name: '고치기' }));
     expect(screen.getByText('선택한 칸에 들어갈 모양을 다시 골라요.')).toBeInTheDocument();
     expect(screen.queryByText(/정답|B|다섯째 칸은 깃발/)).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '다음 칸' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: COPY.nextTranslateStage })).not.toBeInTheDocument();
   });
 
   it('위치와 교체 항이 맞지 않으면 이유를 알려 주고 다시 고르게 한다', async () => {
@@ -77,7 +78,7 @@ describe('RepairPatternScreen', () => {
     await user.click(screen.getByRole('button', { name: '깃발 모양' }));
     await user.click(screen.getByRole('button', { name: '고치기' }));
     expect(screen.getByText('규칙을 깨뜨린 칸을 다시 찾아봐요.')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '다음 칸' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: COPY.nextTranslateStage })).not.toBeInTheDocument();
   });
 
   it('위치를 바꾸면 이전 교체 항을 비우고 다시 고르게 한다', async () => {

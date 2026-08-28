@@ -2,6 +2,7 @@ import type { JSX } from 'react';
 
 import { COPY } from '../../content/copy';
 import { InstructionCard } from '../../components/InstructionCard';
+import { StartMissionIllustration } from '../../components/StartMissionIllustration';
 import type { AccessibilitySettings } from '../session/types';
 import { PrimaryAction } from '../../components/PrimaryAction';
 
@@ -17,6 +18,7 @@ export function StartScreen({ settings, onStart, onOpenSettings, audioEnabled = 
   return (
     <section aria-label={COPY.startTitle} className="start-screen">
       <InstructionCard title={COPY.startTitle} cue="start" audioEnabled={audioEnabled} />
+      <StartMissionIllustration />
       <div className="start-screen__actions">
         <PrimaryAction onClick={onStart}>{COPY.startAction}</PrimaryAction>
         <button onClick={onOpenSettings} type="button">

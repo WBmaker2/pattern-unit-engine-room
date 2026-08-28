@@ -5,6 +5,7 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PatternStrip } from '../../components/PatternStrip';
+import { ProgressIndicator } from '../../components/ProgressIndicator';
 import { PrimaryAction } from '../../components/PrimaryAction';
 import { COPY, formatUnitChoice } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
@@ -49,6 +50,7 @@ export function ContinuePatternScreen({
   return (
     <section aria-label={COPY.continueTitle} className="continue-screen">
       <InstructionCard title={COPY.continueTitle} cue="continue" audioEnabled={audioEnabled} />
+      <ProgressIndicator current={2} total={5} />
       <PatternBoard slots={mission.slots} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.continueChoicesLabel}
@@ -64,7 +66,7 @@ export function ContinuePatternScreen({
       ) : null}
       {isSuccess ? (
         <button onClick={onContinue} type="button">
-          {COPY.nextStage}
+          {COPY.nextRepairStage}
         </button>
       ) : (
         <PrimaryAction

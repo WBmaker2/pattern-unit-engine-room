@@ -23,7 +23,7 @@ function createEntry(cue: AudioCue, transcriptKey: CopyKey): AudioGuideEntry {
 }
 
 export const AUDIO_GUIDES: Readonly<Record<AudioCue, AudioGuideEntry>> = Object.freeze({
-  start: createEntry('start', 'startTitle'),
+  start: createEntry('start', 'startInstruction'),
   find: createEntry('find', 'findInstruction'),
   continue: createEntry('continue', 'continueInstruction'),
   repair: createEntry('repair', 'repairInstruction'),

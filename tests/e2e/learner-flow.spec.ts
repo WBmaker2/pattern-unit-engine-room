@@ -11,7 +11,7 @@ async function completeJourneyZeroByVisibleLabels(page: Page): Promise<void> {
   await expect(page.getByText('이 묶음으로는 끝까지 되풀이되지 않아요.')).toBeVisible();
   await page.getByRole('button', { name: '테두리 도움 보기' }).click();
   await submitFind(page, /후보 2:/);
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 이어 붙이기' }).click();
 
   // 이어 붙이기: AAB의 마지막 항인 나사못을 선택합니다.
   await page.getByRole('button', { name: '톱니바퀴 한 칸' }).click();
@@ -19,7 +19,7 @@ async function completeJourneyZeroByVisibleLabels(page: Page): Promise<void> {
   await expect(page.getByText('한 묶음의 순서를 다시 살펴봐요.')).toBeVisible();
   await page.getByRole('button', { name: '나사못 한 칸' }).click();
   await page.getByRole('button', { name: '이어 붙이기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 규칙 수리하기' }).click();
 
   // 수리: 먼저 틀린 칸/모양을 제출하고, 다섯째 칸을 깃발로 교체합니다.
   await page.getByRole('button', { name: /둘째 칸/ }).click();
@@ -29,7 +29,7 @@ async function completeJourneyZeroByVisibleLabels(page: Page): Promise<void> {
   await page.getByRole('button', { name: /다섯째 칸/ }).click();
   await page.getByRole('button', { name: '깃발 모양', exact: true }).click();
   await page.getByRole('button', { name: '고치기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 새 모양으로 바꾸기' }).click();
 
   // 번역: 원래 항을 고른 다음 대응하는 새 모양을 고릅니다.
   const translation = [
@@ -42,7 +42,7 @@ async function completeJourneyZeroByVisibleLabels(page: Page): Promise<void> {
     await page.getByRole('button', { name: target }).click();
   }
   await page.getByRole('button', { name: '같은 규칙 확인' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 내 규칙 만들기' }).click();
 
   // 자유 규칙: 두 모양으로 한 묶음을 정하고 두 번 붙인 뒤 운행합니다.
   await page.getByRole('button', { name: '톱니바퀴 모양', exact: true }).click();
@@ -51,7 +51,7 @@ async function completeJourneyZeroByVisibleLabels(page: Page): Promise<void> {
   await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
   await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
   await page.getByRole('button', { name: '운행하기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '활동 도장 보기' }).click();
 }
 
 test.beforeEach(async ({ page }) => {

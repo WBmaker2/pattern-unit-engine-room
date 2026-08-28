@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { useReducer } from 'react';
 
 import { getMission, JOURNEYS } from '../../src/content/missions';
+import { COPY } from '../../src/content/copy';
 import { FindUnitScreen } from '../../src/features/find/FindUnitScreen';
 import { createInitialSession, sessionReducer } from '../../src/features/session/reducer';
 
@@ -53,7 +54,7 @@ describe('FindUnitScreen', () => {
     await user.click(screen.getByRole('button', { name: '한 묶음 찾기' }));
     expect(screen.getByText('되풀이되지만 더 짧은 한 묶음이 있어요.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '테두리 도움 보기' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '다음 칸' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: COPY.nextContinueStage })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '테두리 도움 보기' }));
     expect(screen.getByText('테두리로 나눈 묶음을 차례로 살펴보세요.')).toBeInTheDocument();
     expect(document.querySelectorAll('.pattern-cell--active').length).toBeGreaterThan(0);
@@ -61,7 +62,7 @@ describe('FindUnitScreen', () => {
     await user.click(screen.getByRole('button', { name: '한 묶음 찾기' }));
     expect(screen.getByText('가장 짧은 한 묶음을 찾았어요.')).toBeInTheDocument();
     expect(screen.getByText('테두리 도움을 사용해 규칙을 찾았어요.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '다음 칸' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: COPY.nextContinueStage })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '한 묶음 찾기' })).not.toBeInTheDocument();
     expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(0);
   });

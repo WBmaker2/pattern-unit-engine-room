@@ -89,8 +89,8 @@ describe('CreatePatternScreen', () => {
       />,
     );
     expect(screen.queryByRole('button', { name: COPY.runFreePattern })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: COPY.nextStage })).not.toHaveClass('gi-pulse');
-    expect(screen.getByRole('button', { name: COPY.nextStage })).toBeEnabled();
+    expect(screen.getByRole('button', { name: `${COPY.summaryTitle} 보기` })).not.toHaveClass('gi-pulse');
+    expect(screen.getByRole('button', { name: `${COPY.summaryTitle} 보기` })).toBeEnabled();
   });
 
   it('allows only run to carry the pulse and leaves an empty track run disabled', () => {

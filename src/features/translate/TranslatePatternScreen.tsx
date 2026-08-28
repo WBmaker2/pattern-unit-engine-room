@@ -6,6 +6,7 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PrimaryAction } from '../../components/PrimaryAction';
+import { ProgressIndicator } from '../../components/ProgressIndicator';
 import { TokenIcon } from '../../components/TokenIcon';
 import { COPY, formatOriginalToken, formatTokenShape } from '../../content/copy';
 import {
@@ -70,6 +71,7 @@ export function TranslatePatternScreen({
   return (
     <section aria-label={COPY.translateTitle} className="translate-screen">
       <InstructionCard title={COPY.translateTitle} cue="translate" audioEnabled={audioEnabled} />
+      <ProgressIndicator current={4} total={5} />
       <PatternBoard slots={mission.sourceSequence} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.translationSourceLabel}
@@ -121,7 +123,7 @@ export function TranslatePatternScreen({
         <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} />
       ) : null}
       {isSuccess ? (
-        <button onClick={onContinue} type="button">{COPY.nextStage}</button>
+        <button onClick={onContinue} type="button">{COPY.nextCreateStage}</button>
       ) : (
         <PrimaryAction
           disabled={!translatedComplete}

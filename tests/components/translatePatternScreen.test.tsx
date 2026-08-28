@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { useReducer, useState } from 'react';
 
 import { getMission, JOURNEYS } from '../../src/content/missions';
+import { COPY } from '../../src/content/copy';
 import { TranslatePatternScreen } from '../../src/features/translate/TranslatePatternScreen';
 import { createInitialSession, sessionReducer } from '../../src/features/session/reducer';
 import type { DisplayTokenId } from '../../src/content/tokenThemes';
@@ -55,7 +56,7 @@ describe('TranslatePatternScreen', () => {
     await chooseMapping(user, '나사못', '동그라미');
     await user.click(screen.getByRole('button', { name: '같은 규칙 확인' }));
     expect(screen.getByText('서로 다른 항에는 서로 다른 새 모양을 골라요.')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '다음 칸' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: COPY.nextCreateStage })).not.toBeInTheDocument();
   });
 
   it('원래 항과 새 모양 대응을 Enter와 Space로 조작하고 pulse를 쓰지 않는다', async () => {
@@ -79,7 +80,7 @@ describe('TranslatePatternScreen', () => {
     await chooseMapping(user, '나사못', '세모');
     await user.click(screen.getByRole('button', { name: '같은 규칙 확인' }));
     expect(screen.getByText('모양은 달라도 같은 순서예요.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '다음 칸' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: COPY.nextCreateStage })).toBeInTheDocument();
   });
 
   it('세 항 번역도 원래 순서를 유지한다', async () => {
