@@ -222,3 +222,38 @@
 
 - 테스트 커밋: `9b734d0 test: cover escape modal focus restoration`
 - 보고서 전용 커밋: 이 문서 자체를 참조하는 해시는 self-reference를 피하기 위해 최종 전달 내용에 별도로 기록합니다.
+
+## Fix round 5 (final allowed round)
+
+### 리뷰 반영
+
+- Escape privacy E2E의 저장 안전성 증거를 강화했습니다. persistence를 켠 직후 localStorage에 `PROGRESS_KEY`가 생성될 때까지 기다리고, Escape 전에 해당 키의 정확한 JSON/string 값을 캡처합니다.
+- Escape 후에는 alertdialog가 단순히 숨겨진 상태가 아니라 DOM에서 완전히 제거되어 count가 0인지 확인합니다. `.app-shell__content`에 `inert`가 없고 persistence 스위치가 active element인지, 스위치가 계속 checked인지, localStorage 키의 값이 Escape 전 문자열과 정확히 같은지도 검증합니다.
+- 기존 계속 사용(취소 버튼) 및 실제 삭제(확인 버튼) E2E assertion은 변경하지 않았습니다. 제품 코드는 변경하지 않았습니다.
+
+### Fix round 5 검증
+
+1. 집중 privacy E2E: `npm run test:e2e -- tests/e2e/privacy.spec.ts -g '이어 하기를 끌 때|Escape로'`
+   - Chromium 2 tests passed. 기존 확인/삭제 경로와 강화된 Escape 경로를 통과했습니다.
+2. 집중 설정/저장소 테스트: `npm test -- tests/components/accessibilitySettings.test.tsx tests/unit/progressStore.test.ts`
+   - 2 files passed, 37 tests passed.
+3. 정적 검사: `npm run lint`
+   - `eslint . --max-warnings=0` 통과.
+4. 빌드: `npm run build`
+   - TypeScript 및 Vite production build 통과.
+5. 파일 크기: `npm run check:size`
+   - architecture source-size test 1 passed.
+6. `git diff --check`
+   - 공백 오류 없음.
+
+### Fix round 5 자체 검토 및 잔여 사항
+
+- 최종 리뷰 범위의 Escape 경로에서 alertdialog 제거, page-level inert 해제, 스위치 focus 복구, persistence 상태·정확한 저장값 보존을 실제 Chromium으로 확인했습니다.
+- 이번 최종 fix round에서 남은 기능 리뷰 finding은 없습니다.
+- Chromium 실행에 제한은 없었고 MachPortRendezvous도 발생하지 않았습니다. VoiceOver, push, deploy 및 별도 Safari/실기기 수동 검증은 기존 범위 지침대로 수행하지 않았습니다.
+- 변경 파일은 모두 500줄 미만입니다.
+
+### Fix round 5 커밋
+
+- 테스트 커밋: `d053fe3 test: assert escape preserves persisted progress`
+- 보고서 전용 커밋: 이 문서 자체를 참조하는 해시는 self-reference를 피하기 위해 최종 전달 내용에 별도로 기록합니다.
