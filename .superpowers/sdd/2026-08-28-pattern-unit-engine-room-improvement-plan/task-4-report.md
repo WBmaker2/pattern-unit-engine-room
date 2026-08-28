@@ -187,3 +187,38 @@
 
 - 구현 커밋: `f955f58 fix: restore persistence focus after modal cleanup`
 - 보고서 전용 커밋: 이 문서 자체를 참조하는 해시는 self-reference를 피하기 위해 최종 전달 내용에 별도로 기록합니다.
+
+## Fix round 4
+
+### 리뷰 반영
+
+- 실제 Chromium에서 Escape로 confirmation alertdialog를 닫는 독립 회귀 순서를 `tests/e2e/privacy.spec.ts`에 추가했습니다.
+- persistence를 켠 상태에서 스위치를 끄고 alertdialog를 연 뒤 `page.keyboard.press('Escape')`를 실행합니다. 이후 alertdialog 제거, `.app-shell__content`의 `inert` 해제, persistence 스위치로의 active focus 복구, persistence 상태 유지까지 확인합니다.
+- 기존 계속 사용(취소 버튼) 및 실제 삭제(확인 버튼) focus assertion은 그대로 유지했습니다.
+
+### Fix round 4 검증
+
+1. 집중 privacy E2E: `npm run test:e2e -- tests/e2e/privacy.spec.ts -g '이어 하기를 끌 때|Escape로'`
+   - Chromium 2 tests passed. 기존 확인 경로와 새 Escape 경로 모두 통과했습니다.
+2. 집중 설정/저장소 테스트: `npm test -- tests/components/accessibilitySettings.test.tsx tests/unit/progressStore.test.ts`
+   - 2 files passed, 37 tests passed.
+3. 정적 검사: `npm run lint`
+   - `eslint . --max-warnings=0` 통과.
+4. 빌드: `npm run build`
+   - TypeScript 및 Vite production build 통과.
+5. 파일 크기: `npm run check:size`
+   - architecture source-size test 1 passed.
+6. `git diff --check`
+   - 공백 오류 없음.
+
+### Fix round 4 자체 검토
+
+- 새 테스트는 runtime modal blocking을 변경하지 않고 page-level `inert` contract와 Escape close focus restoration을 실제 브라우저에서 검증합니다.
+- 기존 cancel/confirm focus assertion을 보존했으며, 저장 상태가 확인 없이 꺼지지 않는 기존 privacy 계약도 함께 유지했습니다.
+- Chromium은 실행 가능했고 MachPortRendezvous 환경 제한은 발생하지 않았습니다. VoiceOver, push, deploy는 수행하지 않았습니다.
+- 변경 파일은 모두 500줄 미만입니다.
+
+### Fix round 4 커밋
+
+- 테스트 커밋: `9b734d0 test: cover escape modal focus restoration`
+- 보고서 전용 커밋: 이 문서 자체를 참조하는 해시는 self-reference를 피하기 위해 최종 전달 내용에 별도로 기록합니다.
