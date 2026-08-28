@@ -35,6 +35,8 @@ describe('RepairPatternScreen', () => {
   it('칸 선택 뒤 교체 항을 눌러 한 오류만 수리한다', async () => {
     const user = userEvent.setup();
     render(<RepairHarness />);
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('현재 단계 3 / 5');
     await user.click(screen.getByRole('button', { name: /다섯째 칸/ }));
     await user.click(screen.getByRole('button', { name: '깃발 모양' }));
     await user.click(screen.getByRole('button', { name: '고치기' }));

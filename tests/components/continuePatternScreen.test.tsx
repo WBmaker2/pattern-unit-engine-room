@@ -36,6 +36,8 @@ describe('ContinuePatternScreen', () => {
   ] as const)('빈칸 수에 맞는 선택지(%s)를 제출한다', async (missionId, answerName) => {
     const user = userEvent.setup();
     render(<ContinueHarness missionId={missionId} />);
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('현재 단계 2 / 5');
     expect(screen.getByRole('button', { name: '이어 붙이기' })).toBeDisabled();
     await user.click(screen.getByRole('button', { name: answerName }));
     expect(screen.getByRole('button', { name: '이어 붙이기' })).toBeEnabled();

@@ -29,6 +29,8 @@ describe('CreatePatternScreen', () => {
     const user = userEvent.setup();
     const onAddToken = vi.fn();
     const { rerender } = render(<CreatePatternScreen {...props({ onAddToken })} />);
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('현재 단계 5 / 5');
     const choices = screen.getAllByRole('button', { name: /모양$/ });
     expect(choices).toHaveLength(3);
     expect(screen.getByRole('button', { name: COPY.removeFreeToken })).toBeDisabled();
@@ -39,6 +41,8 @@ describe('CreatePatternScreen', () => {
     expect(onAddToken).toHaveBeenCalledWith('A');
 
     rerender(<CreatePatternScreen {...props({ unit: ['A', 'B', 'C'], onAddToken })} />);
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('현재 단계 5 / 5');
     expect(screen.getAllByRole('button', { name: /모양$/ })).toHaveLength(3);
     expect(onAddToken).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: COPY.lockFreeUnit })).toBeEnabled();

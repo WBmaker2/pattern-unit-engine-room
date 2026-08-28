@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import App from '../../src/App';
+import { StartMissionIllustration } from '../../src/components/StartMissionIllustration';
 import { COPY } from '../../src/content/copy';
 import { StartScreen } from '../../src/features/start/StartScreen';
 import { createInitialSession } from '../../src/features/session/reducer';
@@ -24,6 +25,14 @@ describe('StartScreen', () => {
     expect(screen.queryAllByText(COPY.startTitle)).toHaveLength(1);
     expect(screen.getByTestId('start-mission-illustration')).toBeInTheDocument();
     expect(screen.getByTestId('start-mission-illustration')).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('제목을 주면 미션 그림을 이미지로 읽는다', () => {
+    render(<StartMissionIllustration title="다섯 미션 기관실 그림" />);
+
+    const illustration = screen.getByRole('img', { name: '다섯 미션 기관실 그림' });
+    expect(illustration).toBeInTheDocument();
+    expect(illustration).not.toHaveAttribute('aria-hidden');
   });
 
   it('제목과 시작·접근성 설정 행동을 보여 주고 각각의 콜백을 호출한다', async () => {

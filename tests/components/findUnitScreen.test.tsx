@@ -35,6 +35,8 @@ describe('FindUnitScreen', () => {
   it('선택 전 제출을 막고 후보를 한국어 이름과 칸 수로 읽는다', async () => {
     const user = userEvent.setup();
     render(<FindHarness />);
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('현재 단계 1 / 5');
     const submit = screen.getByRole('button', { name: '한 묶음 찾기' });
     expect(submit).toBeDisabled();
     expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(0);

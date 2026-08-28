@@ -46,6 +46,8 @@ describe('TranslatePatternScreen', () => {
 
   it('모든 원래 항을 대응하기 전에는 확인을 막는다', () => {
     render(<TranslateHarness />);
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('현재 단계 4 / 5');
     expect(screen.getByRole('button', { name: '같은 규칙 확인' })).toBeDisabled();
   });
 
