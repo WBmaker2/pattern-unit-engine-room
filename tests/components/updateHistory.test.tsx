@@ -16,9 +16,11 @@ describe('업데이트 내역', () => {
     render(<AppShell><div>학습 화면</div></AppShell>);
 
     const trigger = screen.getByRole('button', { name: '업데이트 내역' });
+    expect(trigger).toHaveAttribute('aria-controls', 'update-history-dialog');
     await user.click(trigger);
 
     const dialog = screen.getByRole('dialog', { name: '업데이트 내역' });
+    expect(dialog).toHaveAttribute('id', 'update-history-dialog');
     expect(within(dialog).getAllByText('2026-08-26')).toHaveLength(2);
     expect(within(dialog).getByText('2026-08-27')).toBeInTheDocument();
     expect(
@@ -59,28 +61,24 @@ describe('업데이트 내역', () => {
     expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개선', '개발', '설계']);
   });
 
-  it('앱 콘텐츠와 업데이트 버튼이 모든 safe-area 계약을 지킨다', async () => {
+  it('콘텐츠 footer의 업데이트 버튼이 inline 배치 계약을 지킨다', async () => {
     const styles = await readFile(
       resolve(import.meta.dirname, '../../src/styles/components.css'),
       'utf8',
     );
     const appShellBlocks = [...styles.matchAll(/\.app-shell\s*\{([^{}]*)\}/g)]
       .map((match) => match[1] ?? '');
+    const footerBlock = styles.match(/\.app-shell__footer\s*\{([^{}]*)\}/)?.[1] ?? '';
     const buttonBlock = styles.match(/\.update-history-button\s*\{([^{}]*)\}/)?.[1] ?? '';
 
     expect(appShellBlocks).toHaveLength(2);
-    expect(appShellBlocks[0]).toContain(
-      'padding-block-end: calc(var(--space-page) + 4.5rem + env(safe-area-inset-bottom, 0px));',
-    );
-    expect(appShellBlocks[1]).toContain(
-      'padding-block-end: calc(5rem + env(safe-area-inset-bottom, 0px));',
-    );
-    expect(buttonBlock).toContain(
-      'inset-inline-end: calc(env(safe-area-inset-right, 0px) + 12px);',
-    );
-    expect(buttonBlock).toContain(
-      'inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 12px);',
-    );
+    expect(footerBlock).toContain('display: flex;');
+    expect(footerBlock).toContain('justify-content: flex-end;');
+    expect(footerBlock).toContain('margin-block-start: var(--space-5);');
+    expect(buttonBlock).not.toContain('position: fixed;');
+    expect(buttonBlock).not.toContain('z-index:');
+    expect(buttonBlock).not.toContain('inset-inline-end:');
+    expect(buttonBlock).not.toContain('inset-block-end:');
     expect(buttonBlock).toContain('min-inline-size: 48px;');
     expect(buttonBlock).toContain('min-block-size: 48px;');
   });

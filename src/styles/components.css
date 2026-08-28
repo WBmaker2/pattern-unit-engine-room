@@ -11,6 +11,12 @@
   margin-inline: auto;
 }
 
+.app-shell__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-start: var(--space-5);
+}
+
 .app-shell__content > h1 {
   color: var(--color-accent-strong);
   font-size: clamp(1.5rem, 5vw, 2.25rem);
@@ -128,10 +134,6 @@
 }
 
 .update-history-button {
-  position: fixed;
-  z-index: 10;
-  inset-inline-end: calc(env(safe-area-inset-right, 0px) + 12px);
-  inset-block-end: calc(env(safe-area-inset-bottom, 0px) + 12px);
   min-inline-size: 48px;
   min-block-size: 48px;
   border-color: var(--color-accent-strong);

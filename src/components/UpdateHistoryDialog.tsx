@@ -3,6 +3,7 @@ import { useEffect, useRef, type JSX, type KeyboardEvent } from 'react';
 import { UPDATE_HISTORY_COPY, type UpdateHistoryEntry } from '../content/updateHistory';
 
 export interface UpdateHistoryDialogProps {
+  readonly dialogId: string;
   readonly open: boolean;
   readonly entries: readonly UpdateHistoryEntry[];
   readonly onClose: () => void;
@@ -18,6 +19,7 @@ const FOCUSABLE_SELECTOR = [
 ].join(',');
 
 export function UpdateHistoryDialog({
+  dialogId,
   open,
   entries,
   onClose,
@@ -68,6 +70,7 @@ export function UpdateHistoryDialog({
         aria-labelledby="update-history-title"
         aria-modal="true"
         className="update-history-dialog"
+        id={dialogId}
         onKeyDown={handleKeyDown}
         role="dialog"
         tabIndex={-1}

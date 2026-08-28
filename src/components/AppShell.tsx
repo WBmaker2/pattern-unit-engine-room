@@ -63,14 +63,20 @@ export function AppShell({
         aria-hidden={historyOpen || undefined}
         className="app-shell__content"
         ref={contentRef}
-      >{children}</div>
-      <UpdateHistoryButton
-        onClick={() => setHistoryOpen(true)}
-        open={historyOpen}
-        ref={triggerRef}
-        {...(historyOpen ? { tabIndex: -1 } : {})}
-      />
+      >
+        {children}
+        <div className="app-shell__footer">
+          <UpdateHistoryButton
+            ariaControls="update-history-dialog"
+            onClick={() => setHistoryOpen(true)}
+            open={historyOpen}
+            ref={triggerRef}
+            {...(historyOpen ? { tabIndex: -1 } : {})}
+          />
+        </div>
+      </div>
       <UpdateHistoryDialog
+        dialogId="update-history-dialog"
         entries={UPDATE_HISTORY}
         onClose={() => setHistoryOpen(false)}
         open={historyOpen}

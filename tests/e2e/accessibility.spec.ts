@@ -88,6 +88,22 @@ async function assert320Layout(page: Page): Promise<void> {
   }
 }
 
+async function assertNoVisibleInteractiveOverlap(page: Page): Promise<void> {
+  const intersections = await page.evaluate(() => {
+    const nodes = [...document.querySelectorAll<HTMLElement>('button, input, select, textarea')]
+      .filter((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+      });
+    return nodes.flatMap((a, index) => nodes.slice(index + 1).filter((b) => {
+      const x = a.getBoundingClientRect(); const y = b.getBoundingClientRect();
+      return !(x.right <= y.left || y.right <= x.left || x.bottom <= y.top || y.bottom <= x.top);
+    }).map((b) => [a.className, b.className]));
+  });
+  expect(intersections).toEqual([]);
+}
+
 async function assertStageAxe(page: Page): Promise<void> {
   const result = await new AxeBuilder({ page }).analyze();
   expect(result.violations, result.violations.map((violation) => `${violation.id}: ${violation.help}`).join('\n'))
@@ -95,6 +111,20 @@ async function assertStageAxe(page: Page): Promise<void> {
 }
 
 test.describe('모바일·확대·모션 접근성', () => {
+  test('320px·390px에서 보이는 조작 대상 겹침이 없고 가로 스크롤이 없다', async ({ page }) => {
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 720 });
+      await page.goto('/');
+      await page.getByRole('button', { name: '운행 시작' }).click();
+      await assertNoVisibleInteractiveOverlap(page);
+      const viewport = await page.evaluate(() => ({
+        clientWidth: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+      }));
+      expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.clientWidth);
+    }
+  });
+
   test('320px에서 가로 스크롤과 작은 조작 대상이 없다', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 720 });
     await page.goto('/');
