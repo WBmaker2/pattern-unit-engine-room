@@ -105,4 +105,4 @@
 ### Fix 커밋
 
 - 구현 커밋: `714e1b5 fix: fail closed persistence disable and modal focus`
-- 보고서 전용 커밋: `ad4b7e5 docs: record task 4 fix round`
+- 보고서 전용 커밋: 이 문서 자체를 참조하는 해시는 self-reference를 피하기 위해 보고서에 삽입하지 않고 최종 전달 내용에 기록합니다.
