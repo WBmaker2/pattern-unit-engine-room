@@ -55,7 +55,7 @@ export interface PersistedProgressV1 {
 export interface ProgressStore {
   load(): PersistedProgressV1 | null;
   save(value: PersistedProgressV1): void;
-  clear(): void;
+  clear(): boolean;
 }
 
 export interface FeedbackState {

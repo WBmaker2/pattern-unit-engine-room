@@ -135,11 +135,13 @@ function parseProgress(raw: string): PersistedProgressV1 | null {
 }
 
 export function createProgressStore(storage: Storage): ProgressStore {
-  const clear = (): void => {
+  const clear = (): boolean => {
     try {
       storage.removeItem(PROGRESS_KEY);
+      return storage.getItem(PROGRESS_KEY) === null;
     } catch {
       // Storage can be unavailable or full; learning remains usable.
+      return false;
     }
   };
 
@@ -203,6 +205,6 @@ export function persistSession(state: SessionState, store: ProgressStore): void 
   store.save({ version: 1, consent: true, snapshot, settings });
 }
 
-export function disablePersistence(store: ProgressStore): void {
-  store.clear();
+export function disablePersistence(store: ProgressStore): boolean {
+  return store.clear();
 }

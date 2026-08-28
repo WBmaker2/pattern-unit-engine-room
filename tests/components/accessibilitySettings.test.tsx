@@ -1,3 +1,5 @@
+import { useState, type JSX } from 'react';
+
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -6,6 +8,11 @@ import App from '../../src/App';
 import { COPY } from '../../src/content/copy';
 import { createInitialSession } from '../../src/features/session/reducer';
 import { AccessibilitySettings, resolveReducedMotion } from '../../src/features/settings/AccessibilitySettings';
+
+function PersistenceSettingsHarness(): JSX.Element {
+  const [settings, setSettings] = useState({ ...createInitialSession().settings, persistenceEnabled: true });
+  return <AccessibilitySettings settings={settings} onChange={setSettings} onClose={() => {}} />;
+}
 
 describe('접근성 설정', () => {
   beforeEach(() => window.localStorage.clear());
@@ -62,6 +69,43 @@ describe('접근성 설정', () => {
     expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ persistenceEnabled: false }));
   });
 
+  it('확인 패널은 첫 동작에 초점을 주고 Tab을 안에서 순환하며 Escape로 닫는다', async () => {
+    const user = userEvent.setup();
+    render(
+      <AccessibilitySettings
+        settings={{ ...createInitialSession().settings, persistenceEnabled: true }}
+        onChange={() => {}}
+        onClose={() => {}}
+      />,
+    );
+    const persistenceSwitch = screen.getByRole('switch', { name: '이 기기에서 이어 하기' });
+    await user.click(persistenceSwitch);
+    const dialog = screen.getByRole('alertdialog', { name: '이어 하기 끄기 확인' });
+    const confirm = screen.getByRole('button', { name: '이어 하기 끄기' });
+    const cancel = screen.getByRole('button', { name: '계속 사용' });
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(confirm).toHaveFocus();
+    await user.tab();
+    expect(cancel).toHaveFocus();
+    await user.tab();
+    expect(confirm).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(cancel).toHaveFocus();
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('alertdialog', { name: '이어 하기 끄기 확인' })).not.toBeInTheDocument();
+    expect(persistenceSwitch).toHaveFocus();
+  });
+
+  it('이어 하기를 끄면 승인 후 상태를 끄고 스위치에 초점을 돌려준다', async () => {
+    const user = userEvent.setup();
+    render(<PersistenceSettingsHarness />);
+    const persistenceSwitch = screen.getByRole('switch', { name: '이 기기에서 이어 하기' });
+    await user.click(persistenceSwitch);
+    await user.click(screen.getByRole('button', { name: '이어 하기 끄기' }));
+    expect(persistenceSwitch).toHaveAttribute('aria-checked', 'false');
+    expect(persistenceSwitch).toHaveFocus();
+  });
+
   it('이어 하기 끄기에서 계속 사용을 누르면 현재 상태를 유지한다', async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
@@ -101,6 +145,37 @@ describe('접근성 설정', () => {
     const { rerender } = render(<App />);
     rerender(<App />);
     expect(load).toHaveBeenCalledTimes(1);
+  });
+
+  it('App은 이어 하기 삭제 실패 시 저장 동의를 끄지 않는다', async () => {
+    const user = userEvent.setup();
+    const removeItem = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    window.localStorage.setItem('pattern-unit-engine-room:v1', JSON.stringify({
+      version: 1,
+      consent: true,
+      snapshot: {
+        journeyIndex: 0,
+        stage: 'start',
+        completedKinds: [],
+        freeUnit: [],
+        freeTrack: [],
+      },
+      settings: { audioEnabled: false, motionPreference: 'system', patternContrast: 'standard' },
+    }));
+    try {
+      render(<App />);
+      await user.click(screen.getByRole('button', { name: '접근성 설정' }));
+      const persistenceSwitch = screen.getByRole('switch', { name: '이 기기에서 이어 하기' });
+      await user.click(persistenceSwitch);
+      await user.click(screen.getByRole('button', { name: '이어 하기 끄기' }));
+      expect(persistenceSwitch).toHaveAttribute('aria-checked', 'true');
+      expect(screen.getByRole('alertdialog', { name: '이어 하기 끄기 확인' })).toBeInTheDocument();
+      expect(window.localStorage.getItem('pattern-unit-engine-room:v1')).not.toBeNull();
+    } finally {
+      removeItem.mockRestore();
+    }
   });
 
   it('create-track 완료 상태를 새로고침해도 summary의 다음 행동에 도달한다', async () => {

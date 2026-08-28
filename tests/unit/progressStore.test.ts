@@ -252,8 +252,22 @@ describe('동의 기반 로컬 진행 저장소', () => {
   it('이어 하기를 끄면 기존 항목을 즉시 지운다', () => {
     const storage = createMemoryStorage();
     storage.setItem(PROGRESS_KEY, JSON.stringify(validProgress()));
-    disablePersistence(createProgressStore(storage));
+    expect(disablePersistence(createProgressStore(storage))).toBe(true);
     expect(storage.getItem(PROGRESS_KEY)).toBeNull();
+  });
+
+  it('저장소 삭제가 실패하면 clear와 disablePersistence가 실패를 보고한다', () => {
+    const storage = createMemoryStorage();
+    storage.setItem(PROGRESS_KEY, JSON.stringify(validProgress()));
+    const failing = {
+      ...storage,
+      removeItem: vi.fn(() => { throw new Error('blocked'); }),
+    } as unknown as Storage;
+    const store = createProgressStore(failing);
+
+    expect(store.clear()).toBe(false);
+    expect(disablePersistence(store)).toBe(false);
+    expect(storage.getItem(PROGRESS_KEY)).not.toBeNull();
   });
 
   it('journey 범위는 현재 고정된 다섯 칸과 일치한다', () => {

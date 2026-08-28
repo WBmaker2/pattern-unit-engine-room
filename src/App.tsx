@@ -70,11 +70,12 @@ export default function App(): JSX.Element {
     persistSession(state, progressStore);
   }, [progressStore, state]);
 
-  const updateSettings = (settings: AccessibilitySettingsState): void => {
+  const updateSettings = (settings: AccessibilitySettingsState): boolean => {
     if (state.settings.persistenceEnabled && !settings.persistenceEnabled) {
-      disablePersistence(progressStore);
+      if (!disablePersistence(progressStore)) return false;
     }
     dispatch({ type: 'UPDATE_SETTINGS', settings });
+    return true;
   };
 
   const startJourney = (): void => {
