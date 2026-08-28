@@ -202,17 +202,21 @@ test('Escape로 이어 하기 끄기 확인을 닫으면 배경과 스위치 초
   await page.getByRole('button', { name: '접근성 설정' }).click();
   const persistenceSwitch = page.getByRole('switch', { name: '이 기기에서 이어 하기' });
   await persistenceSwitch.check();
+  await expect.poll(() => page.evaluate((key) => localStorage.getItem(key), PROGRESS_KEY))
+    .not.toBeNull();
+  const persistedBeforeEscape = await page.evaluate((key) => localStorage.getItem(key), PROGRESS_KEY);
   await persistenceSwitch.click();
 
   const confirmation = page.getByRole('alertdialog', { name: '이어 하기 끄기 확인' });
   await expect(confirmation).toBeVisible();
   await page.keyboard.press('Escape');
 
-  await expect(confirmation).not.toBeVisible();
+  await expect(confirmation).toHaveCount(0);
   await expect(page.locator('.app-shell__content')).not.toHaveAttribute('inert');
   await expect.poll(() => page.evaluate(() => document.activeElement?.getAttribute('aria-label')))
     .toBe('이 기기에서 이어 하기');
   await expect(persistenceSwitch).toBeChecked();
+  expect(await page.evaluate((key) => localStorage.getItem(key), PROGRESS_KEY)).toBe(persistedBeforeEscape);
 });
 
 test('색을 회색조로 바꾸어도 visible label만으로 Journey 0을 완료한다', async ({ page }) => {
