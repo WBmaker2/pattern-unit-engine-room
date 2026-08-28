@@ -241,7 +241,15 @@ describe('동의 기반 로컬 진행 저장소', () => {
     ['duplicate kinds', validProgress({ completedKinds: ['unit-recognized', 'unit-recognized'] })],
     ['invalid token', validProgress({ freeUnit: ['D' as never] })],
     ['too many unit tokens', validProgress({ freeUnit: ['A', 'B', 'C', 'A'] })],
-    ['too many track tokens', validProgress({ stage: 'create-track', freeUnit: ['A', 'B'], freeTrack: Array(MAX_FREE_TRACK_TOKENS + 1).fill('A') })],
+    ['too many track tokens', validProgress({
+      stage: 'create-track',
+      completedKinds: ['unit-recognized', 'continued', 'repaired', 'translated'],
+      freeUnit: ['A', 'B'],
+      freeTrack: Array.from(
+        { length: MAX_FREE_TRACK_TOKENS + 2 },
+        (_, index) => index % 2 === 0 ? 'A' : 'B',
+      ),
+    })],
   ])('손상된 %s는 해당 키만 지우고 null을 반환한다', (_label, value) => {
     const storage = createMemoryStorage();
     storage.setItem(PROGRESS_KEY, JSON.stringify(value));
