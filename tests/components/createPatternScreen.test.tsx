@@ -116,6 +116,23 @@ describe('CreatePatternScreen', () => {
     expect(document.querySelectorAll('.pattern-cell--active')).toHaveLength(0);
   });
 
+  it('reduced motion retry에서도 반복 중인 미운행 트랙은 활성 칸을 표시하지 않는다', () => {
+    render(
+      <CreatePatternScreen
+        {...props({
+          mode: 'track',
+          unit: ['A', 'B'],
+          track: ['A', 'B', 'A', 'B'],
+          reducedMotion: true,
+          feedback: { status: 'retry', reason: 'does-not-repeat', hintVisible: false },
+        })}
+      />,
+    );
+
+    expect(document.querySelector('.train-track--moving')).toBeNull();
+    expect(document.querySelectorAll('.pattern-cell--active')).toHaveLength(0);
+  });
+
   it('자유 규칙 성공 시 실제 선로에 moving class를 붙인다', () => {
     render(
       <CreatePatternScreen
