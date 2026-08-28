@@ -71,7 +71,7 @@ Task 9 전체 품질 게이트와 HVC 전달용 결과 기록입니다. Task 1�
 
 [https://wbmaker2.github.io/pattern-unit-engine-room/](https://wbmaker2.github.io/pattern-unit-engine-room/)
 
-배포 후 읽기 전용 `curl -I -L -sS` 확인: `HTTP/2 200`, `last-modified: Fri, 28 Aug 2026 07:32:19 GMT`. 공개 HTML은 `규칙 단위 기관실` 제목, `./assets/index-CgWso5GX.js`, `./assets/index-C-tdXe_D.css`, `./favicon.svg`를 제공하며, 공개 URL의 390px 브라우저 점검에서 시작 버튼과 가로 넘침 없는 화면을 확인했습니다.
+배포 후 읽기 전용 `curl -I -L -sS` 확인: `HTTP/2 200`. 공개 HTML은 `규칙 단위 기관실` 제목, `./assets/index-CgWso5GX.js`, `./assets/index-C-tdXe_D.css`, `./favicon.svg`를 제공하며, 공개 URL의 390px 브라우저 점검에서 시작 버튼과 가로 넘침 없는 화면을 확인했습니다. CDN의 `last-modified` 시각은 캐시 갱신에 따라 변동하므로 Actions 배포 실행 ID를 기준으로 추적합니다.
 
 ## Known limits
 
@@ -89,4 +89,4 @@ Task 9 전체 품질 게이트와 HVC 전달용 결과 기록입니다. Task 1�
 
 ## Release status
 
-`main`의 구현 커밋 `c965b5a`를 2026-08-28에 `origin/main`으로 push했습니다. GitHub Actions `Quality` run [33151798274](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33151798274)와 `Deploy to GitHub Pages` run [33151798238](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33151798238)는 모두 `success`로 완료되었습니다. Pages 설정은 `build_type=workflow`, source는 `main`이며, 공개 URL은 현재 `c965b5a` 변경을 반영합니다. 로컬 `main`의 작업 트리도 clean입니다.
+`main`의 구현 커밋 `c965b5a`와 배포 상태 문서 커밋 `fc7098f`를 2026-08-28에 `origin/main`으로 push했습니다. 최신 GitHub Actions `Quality` run [33152038067](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33152038067)와 `Deploy to GitHub Pages` run [33152038025](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33152038025)는 모두 `success`로 완료되었습니다. Pages 설정은 `build_type=workflow`, source는 `main`이며, 공개 URL은 현재 `fc7098f` 변경을 반영합니다. 로컬 `main`의 작업 트리도 clean입니다.
