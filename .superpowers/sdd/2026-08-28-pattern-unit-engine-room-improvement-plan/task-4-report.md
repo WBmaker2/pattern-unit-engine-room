@@ -63,10 +63,46 @@
 
 ## 커밋
 
-- 커밋 메시지: `fix: make accessibility settings explicit and safe`
-- 커밋 해시: `a59032d`
+- 초기 구현 커밋: `a59032d fix: make accessibility settings explicit and safe`
 
 ## 우려/보류
 
-- 남은 기능상 우려는 없습니다.
+- 리뷰에서 저장 삭제 실패 시 fail-closed 계약과 확인 패널의 키보드 초점 계약을 보강하도록 요청받아 수정 라운드를 진행합니다.
 - 브라우저 기반 E2E는 Chromium으로 확인했으며, VoiceOver·Safari·실기기 수동 검증은 지침대로 수행하지 않았습니다.
+
+## Fix round 1
+
+### 리뷰 반영
+
+- `ProgressStore.clear()`가 `boolean` 성공값을 반환하도록 계약을 확장했습니다.
+- `removeItem` 후 키를 다시 읽어 실제로 사라졌는지도 확인하며, 예외 또는 잔존 시 `false`를 반환합니다.
+- App은 이어 하기 삭제 실패 시 `UPDATE_SETTINGS`를 dispatch하지 않고 `false`를 반환합니다. 설정 UI도 실패 응답을 받으면 확인 패널을 유지해 성공으로 오인하지 않게 했습니다.
+- 확인 alertdialog의 `aria-modal="true"`에 맞춰 첫 확인 버튼 자동 포커스, Escape 닫기, 확인/취소 후 스위치 포커스 복원, 두 버튼 간 Tab/Shift+Tab 순환을 구현했습니다.
+- 패널이 열려 있는 동안 배경 설정 스위치와 설정 닫기 버튼을 disabled 처리해 Tab 대상에서 제외했습니다.
+
+### Fix TDD
+
+1. RED: `npm test -- tests/components/accessibilitySettings.test.tsx tests/unit/progressStore.test.ts`
+   - 새 실패 5건을 확인했습니다(저장소 clear 반환값 2건, alertdialog 포커스/승인 포커스/App 실패 유지 3건).
+2. 구현 후 동일 명령
+   - 2 files passed, 36 tests passed.
+3. 전체 단위 테스트: `npm test`
+   - 30 files passed, 181 tests passed.
+4. 개인정보 E2E: `npm run test:e2e -- tests/e2e/privacy.spec.ts`
+   - Chromium 4 tests passed.
+5. 정적 검사/빌드: `npm run lint`, `npm run build`, `npm run check:size`
+   - 모두 통과했습니다.
+6. `git diff --check`
+   - 공백 오류 없음.
+
+### 자체 검토
+
+- 정상 삭제는 `true`를 반환하고 키를 제거하며, throwing `removeItem`은 `false`를 반환하고 기존 키/동의를 보존합니다.
+- App 실패 경로는 persistence 설정을 끄지 않고 확인 패널을 유지합니다.
+- 모달 포커스 순환은 확인/취소 두 버튼 안에서만 일어나며, Escape와 두 버튼 모두 스위치로 포커스를 되돌립니다.
+- 관련 파일은 모두 500줄 미만이며 VoiceOver, push, deploy는 수행하지 않았습니다.
+
+### Fix 커밋
+
+- 구현 커밋: `714e1b5 fix: fail closed persistence disable and modal focus`
+- 보고서 전용 커밋: `ad4b7e5 docs: record task 4 fix round`
