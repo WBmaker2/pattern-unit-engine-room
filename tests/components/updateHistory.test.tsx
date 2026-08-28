@@ -11,6 +11,14 @@ import { UPDATE_HISTORY } from '../../src/content/updateHistory';
 describe('업데이트 내역', () => {
   afterEach(cleanup);
 
+  it('최신 업데이트 날짜와 개선 요약이 기록된다', () => {
+    expect(UPDATE_HISTORY[0]).toMatchObject({
+      date: '2026-08-28',
+      kind: '개선',
+      summary: '초등학생 관점 모바일·선택·운행 피드백 개선',
+    });
+  });
+
   it('문자 라벨 버튼으로 날짜가 있는 이력을 열고 닫는다', async () => {
     const user = userEvent.setup();
     render(<AppShell><div>학습 화면</div></AppShell>);
@@ -22,7 +30,11 @@ describe('업데이트 내역', () => {
     const dialog = screen.getByRole('dialog', { name: '업데이트 내역' });
     expect(dialog).toHaveAttribute('id', 'update-history-dialog');
     expect(within(dialog).getAllByText('2026-08-26')).toHaveLength(2);
+    expect(within(dialog).getByText('2026-08-28')).toBeInTheDocument();
     expect(within(dialog).getByText('2026-08-27')).toBeInTheDocument();
+    expect(
+      within(dialog).getByText('초등학생 관점 모바일·선택·운행 피드백 개선'),
+    ).toBeInTheDocument();
     expect(
       within(dialog).getByText('GitHub Pages 배포 구성 추가'),
     ).toBeInTheDocument();
@@ -34,6 +46,11 @@ describe('업데이트 내역', () => {
 
   it('최신 개선 기록과 기존 기록의 순서를 지키며 중복이 없다', () => {
     expect(UPDATE_HISTORY).toEqual([
+      {
+        date: '2026-08-28',
+        kind: '개선',
+        summary: '초등학생 관점 모바일·선택·운행 피드백 개선',
+      },
       {
         date: '2026-08-27',
         kind: '개선',
@@ -54,11 +71,12 @@ describe('업데이트 내역', () => {
     const keys = UPDATE_HISTORY.map(({ date, kind, summary }) => `${date}:${kind}:${summary}`);
     expect(new Set(keys).size).toBe(keys.length);
     expect(UPDATE_HISTORY.map((entry) => entry.date)).toEqual([
+      '2026-08-28',
       '2026-08-27',
       '2026-08-26',
       '2026-08-26',
     ]);
-    expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개선', '개발', '설계']);
+    expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개선', '개선', '개발', '설계']);
   });
 
   it('콘텐츠 footer의 업데이트 버튼이 inline 배치 계약을 지킨다', async () => {

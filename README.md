@@ -64,7 +64,7 @@ npx playwright install --with-deps chromium
 npm run test:e2e
 ```
 
-GitHub Pages 공개 주소는 [https://wbmaker2.github.io/pattern-unit-engine-room/](https://wbmaker2.github.io/pattern-unit-engine-room/)입니다. `main` push 또는 `workflow_dispatch`로 GitHub Actions의 Pages workflow가 Node.js 22 환경에서 `npm ci`와 `npm run build`를 실행하고, `dist` artifact를 `github-pages` 환경에 배포합니다. 로컬 실행과 품질 검증은 위 명령으로 수행합니다.
+GitHub Pages 공개 주소는 [https://wbmaker2.github.io/pattern-unit-engine-room/](https://wbmaker2.github.io/pattern-unit-engine-room/)입니다. `main` push 또는 `workflow_dispatch`로 GitHub Actions의 Pages workflow가 Node.js 22 환경에서 `npm ci`와 `npm run build`를 실행하고, `dist` artifact를 `github-pages` 환경에 배포합니다. Vite는 `%BASE_URL%favicon.svg`를 사용해 동일 출처의 `favicon.svg`를 빌드에 포함합니다. 로컬 실행과 품질 검증은 위 명령으로 수행합니다.
 
 ## local-only 개인정보 경계
 
@@ -85,19 +85,19 @@ GitHub Pages 공개 주소는 [https://wbmaker2.github.io/pattern-unit-engine-ro
 - 주요 터치 대상은 최소 48×48 CSS px이고 320px CSS 폭에서 가로 넘침이 없습니다.
 - 200% 결합 확대 harness, keyboard 전용 조작, 색상 독립(grayscale), Axe 검사를 확인합니다.
 - `prefers-reduced-motion`과 앱의 reduced motion 설정에서는 열차 이동 대신 칸 테두리로 진행을 표시합니다.
-- 선택 음성의 동일 문구 transcript, 화면 순서·모양·무늬의 스크린 리더 이름, 한 화면 한 주 행동을 확인합니다.
+- 선택 음성의 동일 문구 transcript, DOM 접근성 이름·순서·모양·무늬, 한 화면 한 주 행동을 확인합니다.
 - `업데이트 내역` 버튼은 현재 개발 날짜와 변경 요약을 보여 줍니다. 기능을 수정할 때마다 `src/content/updateHistory.ts`에 날짜·구분·짧은 내역을 최신 항목으로 추가합니다.
 
-자동 검증 결과는 PASS로 기록할 수 있지만, **자동 PASS와 수동 검증 대기를 분리하며, 전체 수동 PASS라고 주장하지 않습니다.** 특히 **Safari+VoiceOver** 실제 청취·포커스 확인은 현재 **수동 검증 대기**입니다. 체크리스트는 다음 두 방식으로 제공합니다.
+이 개선 범위의 자동 검증은 keyboard·Axe·DOM·320px·200%·reduced-motion·privacy 계약으로 한정합니다. **VoiceOver 검증은 이 개선 범위에 포함하지 않습니다.** 자동 PASS는 사람의 보조공학 검증을 의미하지 않으며, 체크리스트는 자동 검증 범위를 기록하는 문서로 제공합니다.
 
 - 상대 링크: [접근성·개인정보 완료 검증 체크리스트](docs/qa/2026-08-26-accessibility-checklist.md)
 - 저장소 기준 절대 경로: `/docs/qa/2026-08-26-accessibility-checklist.md`
 
-Task 15에서 Chromium 자동 E2E 12건, unit/component 포함 테스트 167건을 통과했지만 이는 Safari VoiceOver 사람 청취를 대신하지 않습니다. 수동 검증자가 체크리스트의 Safari + VoiceOver 항목을 실제 수행하기 전에는 전체 수동 완료로 표시하지 않습니다.
+Task 15 이후 현재 Chromium 자동 E2E 12건과 unit/component 포함 전체 테스트 191건을 통과했습니다. 이는 VoiceOver 검증 결과가 아니며, 이 개선 범위에서는 VoiceOver 수동 검증을 수행하지 않습니다.
 
 ## 업데이트 내역
 
-화면 오른쪽 아래의 작은 `업데이트 내역` 버튼에서 설계·개발·개선 날짜와 요약을 확인할 수 있습니다. 현재 구현 날짜는 2026-08-27이며, 날짜가 바뀌는 수정은 같은 파일과 관련 테스트의 날짜를 함께 갱신합니다.
+화면 오른쪽 아래의 작은 `업데이트 내역` 버튼에서 설계·개발·개선 날짜와 요약을 확인할 수 있습니다. 현재 개선 날짜는 2026-08-28이며, 날짜가 바뀌는 수정은 같은 파일과 관련 테스트의 날짜를 함께 갱신합니다.
 
 ## 범위
 

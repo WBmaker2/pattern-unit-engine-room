@@ -10,6 +10,12 @@ const accessibilityChecklist = readFileSync(
 );
 
 describe('README 문서 계약', () => {
+  it('README는 현재 자동 검증 범위와 공개 경로를 기록한다', () => {
+    expect(readme).toContain('VoiceOver 검증은 이 개선 범위에 포함하지 않습니다');
+    expect(readme).toContain('https://wbmaker2.github.io/pattern-unit-engine-room/');
+    expect(readme).toContain('favicon.svg');
+  });
+
   it('필수 섹션과 경계를 모두 설명한다', () => {
     // 학습 목표와 단계 흐름
     expect(readme).toContain('가장 짧은 반복 단위');
@@ -59,16 +65,16 @@ describe('README 문서 계약', () => {
       '200%',
       'keyboard',
       'Axe',
+      'DOM',
+      'privacy',
       'reduced motion',
       '색상 독립',
       '업데이트 내역',
       '자동 PASS',
-      '수동 검증 대기',
-      'Safari+VoiceOver',
+      'VoiceOver 검증은 이 개선 범위에 포함하지 않습니다',
     ]) {
       expect(readme).toContain(phrase);
     }
-    expect(readme).toMatch(/전체 수동 PASS.*아니|전체 수동 PASS.*주장하지/);
     expect(readme).toContain('사람의 청취 검수 대기');
     expect(readme).toMatch(/docs\/qa\/.*accessibility-checklist\.md/);
     expect(readme).toMatch(/\.\.\/docs\/qa\/|\[.*접근성.*\]\(docs\/qa\//);
@@ -80,6 +86,8 @@ describe('README 문서 계약', () => {
       expect(accessibilityChecklist).toContain(criterion);
     }
     expect(accessibilityChecklist).toMatch(/사람.*듣기 전.*PASS.*아니|PASS.*표시하지 않습니다/);
+    expect(accessibilityChecklist).not.toContain('## Safari + VoiceOver 수동 검증');
+    expect(accessibilityChecklist).not.toContain('VoiceOver 포커스');
 
     // 로컬 실행과 GitHub Pages 배포 범위
     expect(readme).toContain('https://wbmaker2.github.io/pattern-unit-engine-room/');

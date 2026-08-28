@@ -12,6 +12,11 @@ export const UPDATE_HISTORY_COPY = Object.freeze({
 
 export const UPDATE_HISTORY = [
   {
+    date: '2026-08-28',
+    kind: '개선',
+    summary: '초등학생 관점 모바일·선택·운행 피드백 개선',
+  },
+  {
     date: '2026-08-27',
     kind: '개선',
     summary: 'GitHub Pages 배포 구성 추가',
