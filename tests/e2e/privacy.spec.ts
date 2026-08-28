@@ -186,11 +186,15 @@ test('이어 하기를 끌 때 확인 후 저장된 진행을 지운다', async 
 
   await confirmation.getByRole('button', { name: '계속 사용' }).click();
   expect(await persistenceSwitch.isChecked()).toBe(true);
+  await expect.poll(() => page.evaluate(() => document.activeElement?.getAttribute('aria-label')))
+    .toBe('이 기기에서 이어 하기');
   expect(await page.evaluate((key) => localStorage.getItem(key), PROGRESS_KEY)).not.toBeNull();
 
   await persistenceSwitch.click();
   await confirmation.getByRole('button', { name: '이어 하기 끄기' }).click();
   await expect.poll(() => page.evaluate(() => Object.keys(localStorage))).toEqual([]);
+  await expect.poll(() => page.evaluate(() => document.activeElement?.getAttribute('aria-label')))
+    .toBe('이 기기에서 이어 하기');
 });
 
 test('색을 회색조로 바꾸어도 visible label만으로 Journey 0을 완료한다', async ({ page }) => {

@@ -93,7 +93,7 @@ describe('접근성 설정', () => {
     expect(cancel).toHaveFocus();
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('alertdialog', { name: '이어 하기 끄기 확인' })).not.toBeInTheDocument();
-    expect(persistenceSwitch).toHaveFocus();
+    await waitFor(() => expect(persistenceSwitch).toHaveFocus());
   });
 
   it('이어 하기를 끄면 승인 후 상태를 끄고 스위치에 초점을 돌려준다', async () => {
@@ -103,7 +103,7 @@ describe('접근성 설정', () => {
     await user.click(persistenceSwitch);
     await user.click(screen.getByRole('button', { name: '이어 하기 끄기' }));
     expect(persistenceSwitch).toHaveAttribute('aria-checked', 'false');
-    expect(persistenceSwitch).toHaveFocus();
+    await waitFor(() => expect(persistenceSwitch).toHaveFocus());
   });
 
   it('이어 하기 끄기에서 계속 사용을 누르면 현재 상태를 유지한다', async () => {
@@ -203,7 +203,7 @@ describe('접근성 설정', () => {
     expect(startButton).not.toHaveAttribute('tabindex', '-1');
     expect(settingsButton).not.toHaveAttribute('tabindex', '-1');
     expect(historyButton).not.toHaveAttribute('tabindex', '-1');
-    expect(persistenceSwitch).toHaveFocus();
+    await waitFor(() => expect(persistenceSwitch).toHaveFocus());
   });
 
   it('create-track 완료 상태를 새로고침해도 summary의 다음 행동에 도달한다', async () => {

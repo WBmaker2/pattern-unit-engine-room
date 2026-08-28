@@ -84,7 +84,20 @@ export function AccessibilitySettings({
     }
     if (confirmationWasOpen.current) {
       confirmationWasOpen.current = false;
-      persistenceSwitchRef.current?.focus();
+      let restoreFocusFrame: number | null = null;
+      const restoreFocus = (): void => {
+        const persistenceSwitch = persistenceSwitchRef.current;
+        if (!persistenceSwitch || persistenceSwitch.disabled) return;
+        if (persistenceSwitch.closest('[inert]')) {
+          restoreFocusFrame = window.requestAnimationFrame(restoreFocus);
+          return;
+        }
+        persistenceSwitch.focus();
+      };
+      restoreFocusFrame = window.requestAnimationFrame(restoreFocus);
+      return () => {
+        if (restoreFocusFrame !== null) window.cancelAnimationFrame(restoreFocusFrame);
+      };
     }
   }, [confirmPersistenceOff]);
 
