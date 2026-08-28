@@ -108,3 +108,26 @@
 
 - Commit: `ae68115aeb0717e91f0649cb1ef57b5ffd5a3bd0` (`fix: gate reduced motion track fallback`)
 - VoiceOver, push, deploy는 계속 수행하지 않았습니다.
+
+## Review fix round 2
+
+리뷰에서 요청한 의미 있는 경계 회귀 테스트를 추가했습니다.
+
+- `tests/components/createPatternScreen.test.tsx`
+  - `mode="track"`, `unit=['A','B']`, `track=['A','B','A','B']`, `reducedMotion={true}`, retry feedback 조합을 렌더링합니다.
+  - 아직 운행하지 않은 반복 트랙에는 `.train-track--moving`과 `.pattern-cell--active`가 모두 없어야 함을 확인합니다.
+  - 기존 `ABAB` 성공의 정확한 0·2 active 인덱스와 성공 moving-class 테스트는 유지했습니다.
+
+### Fix round 2 verification
+
+- `npm test -- tests/components/createPatternScreen.test.tsx tests/components/reducedMotion.test.tsx` — `2 passed`, `15 passed`.
+- `npm run lint` — 성공.
+- `npm run build` — 성공.
+- `npm run check:size` — 성공, source-size 1건 통과.
+- `git diff --check` — whitespace 오류 없음.
+- 전체 Vitest 및 E2E는 요청에 따라 재실행하지 않았습니다.
+
+### Fix round 2 commit
+
+- Commit: `9726936fa28268dfb783cbb3f5e9c0b58903d994` (`test: cover inactive repeating track fallback`)
+- 제품 코드, VoiceOver, push, deploy는 변경·수행하지 않았습니다.
