@@ -10,8 +10,8 @@
 | 영역 | 명령 | 실제 결과 |
 |---|---|---|
 | 학습자 흐름 | `npm run test:e2e -- tests/e2e/learner-flow.spec.ts` | PASS · 3 tests |
-| 모바일·확대·모션·키보드·Axe | `npm run test:e2e -- tests/e2e/accessibility.spec.ts` | PASS · 6 tests |
-| 개인정보·색상 독립성 | `npm run test:e2e -- tests/e2e/privacy.spec.ts` | PASS · 3 tests |
+| 모바일·확대·모션·키보드·Axe | `npm run test:e2e -- tests/e2e/accessibility.spec.ts` | PASS · 8 tests |
+| 개인정보·색상 독립성 | `npm run test:e2e -- tests/e2e/privacy.spec.ts` | PASS · 5 tests |
 
 자동 검증에서 확인한 항목:
 
