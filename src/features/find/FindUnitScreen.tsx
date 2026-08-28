@@ -4,6 +4,7 @@ import { ChoiceGrid } from '../../components/ChoiceGrid';
 import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
+import { PatternStrip } from '../../components/PatternStrip';
 import { PrimaryAction } from '../../components/PrimaryAction';
 import { COPY, formatFindCandidate } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
@@ -60,9 +61,7 @@ export function FindUnitScreen({
           return formatFindCandidate(index, candidate.map((token) => getTokenVisual(mission.themeId, token).labelKo));
         }}
         onSelect={(candidate) => setSelectedId(candidate.join(''))}
-        renderChoice={(candidate) => (
-          <PatternBoard slots={candidate} themeId={mission.themeId} />
-        )}
+        renderChoice={(candidate) => <PatternStrip slots={candidate} themeId={mission.themeId} />}
       />
       {feedback !== null ? (
         <FeedbackPanel

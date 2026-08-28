@@ -4,6 +4,7 @@ import { ChoiceGrid } from '../../components/ChoiceGrid';
 import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
+import { PatternStrip } from '../../components/PatternStrip';
 import { PrimaryAction } from '../../components/PrimaryAction';
 import { COPY, formatTokenShape } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
@@ -65,9 +66,7 @@ export function RepairPatternScreen({
           getId={(choice) => choice}
           getAccessibleName={(choice) => formatTokenShape(getTokenVisual(mission.themeId, choice).labelKo)}
           onSelect={setReplacement}
-          renderChoice={(choice) => (
-            <PatternBoard slots={[choice]} themeId={mission.themeId} />
-          )}
+          renderChoice={(choice) => <PatternStrip slots={[choice]} themeId={mission.themeId} />}
         />
       ) : null}
       {feedback !== null ? (

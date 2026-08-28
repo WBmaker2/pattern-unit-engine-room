@@ -29,16 +29,18 @@ export function ChoiceGrid<T, TId extends string | number = string>({
       <ul aria-label={`${label} 목록`} className="choice-grid__list">
         {choices.map((choice) => {
           const id = getId(choice);
+          const selected = selectedId !== null && id === selectedId;
           return (
             <li key={String(id)}>
               <button
                 aria-label={getAccessibleName(choice)}
-                aria-pressed={selectedId !== null && id === selectedId}
-                className="choice-button"
+                aria-pressed={selected}
+                className={`choice-button${selected ? ' choice-button--selected' : ''}`}
                 onClick={() => onSelect(choice)}
                 type="button"
               >
                 {renderChoice(choice)}
+                {selected ? <span className="choice-button__selected-label">선택됨</span> : null}
               </button>
             </li>
           );

@@ -310,6 +310,17 @@ test.describe('모바일·확대·모션 접근성', () => {
 });
 
 test.describe('단계별 주 행동·키보드·Axe', () => {
+  test('선택 후보는 포커스가 이동해도 선택 표시를 유지한다', async ({ page }) => {
+    await startJourney(page);
+    const selected = page.getByRole('button', { name: /후보 2:/ });
+    await selected.click();
+    await expect(selected).toHaveClass(/choice-button--selected/);
+    await expect(selected).toContainText('선택됨');
+    await page.getByRole('button', { name: '한 묶음 찾기' }).focus();
+    await expect(selected).toHaveClass(/choice-button--selected/);
+    await assertStageAxe(page);
+  });
+
   test('각 stage의 활성 주 행동은 최대 하나다', async ({ page }) => {
     await startJourney(page);
     await assertOneOrFewerPrimaryActions(page);

@@ -4,6 +4,7 @@ import { ChoiceGrid } from '../../components/ChoiceGrid';
 import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
+import { PatternStrip } from '../../components/PatternStrip';
 import { PrimaryAction } from '../../components/PrimaryAction';
 import { COPY, formatUnitChoice } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
@@ -56,7 +57,7 @@ export function ContinuePatternScreen({
         getId={(choice) => choice.join('')}
         getAccessibleName={(choice) => formatTokenUnit(choice, mission.themeId)}
         onSelect={(choice) => setSelectedId(choice.join(''))}
-        renderChoice={(choice) => <PatternBoard slots={choice} themeId={mission.themeId} />}
+        renderChoice={(choice) => <PatternStrip slots={choice} themeId={mission.themeId} />}
       />
       {feedback !== null ? (
         <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} />

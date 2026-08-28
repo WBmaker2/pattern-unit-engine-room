@@ -39,6 +39,24 @@ describe('ChoiceGrid', () => {
     );
   });
 
+  it('선택된 후보는 포커스가 없어도 시각 클래스와 선택됨 표시를 유지한다', () => {
+    render(
+      <ChoiceGrid
+        label="후보"
+        choices={choices}
+        selectedId="ba"
+        getId={(choice) => choice.id}
+        renderChoice={(choice) => choice.label}
+        getAccessibleName={(choice) => `${choice.label} 묶음`}
+        onSelect={() => {}}
+      />,
+    );
+
+    const selected = screen.getByRole('button', { name: 'BA 묶음' });
+    expect(selected).toHaveClass('choice-button--selected');
+    expect(selected).toHaveTextContent('선택됨');
+  });
+
   it('클릭·Enter·Space를 native 동작으로 선택한다', async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
