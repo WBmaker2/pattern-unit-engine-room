@@ -93,7 +93,7 @@ GitHub Pages 공개 주소는 [https://wbmaker2.github.io/pattern-unit-engine-ro
 - 상대 링크: [접근성·개인정보 완료 검증 체크리스트](docs/qa/2026-08-26-accessibility-checklist.md)
 - 저장소 기준 절대 경로: `/docs/qa/2026-08-26-accessibility-checklist.md`
 
-Task 15 이후 현재 Chromium 자동 E2E 12건과 unit/component 포함 전체 테스트 191건을 통과했습니다. 이는 VoiceOver 검증 결과가 아니며, 이 개선 범위에서는 VoiceOver 수동 검증을 수행하지 않습니다.
+Task 15 이후 현재 Chromium 자동 E2E 16건과 unit/component 포함 전체 테스트 192건을 통과했습니다. 이는 VoiceOver 검증 결과가 아니며, 이 개선 범위에서는 VoiceOver 수동 검증을 수행하지 않습니다.
 
 ## 업데이트 내역
 

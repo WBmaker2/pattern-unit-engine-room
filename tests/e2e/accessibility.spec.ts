@@ -24,20 +24,20 @@ async function startJourney(page: Page): Promise<void> {
 async function completeFind(page: Page): Promise<void> {
   await page.getByRole('button', { name: /후보 2:/ }).click();
   await page.getByRole('button', { name: '한 묶음 찾기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 이어 붙이기' }).click();
 }
 
 async function completeContinue(page: Page): Promise<void> {
   await page.getByRole('button', { name: '나사못 한 칸' }).click();
   await page.getByRole('button', { name: '이어 붙이기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 규칙 수리하기' }).click();
 }
 
 async function completeRepair(page: Page): Promise<void> {
   await page.getByRole('button', { name: /다섯째 칸/ }).click();
   await page.getByRole('button', { name: '깃발 모양', exact: true }).click();
   await page.getByRole('button', { name: '고치기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 새 모양으로 바꾸기' }).click();
 }
 
 async function completeTranslate(page: Page): Promise<void> {
@@ -51,7 +51,7 @@ async function completeTranslate(page: Page): Promise<void> {
     await page.getByRole('button', { name: target, exact: true }).click();
   }
   await page.getByRole('button', { name: '같은 규칙 확인' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 내 규칙 만들기' }).click();
 }
 
 async function completeCreate(page: Page): Promise<void> {
@@ -61,7 +61,7 @@ async function completeCreate(page: Page): Promise<void> {
   await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
   await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
   await page.getByRole('button', { name: '운행하기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '활동 도장 보기' }).click();
 }
 
 async function assertOneOrFewerPrimaryActions(page: Page): Promise<void> {
@@ -139,16 +139,16 @@ test.describe('모바일·확대·모션 접근성', () => {
     await assert320Layout(page);
     await page.getByRole('button', { name: /후보 2:/ }).click();
     await page.getByRole('button', { name: '한 묶음 찾기' }).click();
-    await page.getByRole('button', { name: '다음 칸' }).click();
+    await page.getByRole('button', { name: '다음 활동: 이어 붙이기' }).click();
     await assert320Layout(page);
     await page.getByRole('button', { name: '나사못 한 칸' }).click();
     await page.getByRole('button', { name: '이어 붙이기' }).click();
-    await page.getByRole('button', { name: '다음 칸' }).click();
+    await page.getByRole('button', { name: '다음 활동: 규칙 수리하기' }).click();
     await assert320Layout(page);
     await page.getByRole('button', { name: /다섯째 칸/ }).click();
     await page.getByRole('button', { name: '깃발 모양', exact: true }).click();
     await page.getByRole('button', { name: '고치기' }).click();
-    await page.getByRole('button', { name: '다음 칸' }).click();
+    await page.getByRole('button', { name: '다음 활동: 새 모양으로 바꾸기' }).click();
     await assert320Layout(page);
     await completeTranslate(page);
     await assert320Layout(page);
@@ -160,7 +160,7 @@ test.describe('모바일·확대·모션 접근성', () => {
     await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
     await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
     await page.getByRole('button', { name: '운행하기' }).click();
-    await page.getByRole('button', { name: '다음 칸' }).click();
+    await page.getByRole('button', { name: '활동 도장 보기' }).click();
     await assert320Layout(page);
   });
 
@@ -341,7 +341,7 @@ test.describe('단계별 주 행동·키보드·Axe', () => {
     await page.getByRole('button', { name: /후보 2:/ }).click();
     await assertOneOrFewerPrimaryActions(page);
     await page.getByRole('button', { name: '한 묶음 찾기' }).click();
-    await page.getByRole('button', { name: '다음 칸' }).click();
+    await page.getByRole('button', { name: '다음 활동: 이어 붙이기' }).click();
     await assertOneOrFewerPrimaryActions(page);
     await completeContinue(page);
     await assertOneOrFewerPrimaryActions(page);
@@ -359,23 +359,23 @@ test.describe('단계별 주 행동·키보드·Axe', () => {
 
     await tabActivate(page, page.getByRole('button', { name: /후보 2:/ }), 'Enter');
     await tabActivate(page, page.getByRole('button', { name: '한 묶음 찾기' }), 'Space');
-    await tabActivate(page, page.getByRole('button', { name: '다음 칸' }), 'Enter');
+    await tabActivate(page, page.getByRole('button', { name: '다음 활동: 이어 붙이기' }), 'Enter');
 
     await tabActivate(page, page.getByRole('button', { name: '나사못 한 칸' }), 'Space');
     await tabActivate(page, page.getByRole('button', { name: '이어 붙이기' }), 'Enter');
-    await tabActivate(page, page.getByRole('button', { name: '다음 칸' }), 'Space');
+    await tabActivate(page, page.getByRole('button', { name: '다음 활동: 규칙 수리하기' }), 'Space');
 
     await tabActivate(page, page.getByRole('button', { name: /다섯째 칸/ }), 'Enter');
     await tabActivate(page, page.getByRole('button', { name: '깃발 모양', exact: true }), 'Space');
     await tabActivate(page, page.getByRole('button', { name: '고치기' }), 'Enter');
-    await tabActivate(page, page.getByRole('button', { name: '다음 칸' }), 'Space');
+    await tabActivate(page, page.getByRole('button', { name: '다음 활동: 새 모양으로 바꾸기' }), 'Space');
 
     for (const [source, target] of [['전등', '바퀴'], ['깃발', '창문'], ['별', '기차']] as const) {
       await tabActivate(page, page.getByRole('button', { name: source, exact: true }), 'Enter');
       await tabActivate(page, page.getByRole('button', { name: target, exact: true }), 'Space');
     }
     await tabActivate(page, page.getByRole('button', { name: '같은 규칙 확인' }), 'Enter');
-    await tabActivate(page, page.getByRole('button', { name: '다음 칸' }), 'Space');
+    await tabActivate(page, page.getByRole('button', { name: '다음 활동: 내 규칙 만들기' }), 'Space');
 
     await tabActivate(page, page.getByRole('button', { name: '톱니바퀴 모양', exact: true }), 'Enter');
     await tabActivate(page, page.getByRole('button', { name: '나사못 모양', exact: true }), 'Space');
@@ -383,7 +383,7 @@ test.describe('단계별 주 행동·키보드·Axe', () => {
     await tabActivate(page, page.getByRole('button', { name: '한 묶음 붙이기' }), 'Space');
     await tabActivate(page, page.getByRole('button', { name: '한 묶음 붙이기' }), 'Enter');
     await tabActivate(page, page.getByRole('button', { name: '운행하기' }), 'Space');
-    await tabActivate(page, page.getByRole('button', { name: '다음 칸' }), 'Enter');
+    await tabActivate(page, page.getByRole('button', { name: '활동 도장 보기' }), 'Enter');
     await expect(page.getByRole('heading', { name: '활동 도장' })).toBeVisible();
   });
 
