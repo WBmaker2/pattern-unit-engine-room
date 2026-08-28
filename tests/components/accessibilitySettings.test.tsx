@@ -33,6 +33,52 @@ describe('접근성 설정', () => {
     expect(screen.getByRole('button', { name: COPY.settingsClose })).toBeInTheDocument();
   });
 
+  it('각 설정은 켜짐 또는 꺼짐을 글자로 보여 준다', () => {
+    render(
+      <AccessibilitySettings
+        settings={{ ...createInitialSession().settings, persistenceEnabled: true }}
+        onChange={() => {}}
+        onClose={() => {}}
+      />,
+    );
+    expect(screen.getAllByText('켜짐').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('꺼짐').length).toBeGreaterThan(0);
+  });
+
+  it('이어 하기를 끌 때 즉시 삭제하지 않고 확인 후 저장을 지운다', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <AccessibilitySettings
+        settings={{ ...createInitialSession().settings, persistenceEnabled: true }}
+        onChange={onChange}
+        onClose={() => {}}
+      />,
+    );
+    await user.click(screen.getByRole('switch', { name: '이 기기에서 이어 하기' }));
+    expect(screen.getByRole('alertdialog', { name: '이어 하기 끄기 확인' })).toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: '이어 하기 끄기' }));
+    expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ persistenceEnabled: false }));
+  });
+
+  it('이어 하기 끄기에서 계속 사용을 누르면 현재 상태를 유지한다', async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <AccessibilitySettings
+        settings={{ ...createInitialSession().settings, persistenceEnabled: true }}
+        onChange={onChange}
+        onClose={() => {}}
+      />,
+    );
+    await user.click(screen.getByRole('switch', { name: '이 기기에서 이어 하기' }));
+    await user.click(screen.getByRole('button', { name: '계속 사용' }));
+    expect(screen.queryByRole('alertdialog', { name: '이어 하기 끄기 확인' })).not.toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: '이 기기에서 이어 하기' })).toHaveAttribute('aria-checked', 'true');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('설정 토글은 새 설정을 전달하고 닫기 버튼은 닫는다', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

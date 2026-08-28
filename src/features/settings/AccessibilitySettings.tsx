@@ -1,4 +1,4 @@
-import { type ChangeEvent, type JSX } from 'react';
+import { useState, type ChangeEvent, type JSX } from 'react';
 
 import { COPY } from '../../content/copy';
 import type { AccessibilitySettings as Settings } from '../session/types';
@@ -22,14 +22,17 @@ export function resolveReducedMotion(
 interface SwitchProps {
   readonly name: string;
   readonly checked: boolean;
+  readonly stateLabel: string;
   readonly onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-function SettingSwitch({ name, checked, onChange }: SwitchProps): JSX.Element {
+function SettingSwitch({ name, checked, stateLabel, onChange }: SwitchProps): JSX.Element {
   return (
     <label className="settings-panel__switch">
       <span>{name}</span>
+      <span className="settings-panel__state">{stateLabel}</span>
       <input
+        aria-label={name}
         aria-checked={checked}
         checked={checked}
         onChange={onChange}
@@ -47,6 +50,7 @@ export function AccessibilitySettings({
   effectiveReducedMotion: effectiveReducedMotionProp,
   systemPrefersReduce,
 }: AccessibilitySettingsProps): JSX.Element {
+  const [confirmPersistenceOff, setConfirmPersistenceOff] = useState(false);
   const effectiveReducedMotion = effectiveReducedMotionProp
     ?? resolveReducedMotion(settings.motionPreference, systemPrefersReduce ?? false);
   const update = (key: keyof Settings, value: boolean | Settings['motionPreference'] | Settings['patternContrast']): void => {
@@ -61,11 +65,13 @@ export function AccessibilitySettings({
       <SettingSwitch
         checked={settings.audioEnabled}
         name={COPY.audioSetting}
+        stateLabel={settings.audioEnabled ? COPY.settingsOn : COPY.settingsOff}
         onChange={(event) => update('audioEnabled', event.currentTarget.checked)}
       />
       <SettingSwitch
         checked={settings.motionPreference === 'reduce'}
         name={COPY.motionSetting}
+        stateLabel={settings.motionPreference === 'reduce' ? COPY.settingsOn : COPY.settingsOff}
         onChange={(event) => update('motionPreference', event.currentTarget.checked ? 'reduce' : 'system')}
       />
       <p>{COPY.systemMotionNotice}</p>
@@ -73,13 +79,46 @@ export function AccessibilitySettings({
       <SettingSwitch
         checked={settings.patternContrast === 'strong'}
         name={COPY.patternContrastSetting}
+        stateLabel={settings.patternContrast === 'strong' ? COPY.settingsOn : COPY.settingsOff}
         onChange={(event) => update('patternContrast', event.currentTarget.checked ? 'strong' : 'standard')}
       />
       <SettingSwitch
         checked={settings.persistenceEnabled}
         name={COPY.persistenceSetting}
-        onChange={(event) => update('persistenceEnabled', event.currentTarget.checked)}
+        stateLabel={settings.persistenceEnabled ? COPY.settingsOn : COPY.settingsOff}
+        onChange={(event) => {
+          if (settings.persistenceEnabled && !event.currentTarget.checked) {
+            setConfirmPersistenceOff(true);
+            return;
+          }
+          update('persistenceEnabled', event.currentTarget.checked);
+        }}
       />
+      {confirmPersistenceOff ? (
+        <div
+          aria-label={COPY.persistenceOffTitle}
+          aria-modal="true"
+          className="settings-panel__confirmation"
+          role="alertdialog"
+        >
+          <h3>{COPY.persistenceOffTitle}</h3>
+          <p>{COPY.persistenceOffMessage}</p>
+          <div className="settings-panel__confirmation-actions">
+            <button
+              onClick={() => {
+                update('persistenceEnabled', false);
+                setConfirmPersistenceOff(false);
+              }}
+              type="button"
+            >
+              {COPY.persistenceOffConfirm}
+            </button>
+            <button onClick={() => setConfirmPersistenceOff(false)} type="button">
+              {COPY.persistenceOffCancel}
+            </button>
+          </div>
+        </div>
+      ) : null}
       <button onClick={onClose} type="button">{COPY.settingsClose}</button>
     </section>
   );

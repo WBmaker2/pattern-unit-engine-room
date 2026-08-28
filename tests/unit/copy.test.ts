@@ -103,7 +103,7 @@ describe('학습 문구', () => {
       patternContrastSetting: '무늬 대비 높이기',
       persistenceSetting: '이 기기에서 이어 하기',
       storageExplanation: '운행 위치와 접근성 설정만 이 기기에 저장해요.',
-      storageOffExplanation: '끄면 이 앱의 저장 내용을 바로 지워요.',
+      storageOffExplanation: '끄면 확인 후 이 앱의 저장 내용을 지워요.',
       systemMotionNotice: '기기에서 모션 줄이기를 켜면 함께 줄어들어요.',
       motionReducedNotice: '모션을 줄여서 보여 줘요.',
       motionDefaultNotice: '기본 모션으로 보여 줘요.',

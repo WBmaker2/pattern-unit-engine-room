@@ -76,22 +76,22 @@ async function completeGrayscaleJourney(page: Page): Promise<void> {
 
   await page.getByRole('button', { name: /후보 2:/ }).click();
   await page.getByRole('button', { name: '한 묶음 찾기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 이어 붙이기' }).click();
   await page.getByRole('button', { name: '나사못 한 칸' }).click();
   await page.getByRole('button', { name: '이어 붙이기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 규칙 수리하기' }).click();
 
   await page.getByRole('button', { name: /다섯째 칸/ }).click();
   await page.getByRole('button', { name: '깃발 모양', exact: true }).click();
   await page.getByRole('button', { name: '고치기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 새 모양으로 바꾸기' }).click();
 
   for (const [source, target] of [['전등', '바퀴'], ['깃발', '창문'], ['별', '기차']] as const) {
     await page.getByRole('button', { name: source, exact: true }).click();
     await page.getByRole('button', { name: target, exact: true }).click();
   }
   await page.getByRole('button', { name: '같은 규칙 확인' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '다음 활동: 내 규칙 만들기' }).click();
 
   await page.getByRole('button', { name: '톱니바퀴 모양', exact: true }).click();
   await page.getByRole('button', { name: '나사못 모양', exact: true }).click();
@@ -99,7 +99,7 @@ async function completeGrayscaleJourney(page: Page): Promise<void> {
   await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
   await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
   await page.getByRole('button', { name: '운행하기' }).click();
-  await page.getByRole('button', { name: '다음 칸' }).click();
+  await page.getByRole('button', { name: '활동 도장 보기' }).click();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -170,6 +170,27 @@ test('기본 저장은 꺼져 있고 동의하면 최소 PersistedProgressV1만 
   expect(Object.keys(value.snapshot).sort()).toEqual(['completedKinds', 'freeTrack', 'freeUnit', 'journeyIndex', 'stage']);
   expect(Object.keys(value.settings).sort()).toEqual(['audioEnabled', 'motionPreference', 'patternContrast']);
   expect(JSON.stringify(value)).not.toMatch(/name|photo|voice|record|score|speed|streak|rank|attempt|time/i);
+});
+
+test('이어 하기를 끌 때 확인 후 저장된 진행을 지운다', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: '접근성 설정' }).click();
+  const persistenceSwitch = page.getByRole('switch', { name: '이 기기에서 이어 하기' });
+  await persistenceSwitch.check();
+  await expect.poll(() => page.evaluate(() => Object.keys(localStorage))).toEqual([PROGRESS_KEY]);
+
+  await persistenceSwitch.click();
+  const confirmation = page.getByRole('alertdialog', { name: '이어 하기 끄기 확인' });
+  await expect(confirmation).toBeVisible();
+  expect(await page.evaluate((key) => localStorage.getItem(key), PROGRESS_KEY)).not.toBeNull();
+
+  await confirmation.getByRole('button', { name: '계속 사용' }).click();
+  expect(await persistenceSwitch.isChecked()).toBe(true);
+  expect(await page.evaluate((key) => localStorage.getItem(key), PROGRESS_KEY)).not.toBeNull();
+
+  await persistenceSwitch.click();
+  await confirmation.getByRole('button', { name: '이어 하기 끄기' }).click();
+  await expect.poll(() => page.evaluate(() => Object.keys(localStorage))).toEqual([]);
 });
 
 test('색을 회색조로 바꾸어도 visible label만으로 Journey 0을 완료한다', async ({ page }) => {
