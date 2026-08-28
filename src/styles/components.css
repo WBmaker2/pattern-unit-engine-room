@@ -140,6 +140,49 @@
   gap: var(--space-4);
 }
 
+.learning-stamp-list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.learning-stamp {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 3rem;
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  font-weight: 700;
+}
+
+.learning-stamp__mark {
+  display: grid;
+  flex: 0 0 2rem;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  border: 2px solid var(--color-success);
+  border-radius: 50%;
+  color: var(--color-success);
+  font-weight: 800;
+}
+
+.summary-screen__takeaway {
+  padding: var(--space-3);
+  border-inline-start: 0.35rem solid var(--color-accent);
+  background: var(--color-surface-muted);
+  font-weight: 700;
+}
+
+.summary-screen__next-prompt {
+  font-weight: 700;
+}
+
 .start-screen__actions,
 .settings-panel__switch {
   display: flex;

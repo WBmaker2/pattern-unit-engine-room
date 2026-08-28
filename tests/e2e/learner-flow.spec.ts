@@ -63,7 +63,11 @@ test('Journey 0을 드래그 없이 끝내고 다섯 활동 도장을 받는다'
   await page.getByRole('button', { name: '운행 시작' }).click();
   await completeJourneyZeroByVisibleLabels(page);
   await expect(page.getByRole('heading', { name: '활동 도장' })).toBeVisible();
-  await expect(page.getByRole('list', { name: '완료한 학습 행동' }).getByRole('listitem')).toHaveCount(5);
+  const stamps = page.getByRole('list', { name: '완료한 학습 행동' });
+  await expect(stamps.getByRole('listitem')).toHaveCount(5);
+  await expect(stamps.locator('.learning-stamp')).toHaveCount(5);
+  await expect(page.getByText('반복되는 한 묶음을 찾으면 다음 칸을 예측할 수 있어요.')).toBeVisible();
+  await expect(page.getByText('다음에는 다른 모양의 규칙도 찾아봐요.')).toBeVisible();
 });
 
 test('활동 도장에서 다음 Journey를 순환한다', async ({ page }) => {

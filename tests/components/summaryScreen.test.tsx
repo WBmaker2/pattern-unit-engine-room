@@ -18,10 +18,18 @@ describe('SummaryScreen', () => {
 
   it('shows exactly five ordered learning actions without competitive measures', () => {
     render(<SummaryScreen evidence={evidence} journeyIndex={0} onNextJourney={vi.fn()} onReturnHome={vi.fn()} />);
-    expect(screen.getAllByRole('listitem')).toHaveLength(5);
-    expect(screen.getByRole('list', { name: COPY.summaryListLabel })).toHaveTextContent(
-      `${COPY.evidenceUnit}${COPY.evidenceContinue}${COPY.evidenceRepair}${COPY.evidenceTranslate}${COPY.evidenceCreate}`,
-    );
+    const list = screen.getByRole('list', { name: COPY.summaryListLabel });
+    expect(list.querySelectorAll('.learning-stamp')).toHaveLength(5);
+    expect([...list.querySelectorAll('.learning-stamp > span:last-child')].map((item) => item.textContent)).toEqual([
+      COPY.evidenceUnit,
+      COPY.evidenceContinue,
+      COPY.evidenceRepair,
+      COPY.evidenceTranslate,
+      COPY.evidenceCreate,
+    ]);
+    expect(screen.getByText(COPY.summaryTakeaway)).toBeInTheDocument();
+    expect(screen.getByText(COPY.summaryNextPrompt)).toBeInTheDocument();
+    expect(list.querySelectorAll('.learning-stamp__mark[aria-hidden="true"]')).toHaveLength(5);
     expect(screen.queryByText(/\d+점|순위|\d+초|연속 정답/)).not.toBeInTheDocument();
     expect(screen.getAllByText(COPY.strategySummary)).toHaveLength(1);
   });
@@ -37,6 +45,7 @@ describe('SummaryScreen', () => {
       />,
     );
     expect(screen.getAllByRole('listitem')).toHaveLength(1);
+    expect(screen.getByRole('list', { name: COPY.summaryListLabel }).querySelectorAll('.learning-stamp')).toHaveLength(1);
     expect(screen.getByText(COPY.evidenceCreate)).toBeInTheDocument();
     expect(screen.queryByText('hidden-id')).not.toBeInTheDocument();
     const next = screen.getByRole('button', { name: COPY.nextJourney });

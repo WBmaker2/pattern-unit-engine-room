@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 
+import { LearningStampList } from '../../components/LearningStampList';
 import { PrimaryAction } from '../../components/PrimaryAction';
 import { InstructionCard } from '../../components/InstructionCard';
 import { COPY } from '../../content/copy';
@@ -37,15 +38,16 @@ export function SummaryScreen({
 }: SummaryScreenProps): JSX.Element {
   const completedKinds = new Set(evidence.map((item) => item.kind));
   const hasHint = evidence.some((item) => item.hintUsed);
+  const completedActions = EVIDENCE_ORDER
+    .filter((kind) => completedKinds.has(kind))
+    .map((kind) => EVIDENCE_COPY[kind]);
 
   return (
     <section aria-label={COPY.summaryTitle} className="summary-screen">
       <InstructionCard title={COPY.summaryTitle} cue="complete" audioEnabled={audioEnabled} />
-      <ul aria-label={COPY.summaryListLabel}>
-        {EVIDENCE_ORDER.filter((kind) => completedKinds.has(kind)).map((kind) => (
-          <li key={kind}>{EVIDENCE_COPY[kind]}</li>
-        ))}
-      </ul>
+      <LearningStampList items={completedActions} />
+      <p className="summary-screen__takeaway">{COPY.summaryTakeaway}</p>
+      <p className="summary-screen__next-prompt">{COPY.summaryNextPrompt}</p>
       {hasHint ? <p>{COPY.strategySummary}</p> : null}
       <PrimaryAction onClick={onNextJourney}>{COPY.nextJourney}</PrimaryAction>
       <button onClick={onReturnHome} type="button">{COPY.returnHome}</button>
