@@ -300,7 +300,10 @@ test.describe('모바일·확대·모션 접근성', () => {
     await page.getByRole('button', { name: '묶음 정하기' }).click();
     await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
     await page.getByRole('button', { name: '한 묶음 붙이기' }).click();
-    await page.getByRole('button', { name: '운행하기' }).click();
+    const runButton = page.getByRole('button', { name: '운행하기' });
+    await expect(runButton).toHaveClass(/gi-pulse/);
+    expect(await runButton.evaluate((element) => getComputedStyle(element).animationName)).toBe('none');
+    await runButton.click();
     const motion = await page.evaluate(() => ({
       trainTrackCount: document.querySelectorAll('.train-track--moving').length,
       animationNames: Array.from(document.querySelectorAll('.train-track--moving'))

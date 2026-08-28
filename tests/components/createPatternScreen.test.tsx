@@ -69,6 +69,7 @@ describe('CreatePatternScreen', () => {
           onReset,
           onRun,
           onContinue,
+          reducedMotion: true,
           feedback: { status: 'retry', reason: 'needs-second-repeat', hintVisible: false },
         })}
       />,
@@ -80,6 +81,7 @@ describe('CreatePatternScreen', () => {
     expect(screen.getByRole('button', { name: COPY.resetFreePattern })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: COPY.runFreePattern })).toHaveClass('gi-pulse');
     expect(screen.getByRole('button', { name: COPY.runFreePattern })).toBeEnabled();
+    expect(document.querySelectorAll('.pattern-cell--active')).toHaveLength(0);
 
     rerender(
       <CreatePatternScreen
@@ -103,7 +105,7 @@ describe('CreatePatternScreen', () => {
   it('allows only run to carry the pulse and leaves an empty track run disabled', () => {
     render(
       <CreatePatternScreen
-        {...props({ mode: 'track', unit: ['A', 'B'], track: [] })}
+        {...props({ mode: 'track', unit: ['A', 'B'], track: [], reducedMotion: true })}
       />,
     );
     const run = screen.getByRole('button', { name: COPY.runFreePattern });
@@ -111,6 +113,7 @@ describe('CreatePatternScreen', () => {
     expect(run).not.toHaveClass('gi-pulse');
     expect(document.querySelectorAll('.gi-pulse')).toHaveLength(0);
     expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(0);
+    expect(document.querySelectorAll('.pattern-cell--active')).toHaveLength(0);
   });
 
   it('자유 규칙 성공 시 실제 선로에 moving class를 붙인다', () => {
@@ -127,6 +130,7 @@ describe('CreatePatternScreen', () => {
     );
 
     expect(document.querySelector('.train-track--moving')).not.toBeNull();
+    expect(document.querySelectorAll('.pattern-cell--active')).toHaveLength(0);
   });
 
   it('reduced motion에서는 moving animation 없이 반복 칸 테두리를 표시한다', () => {
@@ -143,6 +147,11 @@ describe('CreatePatternScreen', () => {
     );
 
     expect(document.querySelector('.train-track--moving')).not.toBeNull();
-    expect(document.querySelectorAll('.pattern-cell--active').length).toBeGreaterThan(0);
+    const activeCells = Array.from(document.querySelectorAll('.pattern-cell--active'));
+    expect(activeCells).toHaveLength(2);
+    expect(activeCells.map((cell) => cell.getAttribute('aria-label'))).toEqual([
+      '첫째 칸, 톱니바퀴 모양, 점무늬',
+      '셋째 칸, 톱니바퀴 모양, 점무늬',
+    ]);
   });
 });

@@ -21,8 +21,7 @@ function getRepetitionLength(slots: readonly PatternTokenId[]): number | null {
   return null;
 }
 
-function getActiveIndices(slots: readonly PatternTokenId[], reducedMotion: boolean): readonly number[] {
-  if (!reducedMotion) return [];
+function getActiveIndices(slots: readonly PatternTokenId[]): readonly number[] {
   const repetitionLength = getRepetitionLength(slots);
   if (repetitionLength === null) return [];
   return Array.from(
@@ -39,11 +38,12 @@ export function AnimatedPatternTrack({
   label,
 }: AnimatedPatternTrackProps): JSX.Element {
   const className = isRunning ? 'train-track train-track--moving' : 'train-track';
+  const activeIndices = isRunning && reducedMotion ? getActiveIndices(slots) : [];
 
   return (
     <section aria-label={label} className={className}>
       <PatternBoard
-        activeIndices={getActiveIndices(slots, reducedMotion)}
+        activeIndices={activeIndices}
         slots={slots}
         themeId={themeId}
       />
