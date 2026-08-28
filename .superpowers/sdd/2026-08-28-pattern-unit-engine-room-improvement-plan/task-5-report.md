@@ -80,3 +80,31 @@
 
 - 첫 E2E 시도는 기존 helper가 현재 UI의 `다음 활동: ...` 라벨 대신 오래된 `다음 칸`을 기다려 30초 timeout이 났습니다. 해당 Task 5 테스트 경로를 현재 learner-facing 라벨로 맞춘 뒤 재실행해 통과했습니다.
 - 브라우저/OS VoiceOver 및 Safari 수동 게이트는 이 작업 범위에서 확인하지 않았습니다.
+
+## Review fix round 1
+
+리뷰에서 지적된 세 가지 사항을 반영했습니다.
+
+- `src/components/AnimatedPatternTrack.tsx`
+  - `isRunning && reducedMotion`일 때만 반복 단위 시작 인덱스를 계산하고 `PatternBoard`에 전달하도록 제한했습니다.
+  - 운행 전 및 retry 상태에서는 reduced-motion이어도 `.pattern-cell--active`가 0개이며, `.train-track--moving`은 성공 상태에서만 존재합니다.
+- `tests/components/createPatternScreen.test.tsx`
+  - `ABAB` 성공 트랙에서 active cell이 정확히 2개이고 렌더된 aria/index 계약상 첫째·셋째 칸(인덱스 0·2)인지 확인합니다.
+  - reduced-motion 운행 전/ retry 상태의 active cell 0개를 확인합니다.
+- `tests/e2e/accessibility.spec.ts`
+  - 실제 `운행하기` 버튼을 클릭하기 전에 `.gi-pulse`를 유지하는지, reduced-motion computed `animationName`이 `none`인지 확인합니다.
+  - CSS-only probe 없이 실제 운행 후 `.train-track--moving` 및 active outline 검증을 유지합니다.
+
+### Fix round 1 verification
+
+- `npm test -- tests/components/createPatternScreen.test.tsx tests/components/reducedMotion.test.tsx` — `2 passed`, `14 passed`.
+- `npm run test:e2e -- tests/e2e/accessibility.spec.ts --grep "모션 감소"` — `1 passed (1.8s)`.
+- `npm run lint` — 성공.
+- `npm run build` — 성공.
+- `npm run check:size` — 성공, source-size 1건 통과.
+- `git diff --check` — whitespace 오류 없음.
+
+### Fix round 1 commit
+
+- Commit: `ae68115aeb0717e91f0649cb1ef57b5ffd5a3bd0` (`fix: gate reduced motion track fallback`)
+- VoiceOver, push, deploy는 계속 수행하지 않았습니다.
