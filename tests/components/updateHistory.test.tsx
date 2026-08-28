@@ -72,6 +72,14 @@ describe('업데이트 내역', () => {
     const buttonBlock = styles.match(/\.update-history-button\s*\{([^{}]*)\}/)?.[1] ?? '';
 
     expect(appShellBlocks).toHaveLength(2);
+    expect(appShellBlocks[0]).toContain(
+      'padding-block-end: calc(var(--space-page) + env(safe-area-inset-bottom, 0px));',
+    );
+    expect(appShellBlocks[0]).not.toContain('4.5rem');
+    expect(appShellBlocks[1]).toContain(
+      'padding-block-end: calc(1rem + env(safe-area-inset-bottom, 0px));',
+    );
+    expect(appShellBlocks[1]).not.toContain('5rem');
     expect(footerBlock).toContain('display: flex;');
     expect(footerBlock).toContain('justify-content: flex-end;');
     expect(footerBlock).toContain('margin-block-start: var(--space-5);');

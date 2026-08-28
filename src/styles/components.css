@@ -1,7 +1,7 @@
 .app-shell {
   min-block-size: 100vh;
   padding: var(--space-page);
-  padding-block-end: calc(var(--space-page) + 4.5rem + env(safe-area-inset-bottom, 0px));
+  padding-block-end: calc(var(--space-page) + env(safe-area-inset-bottom, 0px));
 }
 
 .app-shell__content {
@@ -203,7 +203,7 @@
 @media (max-width: 36rem) {
   .app-shell {
     padding: 1rem;
-    padding-block-end: calc(5rem + env(safe-area-inset-bottom, 0px));
+    padding-block-end: calc(1rem + env(safe-area-inset-bottom, 0px));
   }
 
   .choice-grid__list > li {
