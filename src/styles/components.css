@@ -167,8 +167,19 @@
   text-align: end;
 }
 
+.settings-panel__confirmation-backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-3);
+  background: rgb(36 50 74 / 52%);
+}
+
 .settings-panel__confirmation {
   display: grid;
+  inline-size: min(100%, 32rem);
   gap: var(--space-2);
   padding: var(--space-3);
   border: 2px solid var(--color-border-strong);

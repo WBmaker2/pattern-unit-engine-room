@@ -63,7 +63,7 @@
 
 ## 커밋
 
-- 초기 구현 커밋: `a59032d fix: make accessibility settings explicit and safe`
+- 초기 구현 커밋: `51ca87d fix: make accessibility settings explicit and safe`
 
 ## 우려/보류
 
@@ -106,3 +106,43 @@
 
 - 구현 커밋: `714e1b5 fix: fail closed persistence disable and modal focus`
 - 보고서 전용 커밋: 이 문서 자체를 참조하는 해시는 self-reference를 피하기 위해 보고서에 삽입하지 않고 최종 전달 내용에 기록합니다.
+
+## Fix round 2
+
+### 리뷰 반영
+
+- confirmation alertdialog를 `react-dom` portal로 `document.body`에 렌더링해 inert 배경 밖에 두었습니다.
+- AppShell에 `modalOpen` 계약을 추가하고, 확인 패널이 열린 동안 실제 App의 `.app-shell__content`에 `inert`와 `aria-hidden`을 적용했습니다.
+- AppShell의 시작 버튼, 접근성 설정 버튼, 업데이트 내역 버튼을 Tab 대상에서 제외하고, 닫으면 원래 tabindex를 복원합니다.
+- 기존 확인 버튼 포커스, Escape/Tab 순환 및 persistence 스위치 포커스 복원을 유지했습니다.
+- 시작 화면과 footer 업데이트 버튼까지 차단하는 App 회귀 테스트를 추가했습니다.
+
+### Fix round 2 검증
+
+- RED: `npm test -- tests/components/accessibilitySettings.test.tsx`
+  - App 경로 회귀 테스트가 inert 배경 부재로 1건 실패했습니다.
+- 구현 후: `npm test -- tests/components/accessibilitySettings.test.tsx`
+  - 12 tests passed.
+- 저장/설정 집중 검증: `npm test -- tests/components/accessibilitySettings.test.tsx tests/unit/progressStore.test.ts`
+  - 2 files passed, 37 tests passed.
+- 개인정보 E2E: `npm run test:e2e -- tests/e2e/privacy.spec.ts`
+  - Chromium 4 tests passed.
+- 정적 검사: `npm run lint`
+  - 통과.
+- 빌드: `npm run build`
+  - TypeScript 및 Vite production build 통과.
+- 파일 크기: `npm run check:size`
+  - 통과.
+- `git diff --check`
+  - 공백 오류 없음.
+
+### Fix round 2 자체 검토
+
+- 모달 확인 중에는 실제 App의 시작/설정/업데이트 컨트롤이 pointer·keyboard 상호작용에서 inert 처리됩니다.
+- 모달이 취소 또는 승인으로 닫히면 배경 tabindex와 persistence 스위치 포커스가 복원됩니다.
+- portal backdrop는 기존 light mode 색상 토큰과 48px 버튼 제약을 사용합니다.
+- VoiceOver, push, deploy는 수행하지 않았으며 MachPortRendezvous 환경 오류도 발생하지 않았습니다.
+
+### Fix round 2 커밋
+
+- 구현 및 보고서 커밋: (최종 커밋 후 전달 내용에 기입)

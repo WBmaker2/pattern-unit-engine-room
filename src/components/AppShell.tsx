@@ -8,12 +8,14 @@ export interface AppShellProps {
   readonly children: ReactNode;
   readonly motion?: 'reduce' | 'full';
   readonly patternContrast?: 'standard' | 'strong';
+  readonly modalOpen?: boolean;
 }
 
 export function AppShell({
   children,
   motion = 'full',
   patternContrast = 'standard',
+  modalOpen = false,
 }: AppShellProps): JSX.Element {
   const [historyOpen, setHistoryOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -23,7 +25,7 @@ export function AppShell({
   useEffect(() => {
     const content = contentRef.current;
     if (!content) return;
-    if (!historyOpen) {
+    if (!historyOpen && !modalOpen) {
       content.removeAttribute('inert');
       return;
     }
@@ -45,7 +47,7 @@ export function AppShell({
         else element.setAttribute('tabindex', tabIndex);
       });
     };
-  }, [historyOpen]);
+  }, [historyOpen, modalOpen]);
 
   useEffect(() => {
     if (wasHistoryOpen.current && !historyOpen) triggerRef.current?.focus();
@@ -60,7 +62,7 @@ export function AppShell({
       data-pattern-contrast={patternContrast}
     >
       <div
-        aria-hidden={historyOpen || undefined}
+        aria-hidden={historyOpen || modalOpen || undefined}
         className="app-shell__content"
         ref={contentRef}
       >

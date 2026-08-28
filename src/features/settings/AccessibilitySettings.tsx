@@ -7,6 +7,7 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from 'react';
+import { createPortal } from 'react-dom';
 
 import { COPY } from '../../content/copy';
 import type { AccessibilitySettings as Settings } from '../session/types';
@@ -15,6 +16,7 @@ export interface AccessibilitySettingsProps {
   readonly settings: Settings;
   readonly onChange: (settings: Settings) => boolean | void;
   readonly onClose: () => void;
+  readonly onModalChange?: (open: boolean) => void;
   readonly effectiveReducedMotion?: boolean;
   readonly systemPrefersReduce?: boolean;
 }
@@ -59,6 +61,7 @@ export function AccessibilitySettings({
   settings,
   onChange,
   onClose,
+  onModalChange,
   effectiveReducedMotion: effectiveReducedMotionProp,
   systemPrefersReduce,
 }: AccessibilitySettingsProps): JSX.Element {
@@ -85,6 +88,12 @@ export function AccessibilitySettings({
     }
   }, [confirmPersistenceOff]);
 
+  useEffect(() => {
+    onModalChange?.(confirmPersistenceOff);
+  }, [confirmPersistenceOff, onModalChange]);
+
+  useEffect(() => () => onModalChange?.(false), [onModalChange]);
+
   const handleConfirmationKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
     if (event.key === 'Escape') {
       event.preventDefault();
@@ -104,7 +113,38 @@ export function AccessibilitySettings({
     }
   };
 
+  const confirmation = confirmPersistenceOff ? (
+    <div className="settings-panel__confirmation-backdrop" role="presentation">
+      <div
+        aria-label={COPY.persistenceOffTitle}
+        aria-modal="true"
+        className="settings-panel__confirmation"
+        onKeyDown={handleConfirmationKeyDown}
+        role="alertdialog"
+      >
+        <h3>{COPY.persistenceOffTitle}</h3>
+        <p>{COPY.persistenceOffMessage}</p>
+        <div className="settings-panel__confirmation-actions">
+          <button
+            ref={confirmButtonRef}
+            onClick={() => {
+              const result = update('persistenceEnabled', false);
+              if (result !== false) setConfirmPersistenceOff(false);
+            }}
+            type="button"
+          >
+            {COPY.persistenceOffConfirm}
+          </button>
+          <button ref={cancelButtonRef} onClick={() => setConfirmPersistenceOff(false)} type="button">
+            {COPY.persistenceOffCancel}
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   return (
+    <>
     <section aria-label={COPY.settingsTitle} className="settings-panel">
       <h2>{COPY.settingsTitle}</h2>
       <p>{COPY.storageExplanation}</p>
@@ -146,34 +186,9 @@ export function AccessibilitySettings({
           update('persistenceEnabled', event.currentTarget.checked);
         }}
       />
-      {confirmPersistenceOff ? (
-        <div
-          aria-label={COPY.persistenceOffTitle}
-          aria-modal="true"
-          className="settings-panel__confirmation"
-          onKeyDown={handleConfirmationKeyDown}
-          role="alertdialog"
-        >
-          <h3>{COPY.persistenceOffTitle}</h3>
-          <p>{COPY.persistenceOffMessage}</p>
-          <div className="settings-panel__confirmation-actions">
-            <button
-              ref={confirmButtonRef}
-              onClick={() => {
-                const result = update('persistenceEnabled', false);
-                if (result !== false) setConfirmPersistenceOff(false);
-              }}
-              type="button"
-            >
-              {COPY.persistenceOffConfirm}
-            </button>
-            <button ref={cancelButtonRef} onClick={() => setConfirmPersistenceOff(false)} type="button">
-              {COPY.persistenceOffCancel}
-            </button>
-          </div>
-        </div>
-      ) : null}
       <button disabled={confirmPersistenceOff} onClick={onClose} type="button">{COPY.settingsClose}</button>
     </section>
+    {confirmation && typeof document !== 'undefined' ? createPortal(confirmation, document.body) : null}
+    </>
   );
 }

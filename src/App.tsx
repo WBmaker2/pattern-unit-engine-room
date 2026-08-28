@@ -57,6 +57,7 @@ export default function App(): JSX.Element {
   const [progressStore] = useState<ProgressStore>(() => createProgressStore(getAvailableStorage()));
   const [state, dispatch] = useReducer(sessionReducer, progressStore, initializeSession);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsConfirmationOpen, setSettingsConfirmationOpen] = useState(false);
   const mission = selectCurrentMission(state);
   const canContinue = selectCanContinue(state);
   const reducedMotion = useEffectiveReducedMotion(state.settings.motionPreference);
@@ -90,6 +91,7 @@ export default function App(): JSX.Element {
   return (
     <AppShell
       motion={reducedMotion ? 'reduce' : 'full'}
+      modalOpen={settingsConfirmationOpen}
       patternContrast={state.settings.patternContrast}
     >
       <h1>{COPY.appTitle}</h1>
@@ -107,6 +109,7 @@ export default function App(): JSX.Element {
           settings={state.settings}
           onChange={updateSettings}
           onClose={() => setSettingsOpen(false)}
+          onModalChange={setSettingsConfirmationOpen}
         />
       ) : null}
       {state.stage === 'find' && mission?.kind === 'find' ? (

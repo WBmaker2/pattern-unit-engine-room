@@ -1,6 +1,6 @@
 import { useState, type JSX } from 'react';
 
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -176,6 +176,34 @@ describe('접근성 설정', () => {
     } finally {
       removeItem.mockRestore();
     }
+  });
+
+  it('App 경로에서 확인 패널이 열리면 시작 화면과 업데이트 버튼을 Tab 대상에서 제외한다', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole('button', { name: '접근성 설정' }));
+    const persistenceSwitch = screen.getByRole('switch', { name: '이 기기에서 이어 하기' });
+    await user.click(persistenceSwitch);
+    await user.click(persistenceSwitch);
+
+    const content = screen.getByRole('main').querySelector('.app-shell__content');
+    const startButton = Array.from(content?.querySelectorAll<HTMLButtonElement>('button') ?? [])
+      .find((button) => button.textContent === '운행 시작');
+    const settingsButton = Array.from(content?.querySelectorAll<HTMLButtonElement>('button') ?? [])
+      .find((button) => button.textContent === '접근성 설정');
+    const historyButton = Array.from(content?.querySelectorAll<HTMLButtonElement>('button') ?? [])
+      .find((button) => button.textContent === '업데이트 내역');
+    await waitFor(() => expect(content).toHaveAttribute('inert', ''));
+    expect(startButton).toHaveAttribute('tabindex', '-1');
+    expect(settingsButton).toHaveAttribute('tabindex', '-1');
+    expect(historyButton).toHaveAttribute('tabindex', '-1');
+
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(content).not.toHaveAttribute('inert'));
+    expect(startButton).not.toHaveAttribute('tabindex', '-1');
+    expect(settingsButton).not.toHaveAttribute('tabindex', '-1');
+    expect(historyButton).not.toHaveAttribute('tabindex', '-1');
+    expect(persistenceSwitch).toHaveFocus();
   });
 
   it('create-track 완료 상태를 새로고침해도 summary의 다음 행동에 도달한다', async () => {
