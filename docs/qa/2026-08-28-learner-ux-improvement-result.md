@@ -38,16 +38,22 @@ Task 9 전체 품질 게이트와 HVC 전달용 결과 기록입니다. Task 1�
 
    | 상태 | 결과 | 명령 | 소유 spec/test 및 실제 결과 |
    | --- | --- | --- | --- |
+   | lint | PASS | `npm run lint` | ESLint `--max-warnings=0` 통과 |
+   | source-size | PASS | `npm run check:size` | `tests/architecture/source-size.test.ts` 1 file / 1 test, 499줄 이하 계약 통과 |
    | source/type-check | PASS | `npm run build` (`tsc -b`) | TypeScript strict project check 통과 |
    | unit/component | PASS | `npm test` | Vitest 30 files / 192 tests 통과 |
    | production build | PASS | `npm run build` | Vite 65 modules transformed, production build 통과 |
    | browser E2E (sandbox) | 환경 차단 | `npm run test:e2e` | Chromium `MachPortRendezvous ... Permission denied (1100)`/`SIGTRAP`; 16개 0ms 실패 |
    | browser E2E (외부 실행) | PASS | `npm run test:e2e` | `tests/e2e/accessibility.spec.ts` 8/8, `tests/e2e/learner-flow.spec.ts` 3/3, `tests/e2e/privacy.spec.ts` 5/5; 전체 16/16 |
+   | learner Journey | PASS | `npm run test:e2e` | `tests/e2e/learner-flow.spec.ts` Journey 0 도장·다음 Journey·순환 3/3 |
    | privacy | PASS | 위 전체 E2E의 `tests/e2e/privacy.spec.ts` | 앱 origin/로컬 음원, 최소 저장·삭제 확인, grayscale Journey 0; 5/5 |
    | Axe | PASS | 위 전체 E2E의 `tests/e2e/accessibility.spec.ts` | `Find·Continue·Repair·Translate·Create·Summary의 Axe 위반이 0개다` (line 390), 1/1 |
    | keyboard | PASS | 위 전체 E2E의 `tests/e2e/accessibility.spec.ts` | `Tab으로 이동하고 Enter·Space로 Journey 0 전체를 완료한다` (line 356), 1/1 |
+   | selection-state persistence | PASS | `npm run test:e2e` | `tests/e2e/accessibility.spec.ts` `선택 후보는 포커스가 이동해도 선택 표시를 유지한다` (line 327), 1/1 |
+   | single primary action | PASS | `npm run test:e2e` | `tests/e2e/accessibility.spec.ts` `각 stage의 활성 주 행동은 최대 하나다` (line 338), 1/1 |
    | 320px | PASS | 위 전체 E2E의 `tests/e2e/accessibility.spec.ts` | 320px·390px 겹침/가로 넘침 및 48px 검사 (lines 114, 128), 2/2 |
    | 200% zoom | PASS | 위 전체 E2E의 `tests/e2e/accessibility.spec.ts` | 640px viewport 2배 페이지 배율 검사 (line 167), 1/1 |
+   | normal-motion runtime | PASS | `npm test` | `tests/components/createPatternScreen.test.tsx` `자유 규칙 성공 시 실제 선로에 moving class를 붙인다` (line 154), 1/1 |
    | reduced-motion | PASS | 위 전체 E2E의 `tests/e2e/accessibility.spec.ts` | 실제 운행의 moving track/정적 4px 테두리 검사 (line 279), 1/1 |
    | grayscale | PASS | 위 전체 E2E의 `tests/e2e/privacy.spec.ts` | `색을 회색조로 바꾸어도 visible label만으로 Journey 0을 완료한다` (line 222), 1/1 |
 
@@ -57,8 +63,8 @@ Task 9 전체 품질 게이트와 HVC 전달용 결과 기록입니다. Task 1�
    git diff --check
    PASS — whitespace 오류 없음
 
-   find src tests ... | sort -nr | head
-   PASS — 최대 파일 tests/e2e/accessibility.spec.ts 405줄 (모든 코드 파일 499줄 이하)
+   npm run check:size
+   PASS — tests/architecture/source-size.test.ts 1 file / 1 test; 499줄 이하 계약 통과
    ```
 
 ## Public learner URL
