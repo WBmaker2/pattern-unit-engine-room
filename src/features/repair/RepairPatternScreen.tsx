@@ -5,8 +5,9 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PatternStrip } from '../../components/PatternStrip';
-import { ProgressIndicator } from '../../components/ProgressIndicator';
 import { PrimaryAction } from '../../components/PrimaryAction';
+import { StageHeader } from '../../components/StageHeader';
+import { ActionRail } from '../../components/ActionRail';
 import { COPY, formatTokenShape } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
 import type { RepairMission } from '../../content/missions/types';
@@ -51,8 +52,8 @@ export function RepairPatternScreen({
 
   return (
     <section aria-label={COPY.repairTitle} className="repair-screen">
-      <InstructionCard title={COPY.repairTitle} cue="repair" audioEnabled={audioEnabled} />
-      <ProgressIndicator current={3} total={5} />
+      <StageHeader eyebrow="3단계" title={COPY.repairTitle} instruction={COPY.repairInstruction} current={3} total={5} />
+      <InstructionCard cue="repair" audioEnabled={audioEnabled} showTranscript={false} />
       <PatternBoard
         slots={mission.brokenSequence}
         themeId={mission.themeId}
@@ -74,18 +75,14 @@ export function RepairPatternScreen({
       {feedback !== null ? (
         <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} />
       ) : null}
-      {isSuccess ? (
-        <button onClick={onContinue} type="button">{COPY.nextTranslateStage}</button>
-      ) : (
-        <PrimaryAction
+      <ActionRail primary={isSuccess ? <PrimaryAction onClick={onContinue}>{COPY.nextTranslateStage}</PrimaryAction> : <PrimaryAction
           disabled={selectedIndex === null || replacement === null}
           onClick={() => {
             if (replacement !== null) onSubmit(replacement);
           }}
         >
           {COPY.repairSubmit}
-        </PrimaryAction>
-      )}
+        </PrimaryAction>} />
     </section>
   );
 }

@@ -10,6 +10,7 @@ export interface InstructionCardProps {
   readonly title?: string;
   readonly cue?: AudioCue;
   readonly audioEnabled?: boolean;
+  readonly showTranscript?: boolean;
 }
 
 const DEFAULT_INSTRUCTION = '안내를 읽고 차례로 해 보세요.';
@@ -36,7 +37,8 @@ export function InstructionCard({
   title,
   cue,
   audioEnabled = false,
-}: InstructionCardProps): JSX.Element {
+  showTranscript = true,
+}: InstructionCardProps): JSX.Element | null {
   const transcript = cue === undefined ? undefined : getAudioTranscript(cue);
   const visibleText = transcript !== undefined
     ? transcript
@@ -45,12 +47,17 @@ export function InstructionCard({
     : hasVisibleContent(text)
       ? text
       : transcript ?? DEFAULT_INSTRUCTION;
+  const hasAudioControl = audioEnabled && cue !== undefined;
+
+  // StageHeader owns the visible instruction. Do not leave an empty card
+  // behind when audio is disabled and the transcript is intentionally hidden.
+  if (!showTranscript && !hasAudioControl && title === undefined) return null;
 
   return (
     <div className="instruction-card">
       {title !== undefined ? <h2>{title}</h2> : null}
-      <p>{visibleText}</p>
-      {audioEnabled && cue !== undefined ? (
+      {showTranscript ? <p>{visibleText}</p> : null}
+      {hasAudioControl ? (
         <>
           <AudioGuideButton cue={cue} />
           <p>{COPY.audioDisclosure}</p>

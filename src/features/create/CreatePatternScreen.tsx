@@ -5,7 +5,8 @@ import { AnimatedPatternTrack } from '../../components/AnimatedPatternTrack';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PrimaryAction } from '../../components/PrimaryAction';
-import { ProgressIndicator } from '../../components/ProgressIndicator';
+import { StageHeader } from '../../components/StageHeader';
+import { ActionRail } from '../../components/ActionRail';
 import { COPY, formatTokenShape } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
 import type { PatternTokenId, PatternUnit } from '../../domain/pattern/types';
@@ -50,7 +51,7 @@ function UnitMode({ props }: { readonly props: CreatePatternScreenProps }): JSX.
   const { unit, feedback } = props;
   return (
     <>
-      <InstructionCard title={COPY.createUnitTitle} cue="create" audioEnabled={props.audioEnabled ?? false} />
+      <InstructionCard title={COPY.createUnitTitle} cue="create" audioEnabled={props.audioEnabled ?? false} showTranscript={false} />
       <fieldset>
         <legend>{COPY.createTokenChoices}</legend>
         {TOKEN_IDS.map((token) => (
@@ -68,9 +69,7 @@ function UnitMode({ props }: { readonly props: CreatePatternScreenProps }): JSX.
       <button disabled={unit.length === 0} onClick={props.onRemoveToken} type="button">
         {COPY.removeFreeToken}
       </button>
-      <PrimaryAction disabled={unit.length === 0} onClick={props.onLockUnit}>
-        {COPY.lockFreeUnit}
-      </PrimaryAction>
+      <ActionRail primary={<PrimaryAction disabled={unit.length === 0} onClick={props.onLockUnit}>{COPY.lockFreeUnit}</PrimaryAction>} />
       {feedback !== null ? <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} /> : null}
     </>
   );
@@ -82,7 +81,7 @@ function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX
   const canAppendUnit = track.length + props.unit.length <= props.maxTrackTokens;
   return (
     <>
-      <InstructionCard title={COPY.createTrackTitle} cue="create" audioEnabled={props.audioEnabled ?? false} />
+      <InstructionCard title={COPY.createTrackTitle} cue="create" audioEnabled={props.audioEnabled ?? false} showTranscript={false} />
       <Board label={COPY.freeUnitBoardLabel} tokens={props.unit} />
       <AnimatedPatternTrack
         isRunning={isSuccess}
@@ -95,24 +94,11 @@ function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX
         {track.length} / {props.maxTrackTokens}
       </p>
       {!canAppendUnit ? <p role="status">{COPY.freeTrackLimit}</p> : null}
-      <button disabled={!canAppendUnit} onClick={props.onAppendUnit} type="button">
-        {COPY.appendFreeUnit}
-      </button>
-      <button onClick={props.onReset} type="button">
-        {COPY.resetFreePattern}
-      </button>
+      <ActionRail
+        primary={isSuccess ? <PrimaryAction onClick={props.onContinue}>{COPY.summaryTitle} 보기</PrimaryAction> : <PrimaryAction disabled={track.length === 0} onClick={props.onRun} pulseKind="run">{COPY.runFreePattern}</PrimaryAction>}
+        secondary={<><button disabled={!canAppendUnit} onClick={props.onAppendUnit} type="button">{COPY.appendFreeUnit}</button><button onClick={props.onReset} type="button">{COPY.resetFreePattern}</button></>}
+      />
       {feedback !== null ? <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} /> : null}
-      {isSuccess ? (
-        <button onClick={props.onContinue} type="button">{COPY.summaryTitle} 보기</button>
-      ) : (
-        <PrimaryAction
-          disabled={track.length === 0}
-          onClick={props.onRun}
-          pulseKind="run"
-        >
-          {COPY.runFreePattern}
-        </PrimaryAction>
-      )}
     </>
   );
 }
@@ -120,8 +106,7 @@ function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX
 export function CreatePatternScreen(props: CreatePatternScreenProps): JSX.Element {
   return (
     <section aria-label={COPY.createTitle} className="create-screen">
-      <h2>{COPY.createTitle}</h2>
-      <ProgressIndicator current={5} total={5} />
+      <StageHeader eyebrow="5단계" title={COPY.createTitle} instruction={COPY.createInstruction} current={5} total={5} />
       {props.mode === 'unit' ? <UnitMode props={props} /> : <TrackMode props={props} />}
     </section>
   );

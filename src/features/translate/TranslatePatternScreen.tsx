@@ -6,7 +6,8 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PrimaryAction } from '../../components/PrimaryAction';
-import { ProgressIndicator } from '../../components/ProgressIndicator';
+import { StageHeader } from '../../components/StageHeader';
+import { ActionRail } from '../../components/ActionRail';
 import { TokenIcon } from '../../components/TokenIcon';
 import { COPY, formatOriginalToken, formatTokenShape } from '../../content/copy';
 import {
@@ -70,8 +71,8 @@ export function TranslatePatternScreen({
 
   return (
     <section aria-label={COPY.translateTitle} className="translate-screen">
-      <InstructionCard title={COPY.translateTitle} cue="translate" audioEnabled={audioEnabled} />
-      <ProgressIndicator current={4} total={5} />
+      <StageHeader eyebrow="4단계" title={COPY.translateTitle} instruction={COPY.translateInstruction} current={4} total={5} />
+      <InstructionCard cue="translate" audioEnabled={audioEnabled} showTranscript={false} />
       <PatternBoard slots={mission.sourceSequence} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.translationSourceLabel}
@@ -122,18 +123,14 @@ export function TranslatePatternScreen({
       {feedback !== null ? (
         <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} />
       ) : null}
-      {isSuccess ? (
-        <button onClick={onContinue} type="button">{COPY.nextCreateStage}</button>
-      ) : (
-        <PrimaryAction
+      <ActionRail primary={isSuccess ? <PrimaryAction onClick={onContinue}>{COPY.nextCreateStage}</PrimaryAction> : <PrimaryAction
           disabled={!translatedComplete}
           onClick={() => {
             if (translatedComplete) onSubmit(draftPairs, translated);
           }}
         >
           {COPY.translateSubmit}
-        </PrimaryAction>
-      )}
+        </PrimaryAction>} />
     </section>
   );
 }

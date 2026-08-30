@@ -1,7 +1,7 @@
 @keyframes gi-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 45%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-action) 45%, transparent);
   }
 
   50% {

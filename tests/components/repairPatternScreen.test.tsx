@@ -59,7 +59,7 @@ describe('RepairPatternScreen', () => {
     await user.keyboard('{Enter}');
     expect(screen.getByText('규칙을 깨뜨린 칸을 고쳤어요.')).toBeInTheDocument();
     expect(submit).not.toHaveClass('gi-pulse');
-    expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(0);
+    expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(1);
   });
 
   it('맞는 위치에서 틀린 교체 항을 고르면 답을 노출하지 않는다', async () => {

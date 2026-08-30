@@ -13,9 +13,9 @@ describe('업데이트 내역', () => {
 
   it('최신 업데이트 날짜와 개선 요약이 기록된다', () => {
     expect(UPDATE_HISTORY[0]).toMatchObject({
-      date: '2026-08-28',
+      date: '2026-08-30',
       kind: '개선',
-      summary: '초등학생 관점 모바일·선택·운행 피드백 개선',
+      summary: '설정 닫기 포커스 복귀와 의미 토큰을 보강하고 모바일 가로 넘침을 확인했어요',
     });
   });
 
@@ -30,7 +30,9 @@ describe('업데이트 내역', () => {
     const dialog = screen.getByRole('dialog', { name: '업데이트 내역' });
     expect(dialog).toHaveAttribute('id', 'update-history-dialog');
     expect(within(dialog).getAllByText('2026-08-26')).toHaveLength(2);
+    expect(within(dialog).getByText('2026-08-30')).toBeInTheDocument();
     expect(within(dialog).getByText('2026-08-28')).toBeInTheDocument();
+    expect(within(dialog).getByText('2026-08-29')).toBeInTheDocument();
     expect(within(dialog).getByText('2026-08-27')).toBeInTheDocument();
     expect(
       within(dialog).getByText('초등학생 관점 모바일·선택·운행 피드백 개선'),
@@ -46,6 +48,16 @@ describe('업데이트 내역', () => {
 
   it('최신 개선 기록과 기존 기록의 순서를 지키며 중복이 없다', () => {
     expect(UPDATE_HISTORY).toEqual([
+      {
+        date: '2026-08-30',
+        kind: '개선',
+        summary: '설정 닫기 포커스 복귀와 의미 토큰을 보강하고 모바일 가로 넘침을 확인했어요',
+      },
+      {
+        date: '2026-08-29',
+        kind: '개선',
+        summary: '학습 여정·행동 레일·출발 화면 계층을 정리하고 피드백을 강화했어요',
+      },
       {
         date: '2026-08-28',
         kind: '개선',
@@ -71,12 +83,14 @@ describe('업데이트 내역', () => {
     const keys = UPDATE_HISTORY.map(({ date, kind, summary }) => `${date}:${kind}:${summary}`);
     expect(new Set(keys).size).toBe(keys.length);
     expect(UPDATE_HISTORY.map((entry) => entry.date)).toEqual([
+      '2026-08-30',
+      '2026-08-29',
       '2026-08-28',
       '2026-08-27',
       '2026-08-26',
       '2026-08-26',
     ]);
-    expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개선', '개선', '개발', '설계']);
+    expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개선', '개선', '개선', '개선', '개발', '설계']);
   });
 
   it('콘텐츠 footer의 업데이트 버튼이 inline 배치 계약을 지킨다', async () => {

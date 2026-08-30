@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState, type JSX, type ReactNode } from 'react';
+import { Children, useEffect, useRef, useState, type JSX, type ReactNode } from 'react';
 
 import { UPDATE_HISTORY } from '../content/updateHistory';
 import { UpdateHistoryButton } from './UpdateHistoryButton';
 import { UpdateHistoryDialog } from './UpdateHistoryDialog';
+import type { JourneyProgressItem } from '../features/session/selectors';
+import { LearningJourney } from './LearningJourney';
 
 export interface AppShellProps {
   readonly children: ReactNode;
   readonly motion?: 'reduce' | 'full';
   readonly patternContrast?: 'standard' | 'strong';
   readonly modalOpen?: boolean;
+  readonly journeyItems?: readonly JourneyProgressItem[];
 }
 
 export function AppShell({
@@ -16,11 +19,13 @@ export function AppShell({
   motion = 'full',
   patternContrast = 'standard',
   modalOpen = false,
+  journeyItems = [],
 }: AppShellProps): JSX.Element {
   const [historyOpen, setHistoryOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const wasHistoryOpen = useRef(false);
+  const [heading, ...body] = Children.toArray(children);
 
   useEffect(() => {
     const content = contentRef.current;
@@ -66,7 +71,9 @@ export function AppShell({
         className="app-shell__content"
         ref={contentRef}
       >
-        {children}
+        {heading}
+        {journeyItems.length > 0 ? <LearningJourney items={journeyItems} /> : null}
+        {body}
         <div className="app-shell__footer">
           <UpdateHistoryButton
             ariaControls="update-history-dialog"

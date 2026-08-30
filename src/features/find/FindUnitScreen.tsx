@@ -5,8 +5,9 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PatternStrip } from '../../components/PatternStrip';
-import { ProgressIndicator } from '../../components/ProgressIndicator';
 import { PrimaryAction } from '../../components/PrimaryAction';
+import { StageHeader } from '../../components/StageHeader';
+import { ActionRail } from '../../components/ActionRail';
 import { COPY, formatFindCandidate } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
 import type { FindMission } from '../../content/missions/types';
@@ -50,8 +51,8 @@ export function FindUnitScreen({
 
   return (
     <section aria-label={COPY.findTitle} className="find-screen">
-      <InstructionCard title={COPY.findTitle} cue="find" audioEnabled={audioEnabled} />
-      <ProgressIndicator current={1} total={5} />
+      <StageHeader eyebrow="1단계" title={COPY.findTitle} instruction={COPY.findInstruction} current={1} total={5} />
+      <InstructionCard cue="find" audioEnabled={audioEnabled} showTranscript={false} />
       <PatternBoard slots={mission.sequence} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.findChoicesLabel}
@@ -81,17 +82,9 @@ export function FindUnitScreen({
           ) : null}
         </FeedbackPanel>
       ) : null}
-      {feedback?.status === 'retry' && !feedback.hintVisible ? (
-        <button onClick={onHint} type="button">
-          {COPY.findHintAction}
-        </button>
-      ) : null}
-      {isSuccess ? (
-        <button onClick={onContinue} type="button">
+      <ActionRail primary={isSuccess ? <PrimaryAction onClick={onContinue}>
           {COPY.nextContinueStage}
-        </button>
-      ) : (
-        <PrimaryAction
+        </PrimaryAction> : <PrimaryAction
           disabled={selected === undefined}
           onClick={() => {
             if (selected !== undefined) onSubmit(selected);
@@ -99,8 +92,7 @@ export function FindUnitScreen({
           pulseKind="find-unit"
         >
           {COPY.findSubmit}
-        </PrimaryAction>
-      )}
+        </PrimaryAction>} secondary={feedback?.status === 'retry' && !feedback.hintVisible ? <button onClick={onHint} type="button">{COPY.findHintAction}</button> : undefined} />
     </section>
   );
 }
