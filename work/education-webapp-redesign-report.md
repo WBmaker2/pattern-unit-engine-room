@@ -4,7 +4,20 @@
 
 기존 `규칙 단위 기관실`의 반복 판정·미션·로컬 저장을 건드리지 않고, 학습 여정이 보이고 다음 행동을 찾기 쉬운 화면 계층으로 리디자인했다. 시작 화면과 모든 학습 단계에 공통 여정 지도와 단계 헤더를 적용했고, 주요 제출·성공 이동·보조 행동을 `ActionRail`로 정리했다. 오답/성공 피드백은 상태 제목과 이유, 다음 행동을 함께 보여 준다. 설정 패널을 닫을 때 원래 버튼으로 포커스를 돌려 키보드 흐름도 보완했다.
 
-이번 작업에서는 커밋, 푸시, GitHub 저장소 변경, Pages 배포, HVC 등록·동기화를 실행하지 않았다.
+구현 변경은 `53fb790` 커밋으로 푸시했고, [PR #1](https://github.com/WBmaker2/pattern-unit-engine-room/pull/1)을 squash merge하여 `main`의 `f14c6f2d293fc0c3171543093b64ef9db78de685`에 반영했다. [Quality 검증](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33292349396)과 [GitHub Pages 배포](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33292349442)는 모두 성공했다. 공개 학습자 주소는 [규칙 단위 기관실 GitHub Pages](https://wbmaker2.github.io/pattern-unit-engine-room/)다. HVC 등록·동기화는 실행하지 않았다.
+
+## 커밋·푸시·배포 결과
+
+| 항목 | 결과 |
+|---|---|
+| 기능 커밋 | `53fb790 feat: redesign pattern learner journey` |
+| Pull Request | [#1 feat: redesign pattern learner journey](https://github.com/WBmaker2/pattern-unit-engine-room/pull/1), merged 2026-08-30 |
+| `main` 병합 커밋 | `f14c6f2d293fc0c3171543093b64ef9db78de685` |
+| `main` Quality workflow | [run 33292349396](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33292349396), PASS |
+| Pages Deploy workflow | [run 33292349442](https://github.com/WBmaker2/pattern-unit-engine-room/actions/runs/33292349442), PASS |
+| 공개 URL | [https://wbmaker2.github.io/pattern-unit-engine-room/](https://wbmaker2.github.io/pattern-unit-engine-room/) |
+
+Pages 배포 run은 빌드와 배포 job을 모두 통과했고 공개 주소는 HTTP 200으로 응답했다. 워크플로 로그에는 Node.js 20 actions deprecation 안내가 annotation으로 남았지만 현재 릴리스를 막는 오류는 아니다.
 
 ## 설계 요구사항 연결
 
@@ -80,7 +93,8 @@ Playwright E2E는 프로젝트 개발 서버를 격리 포트에서 실행해 �
 - 업데이트 대화상자 닫기 뒤 업데이트 버튼이 포커스를 가짐
 - 390px/1280px에서 `scrollWidth === clientWidth`; 390px 시작 캡처에서 CTA가 첫 화면 안에 보임
 - 시작 제목 중복 없음, 비활성 제출 버튼에 활성 primary marker 없음
-- 브라우저 콘솔 `Errors: 0`, `Warnings: 0`; 정적 요청은 `127.0.0.1:5181` 동일 출처뿐
+- 로컬 브라우저 콘솔 `Errors: 0`, `Warnings: 0`; 로컬 정적 요청은 `127.0.0.1:5181` 동일 출처뿐
+- 공개 Pages 브라우저에서도 제목 `규칙 단위 기관실`, 첫 미션 `한 묶음 찾기`, 정답 피드백 `잘했어요`를 확인했다. 390px 공개 화면의 `scrollWidth`와 `clientWidth`는 각각 390이며, 콘솔 `Errors: 0`, `Warnings: 0`, 요청 4건은 모두 `https://wbmaker2.github.io/pattern-unit-engine-room/` 동일 출처였다.
 
 캡처 파일은 검토용으로 [start-390.png](../output/playwright/redesign/start-390.png), [start-1280.png](../output/playwright/redesign/start-1280.png), [find-1280.png](../output/playwright/redesign/find-1280.png), [find-success-1280.png](../output/playwright/redesign/find-success-1280.png)에 남겼다. 이는 프로젝트 런타임 자산으로 참조하지 않는다.
 
@@ -98,6 +112,6 @@ Playwright E2E는 프로젝트 개발 서버를 격리 포트에서 실행해 �
 
 ## 롤백
 
-아직 커밋하지 않았으므로 현재 작업 트리에서 리디자인 변경을 되돌릴 때는 변경 파일을 기존 `HEAD`와 비교해 필요한 파일만 복원한다. `work/`와 `design-system/` 문서는 감사·계획 이력으로 보존한다. 롤백 명령, 커밋, 푸시, 배포는 사용자 승인 이후에만 실행한다.
+현재 `main`에는 `f14c6f2d293fc0c3171543093b64ef9db78de685`가 배포되어 있다. 문제가 확인되면 해당 커밋을 기준으로 별도 수정 커밋을 만들고 Quality workflow와 Pages 배포를 다시 통과시킨 뒤 공개 URL에서 회귀를 확인한다. `work/`와 `design-system/` 문서는 감사·계획 이력으로 보존한다.
 
-기존 공개 빌드(이번 변경 미반영): [규칙 단위 기관실](https://wbmaker2.github.io/pattern-unit-engine-room/)
+현재 공개 빌드: [규칙 단위 기관실](https://wbmaker2.github.io/pattern-unit-engine-room/)
