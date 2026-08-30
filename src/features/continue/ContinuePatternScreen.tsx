@@ -5,8 +5,9 @@ import { FeedbackPanel } from '../../components/FeedbackPanel';
 import { InstructionCard } from '../../components/InstructionCard';
 import { PatternBoard } from '../../components/PatternBoard';
 import { PatternStrip } from '../../components/PatternStrip';
-import { ProgressIndicator } from '../../components/ProgressIndicator';
 import { PrimaryAction } from '../../components/PrimaryAction';
+import { StageHeader } from '../../components/StageHeader';
+import { ActionRail } from '../../components/ActionRail';
 import { COPY, formatUnitChoice } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
 import type { ContinueMission } from '../../content/missions/types';
@@ -49,8 +50,8 @@ export function ContinuePatternScreen({
 
   return (
     <section aria-label={COPY.continueTitle} className="continue-screen">
-      <InstructionCard title={COPY.continueTitle} cue="continue" audioEnabled={audioEnabled} />
-      <ProgressIndicator current={2} total={5} />
+      <StageHeader eyebrow="2단계" title={COPY.continueTitle} instruction={COPY.continueInstruction} current={2} total={5} />
+      <InstructionCard cue="continue" audioEnabled={audioEnabled} showTranscript={false} />
       <PatternBoard slots={mission.slots} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.continueChoicesLabel}
@@ -64,20 +65,16 @@ export function ContinuePatternScreen({
       {feedback !== null ? (
         <FeedbackPanel status={feedback.status} message={feedbackMessage(feedback)} />
       ) : null}
-      {isSuccess ? (
-        <button onClick={onContinue} type="button">
+      <ActionRail primary={isSuccess ? <PrimaryAction onClick={onContinue}>
           {COPY.nextRepairStage}
-        </button>
-      ) : (
-        <PrimaryAction
+        </PrimaryAction> : <PrimaryAction
           disabled={selected === undefined}
           onClick={() => {
             if (selected !== undefined) onSubmit(selected);
           }}
         >
           {COPY.continueSubmit}
-        </PrimaryAction>
-      )}
+        </PrimaryAction>} />
     </section>
   );
 }

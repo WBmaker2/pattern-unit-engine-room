@@ -77,8 +77,8 @@ describe('CreatePatternScreen', () => {
       />,
     );
 
-    expect(screen.getAllByRole('status')).toHaveLength(1);
-    expect(screen.getByRole('status')).toHaveTextContent('현재 단계 5 / 5');
+    expect(screen.getAllByRole('status')).toHaveLength(2);
+    expect(screen.getByText('현재 단계 5 / 5')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: COPY.appendFreeUnit })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: COPY.resetFreePattern })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: COPY.runFreePattern })).toHaveClass('gi-pulse');

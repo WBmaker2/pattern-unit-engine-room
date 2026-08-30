@@ -5,6 +5,7 @@ import { PrimaryAction } from '../../components/PrimaryAction';
 import { InstructionCard } from '../../components/InstructionCard';
 import { COPY } from '../../content/copy';
 import type { LearningEvidence } from '../session/types';
+import { ActionRail } from '../../components/ActionRail';
 
 export interface SummaryScreenProps {
   readonly evidence: readonly LearningEvidence[];
@@ -49,8 +50,10 @@ export function SummaryScreen({
       <p className="summary-screen__takeaway">{COPY.summaryTakeaway}</p>
       <p className="summary-screen__next-prompt">{COPY.summaryNextPrompt}</p>
       {hasHint ? <p>{COPY.strategySummary}</p> : null}
-      <PrimaryAction onClick={onNextJourney}>{COPY.nextJourney}</PrimaryAction>
-      <button onClick={onReturnHome} type="button">{COPY.returnHome}</button>
+      <ActionRail
+        primary={<PrimaryAction onClick={onNextJourney}>{COPY.nextJourney}</PrimaryAction>}
+        secondary={<button onClick={onReturnHome} type="button">{COPY.returnHome}</button>}
+      />
     </section>
   );
 }

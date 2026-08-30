@@ -93,11 +93,18 @@ GitHub Pages 공개 주소는 [https://wbmaker2.github.io/pattern-unit-engine-ro
 - 상대 링크: [접근성·개인정보 완료 검증 체크리스트](docs/qa/2026-08-26-accessibility-checklist.md)
 - 저장소 기준 절대 경로: `/docs/qa/2026-08-26-accessibility-checklist.md`
 
-Task 15 이후 현재 Chromium 자동 E2E 16건과 unit/component 포함 전체 테스트 192건을 통과했습니다. 이는 VoiceOver 검증 결과가 아니며, 이 개선 범위에서는 VoiceOver 수동 검증을 수행하지 않습니다.
+이번 리디자인 이후 Chromium 자동 E2E 16건과 unit/component 포함 전체 테스트 204건을 통과했습니다. 이는 VoiceOver 검증 결과가 아니며, 이 개선 범위에서는 VoiceOver 수동 검증을 수행하지 않습니다.
 
 ## 업데이트 내역
 
-화면 오른쪽 아래의 작은 `업데이트 내역` 버튼에서 설계·개발·개선 날짜와 요약을 확인할 수 있습니다. 현재 개선 날짜는 2026-08-28이며, 날짜가 바뀌는 수정은 같은 파일과 관련 테스트의 날짜를 함께 갱신합니다.
+화면 오른쪽 아래의 작은 `업데이트 내역` 버튼에서 설계·개발·개선 날짜와 요약을 확인할 수 있습니다. 현재 개선 날짜는 2026-08-30이며, 날짜가 바뀌는 수정은 같은 파일과 관련 테스트의 날짜를 함께 갱신합니다.
+
+리디자인 계획·감사·자산 검토·검증 결과는 다음 문서에 기록되어 있습니다.
+
+- [리디자인 실행 계획](work/education-webapp-redesign-plan.md)
+- [초기 UX·접근성 감사](work/education-webapp-redesign-audit.md)
+- [자산 안전 검토](work/education-webapp-redesign-assets.md)
+- [리디자인 검증 보고서](work/education-webapp-redesign-report.md)
 
 ## 범위
 

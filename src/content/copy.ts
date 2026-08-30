@@ -109,6 +109,14 @@ export const COPY = Object.freeze({
   motionDefaultNotice: '기본 모션으로 보여 줘요.',
 } as const);
 
+export const STAGE_META = Object.freeze({
+  find: { title: COPY.findTitle, instruction: COPY.findInstruction },
+  continue: { title: COPY.continueTitle, instruction: COPY.continueInstruction },
+  repair: { title: COPY.repairTitle, instruction: COPY.repairInstruction },
+  translate: { title: COPY.translateTitle, instruction: COPY.translateInstruction },
+  create: { title: COPY.createTitle, instruction: COPY.createInstruction },
+});
+
 export type CopyKey = keyof typeof COPY;
 
 export function formatTokenShape(label: string): string {

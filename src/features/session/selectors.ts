@@ -2,6 +2,41 @@ import { getJourney, getMission } from '../../content/missions';
 import type { Mission } from '../../content/missions/types';
 import type { SessionState } from './types';
 
+export type JourneyStageKey = 'find' | 'continue' | 'repair' | 'translate' | 'create';
+
+export interface JourneyProgressItem {
+  readonly key: JourneyStageKey;
+  readonly label: string;
+  readonly status: 'complete' | 'current' | 'upcoming';
+}
+
+const JOURNEY_STAGES: readonly { key: JourneyStageKey; label: string }[] = [
+  { key: 'find', label: '찾기' },
+  { key: 'continue', label: '이어 붙이기' },
+  { key: 'repair', label: '수리하기' },
+  { key: 'translate', label: '번역하기' },
+  { key: 'create', label: '만들기' },
+];
+
+const STAGE_INDEX: Record<SessionState['stage'], number> = {
+  start: -1,
+  find: 0,
+  continue: 1,
+  repair: 2,
+  translate: 3,
+  'create-unit': 4,
+  'create-track': 4,
+  summary: 5,
+};
+
+export function selectJourneyProgress(state: SessionState): readonly JourneyProgressItem[] {
+  const current = STAGE_INDEX[state.stage];
+  return JOURNEY_STAGES.map((stage, index) => ({
+    ...stage,
+    status: index < current || state.stage === 'summary' ? 'complete' : index === current ? 'current' : 'upcoming',
+  }));
+}
+
 export function selectCurrentJourney(state: SessionState) {
   return getJourney(state.journeyIndex);
 }

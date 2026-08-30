@@ -66,7 +66,7 @@ describe('FindUnitScreen', () => {
     expect(screen.getByText('테두리 도움을 사용해 규칙을 찾았어요.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: COPY.nextContinueStage })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '한 묶음 찾기' })).not.toBeInTheDocument();
-    expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(0);
+    expect(document.querySelectorAll('[data-primary-action="true"]')).toHaveLength(1);
   });
 
   it('후보와 제출을 Enter·Space로 조작한다', async () => {

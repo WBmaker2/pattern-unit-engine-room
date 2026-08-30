@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState, type JSX } from 'react';
+import { useEffect, useReducer, useRef, useState, type JSX } from 'react';
 
 import { AppShell } from './components/AppShell';
 import { COPY } from './content/copy';
@@ -13,7 +13,7 @@ import { SummaryScreen } from './features/summary/SummaryScreen';
 import type { DisplayTokenId } from './content/tokenThemes';
 import type { TranslationPair } from './domain/pattern/types';
 import { createInitialSession, sessionReducer } from './features/session/reducer';
-import { selectCanContinue, selectCurrentMission } from './features/session/selectors';
+import { selectCanContinue, selectCurrentMission, selectJourneyProgress } from './features/session/selectors';
 import { AccessibilitySettings } from './features/settings/AccessibilitySettings';
 import type { AccessibilitySettings as AccessibilitySettingsState, ProgressStore } from './features/session/types';
 import { createProgressStore, disablePersistence, persistSession } from './services/progressStore';
@@ -59,6 +59,8 @@ export default function App(): JSX.Element {
   const [state, dispatch] = useReducer(sessionReducer, progressStore, initializeSession);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsConfirmationOpen, setSettingsConfirmationOpen] = useState(false);
+  const settingsTriggerRef = useRef<HTMLButtonElement>(null);
+  const wasSettingsOpen = useRef(false);
   const mission = selectCurrentMission(state);
   const canContinue = selectCanContinue(state);
   const reducedMotion = useEffectiveReducedMotion(state.settings.motionPreference);
@@ -71,6 +73,11 @@ export default function App(): JSX.Element {
   useEffect(() => {
     persistSession(state, progressStore);
   }, [progressStore, state]);
+
+  useEffect(() => {
+    if (wasSettingsOpen.current && !settingsOpen) settingsTriggerRef.current?.focus();
+    wasSettingsOpen.current = settingsOpen;
+  }, [settingsOpen]);
 
   const updateSettings = (settings: AccessibilitySettingsState): boolean => {
     if (state.settings.persistenceEnabled && !settings.persistenceEnabled) {
@@ -94,6 +101,7 @@ export default function App(): JSX.Element {
       motion={reducedMotion ? 'reduce' : 'full'}
       modalOpen={settingsConfirmationOpen}
       patternContrast={state.settings.patternContrast}
+      {...(state.stage === 'start' ? {} : { journeyItems: selectJourneyProgress(state) })}
     >
       <h1>{COPY.appTitle}</h1>
       {state.stage === 'start' ? (
@@ -101,7 +109,9 @@ export default function App(): JSX.Element {
           settings={state.settings}
           onStart={startJourney}
           onOpenSettings={() => setSettingsOpen(true)}
+          settingsTriggerRef={settingsTriggerRef}
           audioEnabled={state.settings.audioEnabled}
+          journeyItems={selectJourneyProgress(state)}
         />
       ) : null}
       {state.stage === 'start' && settingsOpen ? (
