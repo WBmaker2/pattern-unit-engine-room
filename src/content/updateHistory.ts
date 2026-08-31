@@ -12,6 +12,11 @@ export const UPDATE_HISTORY_COPY = Object.freeze({
 
 export const UPDATE_HISTORY = [
   {
+    date: '2026-08-31',
+    kind: '개선',
+    summary: '단계 전환 포커스·번역 진행·선로 안내를 보강했어요',
+  },
+  {
     date: '2026-08-30',
     kind: '개선',
     summary: '설정 닫기 포커스 복귀와 의미 토큰을 보강하고 모바일 가로 넘침을 확인했어요',

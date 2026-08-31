@@ -34,6 +34,8 @@ describe('CreatePatternScreen', () => {
     const { rerender } = render(<CreatePatternScreen {...props({ onAddToken })} />);
     expect(screen.getAllByRole('status')).toHaveLength(1);
     expect(screen.getByRole('status')).toHaveTextContent('현재 단계 5 / 5');
+    expect(screen.getByText('모양 2~3개를 골라 한 묶음을 만들어요.')).toBeInTheDocument();
+    expect(screen.getByText('아래에서 모양을 눌러 한 묶음을 채워요.')).toBeInTheDocument();
     const choices = screen.getAllByRole('button', { name: /모양$/ });
     expect(choices).toHaveLength(3);
     expect(screen.getByRole('button', { name: COPY.removeFreeToken })).toBeDisabled();
@@ -49,6 +51,7 @@ describe('CreatePatternScreen', () => {
     expect(screen.getAllByRole('button', { name: /모양$/ })).toHaveLength(3);
     expect(onAddToken).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: COPY.lockFreeUnit })).toBeEnabled();
+    expect(screen.queryByText('아래에서 모양을 눌러 한 묶음을 채워요.')).not.toBeInTheDocument();
   });
 
   it.each([
@@ -79,6 +82,8 @@ describe('CreatePatternScreen', () => {
 
     expect(screen.getAllByRole('status')).toHaveLength(2);
     expect(screen.getByText('현재 단계 5 / 5')).toBeInTheDocument();
+    expect(screen.getByText('한 묶음을 두 번 이상 붙이면 운행할 수 있어요.')).toBeInTheDocument();
+    expect(screen.getByText(`선로에 놓은 칸: ${unit.length} / ${MAX_FREE_TRACK_TOKENS}`)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: COPY.appendFreeUnit })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: COPY.resetFreePattern })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: COPY.runFreePattern })).toHaveClass('gi-pulse');

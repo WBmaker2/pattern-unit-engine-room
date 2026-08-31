@@ -46,8 +46,8 @@ describe('TranslatePatternScreen', () => {
 
   it('모든 원래 항을 대응하기 전에는 확인을 막는다', () => {
     render(<TranslateHarness />);
-    expect(screen.getAllByRole('status')).toHaveLength(1);
-    expect(screen.getByRole('status')).toHaveTextContent('현재 단계 4 / 5');
+    expect(screen.getByText('현재 단계 4 / 5')).toBeInTheDocument();
+    expect(screen.getByText('고른 대응 0 / 2')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '같은 규칙 확인' })).toBeDisabled();
   });
 
@@ -55,6 +55,7 @@ describe('TranslatePatternScreen', () => {
     const user = userEvent.setup();
     render(<TranslateHarness />);
     await chooseMapping(user, '톱니바퀴', '동그라미');
+    expect(screen.getByText('고른 대응 1 / 2')).toBeInTheDocument();
     await chooseMapping(user, '나사못', '동그라미');
     await user.click(screen.getByRole('button', { name: '같은 규칙 확인' }));
     expect(screen.getByText('서로 다른 항에는 서로 다른 새 모양을 골라요.')).toBeInTheDocument();
@@ -79,7 +80,9 @@ describe('TranslatePatternScreen', () => {
     const user = userEvent.setup();
     render(<TranslateHarness />);
     await chooseMapping(user, '톱니바퀴', '동그라미');
+    expect(screen.getByText('고른 대응 1 / 2')).toBeInTheDocument();
     await chooseMapping(user, '나사못', '세모');
+    expect(screen.getByText('고른 대응 2 / 2')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '같은 규칙 확인' }));
     expect(screen.getByText('모양은 달라도 같은 순서예요.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: COPY.nextCreateStage })).toBeInTheDocument();
@@ -89,8 +92,10 @@ describe('TranslatePatternScreen', () => {
     const user = userEvent.setup();
     render(<TranslateHarness missionId="translate-abc-cars" />);
     await chooseMapping(user, '전등', '바퀴');
+    expect(screen.getByText('고른 대응 1 / 3')).toBeInTheDocument();
     await chooseMapping(user, '깃발', '창문');
     await chooseMapping(user, '별', '기차');
+    expect(screen.getByText('고른 대응 3 / 3')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '같은 규칙 확인' }));
     expect(screen.getByText('모양은 달라도 같은 순서예요.')).toBeInTheDocument();
   });

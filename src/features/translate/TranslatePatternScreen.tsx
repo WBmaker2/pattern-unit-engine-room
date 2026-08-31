@@ -9,7 +9,12 @@ import { PrimaryAction } from '../../components/PrimaryAction';
 import { StageHeader } from '../../components/StageHeader';
 import { ActionRail } from '../../components/ActionRail';
 import { TokenIcon } from '../../components/TokenIcon';
-import { COPY, formatOriginalToken, formatTokenShape } from '../../content/copy';
+import {
+  COPY,
+  formatOriginalToken,
+  formatTokenShape,
+  formatTranslationProgress,
+} from '../../content/copy';
 import {
   getTokenVisual,
   getDisplayTokenVisual,
@@ -73,6 +78,9 @@ export function TranslatePatternScreen({
     <section aria-label={COPY.translateTitle} className="translate-screen">
       <StageHeader eyebrow="4단계" title={COPY.translateTitle} instruction={COPY.translateInstruction} current={4} total={5} />
       <InstructionCard cue="translate" audioEnabled={audioEnabled} showTranscript={false} />
+      <p aria-live="polite" className="translation-progress">
+        {formatTranslationProgress(draftPairs.length, sourceTokens.length)}
+      </p>
       <PatternBoard slots={mission.sourceSequence} themeId={mission.themeId} />
       <ChoiceGrid
         label={COPY.translationSourceLabel}

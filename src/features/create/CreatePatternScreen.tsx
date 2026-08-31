@@ -7,7 +7,7 @@ import { PatternBoard } from '../../components/PatternBoard';
 import { PrimaryAction } from '../../components/PrimaryAction';
 import { StageHeader } from '../../components/StageHeader';
 import { ActionRail } from '../../components/ActionRail';
-import { COPY, formatTokenShape } from '../../content/copy';
+import { COPY, formatTokenShape, formatTrackProgress } from '../../content/copy';
 import { getTokenVisual } from '../../content/tokenThemes';
 import type { PatternTokenId, PatternUnit } from '../../domain/pattern/types';
 import type { FeedbackState } from '../session/types';
@@ -39,9 +39,14 @@ function feedbackMessage(feedback: FeedbackState): string {
   return COPY.retryDoesNotRepeat;
 }
 
-function Board({ label, tokens }: { readonly label: string; readonly tokens: PatternUnit }): JSX.Element {
+function Board({ label, tokens, emptyHint }: {
+  readonly label: string;
+  readonly tokens: PatternUnit;
+  readonly emptyHint?: string;
+}): JSX.Element {
   return (
     <section aria-label={label}>
+      {tokens.length === 0 && emptyHint ? <p className="pattern-board__empty-hint">{emptyHint}</p> : null}
       <PatternBoard slots={tokens} themeId="engine" />
     </section>
   );
@@ -65,7 +70,7 @@ function UnitMode({ props }: { readonly props: CreatePatternScreenProps }): JSX.
           </button>
         ))}
       </fieldset>
-      <Board label={COPY.freeUnitBoardLabel} tokens={unit} />
+      <Board emptyHint={COPY.freeUnitEmptyHint} label={COPY.freeUnitBoardLabel} tokens={unit} />
       <button disabled={unit.length === 0} onClick={props.onRemoveToken} type="button">
         {COPY.removeFreeToken}
       </button>
@@ -90,8 +95,8 @@ function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX
         slots={track}
         themeId="engine"
       />
-      <p aria-label={`현재 선로 ${track.length} / ${props.maxTrackTokens}`}>
-        {track.length} / {props.maxTrackTokens}
+      <p aria-label={formatTrackProgress(track.length, props.maxTrackTokens)} className="create-track__progress">
+        {formatTrackProgress(track.length, props.maxTrackTokens)}
       </p>
       {!canAppendUnit ? <p role="status">{COPY.freeTrackLimit}</p> : null}
       <ActionRail
@@ -106,7 +111,13 @@ function TrackMode({ props }: { readonly props: CreatePatternScreenProps }): JSX
 export function CreatePatternScreen(props: CreatePatternScreenProps): JSX.Element {
   return (
     <section aria-label={COPY.createTitle} className="create-screen">
-      <StageHeader eyebrow="5단계" title={COPY.createTitle} instruction={COPY.createInstruction} current={5} total={5} />
+      <StageHeader
+        eyebrow="5단계"
+        title={COPY.createTitle}
+        instruction={props.mode === 'track' ? COPY.createTrackInstruction : COPY.createInstruction}
+        current={5}
+        total={5}
+      />
       {props.mode === 'unit' ? <UnitMode props={props} /> : <TrackMode props={props} />}
     </section>
   );

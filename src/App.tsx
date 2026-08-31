@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useRef, useState, type JSX } from 'react';
 
 import { AppShell } from './components/AppShell';
+import { StageFocusRegion } from './components/StageFocusRegion';
 import { COPY } from './content/copy';
 import { ContinuePatternScreen } from './features/continue/ContinuePatternScreen';
 import { CreatePatternScreen } from './features/create/CreatePatternScreen';
@@ -65,6 +66,7 @@ export default function App(): JSX.Element {
   const canContinue = selectCanContinue(state);
   const reducedMotion = useEffectiveReducedMotion(state.settings.motionPreference);
   const [translationPairs, setTranslationPairs] = useState<readonly TranslationPair<DisplayTokenId>[]>([]);
+  const stageFocusKey = `${state.stage}:${mission?.id ?? 'summary'}`;
 
   useEffect(() => {
     if (state.stage !== 'translate') setTranslationPairs([]);
@@ -104,115 +106,117 @@ export default function App(): JSX.Element {
       {...(state.stage === 'start' ? {} : { journeyItems: selectJourneyProgress(state) })}
     >
       <h1>{COPY.appTitle}</h1>
-      {state.stage === 'start' ? (
-        <StartScreen
-          settings={state.settings}
-          onStart={startJourney}
-          onOpenSettings={() => setSettingsOpen(true)}
-          settingsTriggerRef={settingsTriggerRef}
-          audioEnabled={state.settings.audioEnabled}
-          journeyItems={selectJourneyProgress(state)}
-        />
-      ) : null}
-      {state.stage === 'start' && settingsOpen ? (
-        <AccessibilitySettings
-          effectiveReducedMotion={reducedMotion}
-          settings={state.settings}
-          onChange={updateSettings}
-          onClose={() => setSettingsOpen(false)}
-          onModalChange={setSettingsConfirmationOpen}
-        />
-      ) : null}
-      {state.stage === 'find' && mission?.kind === 'find' ? (
-        <FindUnitScreen
-          mission={mission}
-          feedback={state.feedback}
-          hintUsed={state.currentHintUsed}
-          onSubmit={(candidate) => dispatch({ type: 'SUBMIT_FIND', candidate })}
-          onHint={() => dispatch({ type: 'USE_HINT' })}
-          onContinue={continueStage}
-          audioEnabled={state.settings.audioEnabled}
-        />
-      ) : null}
-      {state.stage === 'continue' && mission?.kind === 'continue' ? (
-        <ContinuePatternScreen
-          mission={mission}
-          feedback={state.feedback}
-          onSubmit={(answer) => dispatch({ type: 'SUBMIT_CONTINUATION', answer })}
-          onContinue={continueStage}
-          audioEnabled={state.settings.audioEnabled}
-        />
-      ) : null}
-      {state.stage === 'repair' && mission?.kind === 'repair' ? (
-        <RepairPatternScreen
-          mission={mission}
-          feedback={state.feedback}
-          selectedIndex={state.selectedRepairIndex}
-          onSelectIndex={(index) => dispatch({ type: 'SELECT_REPAIR_INDEX', index })}
-          onSubmit={(replacement) => dispatch({ type: 'SUBMIT_REPAIR', replacement })}
-          onContinue={continueStage}
-          audioEnabled={state.settings.audioEnabled}
-        />
-      ) : null}
-      {state.stage === 'translate' && mission?.kind === 'translate' ? (
-        <TranslatePatternScreen
-          mission={mission}
-          feedback={state.feedback}
-          draftPairs={translationPairs}
-          onChangePair={(source, target) => setTranslationPairs((pairs) => [
-            ...pairs.filter((item) => item.source !== source),
-            { source, target },
-          ])}
-          onSubmit={(pairs, translated) => dispatch({ type: 'SUBMIT_TRANSLATION', pairs, translated })}
-          onContinue={continueStage}
-          audioEnabled={state.settings.audioEnabled}
-        />
-      ) : null}
-      {state.stage === 'create-unit' ? (
-        <CreatePatternScreen
-          mode="unit"
-          unit={state.freeUnit}
-          track={state.freeTrack}
-          feedback={state.feedback}
-          onAddToken={(token) => dispatch({ type: 'ADD_FREE_TOKEN', token })}
-          onRemoveToken={() => dispatch({ type: 'REMOVE_FREE_TOKEN' })}
-          onLockUnit={() => dispatch({ type: 'LOCK_FREE_UNIT' })}
-          onAppendUnit={() => dispatch({ type: 'APPEND_FREE_UNIT' })}
-          onReset={() => dispatch({ type: 'RESET_FREE_PATTERN' })}
-          onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
-          onContinue={continueStage}
-          audioEnabled={state.settings.audioEnabled}
-          reducedMotion={reducedMotion}
-          maxTrackTokens={MAX_FREE_TRACK_TOKENS}
-        />
-      ) : null}
-      {state.stage === 'create-track' ? (
-        <CreatePatternScreen
-          mode="track"
-          unit={state.freeUnit}
-          track={state.freeTrack}
-          feedback={state.feedback}
-          onAddToken={(token) => dispatch({ type: 'ADD_FREE_TOKEN', token })}
-          onRemoveToken={() => dispatch({ type: 'REMOVE_FREE_TOKEN' })}
-          onLockUnit={() => dispatch({ type: 'LOCK_FREE_UNIT' })}
-          onAppendUnit={() => dispatch({ type: 'APPEND_FREE_UNIT' })}
-          onReset={() => dispatch({ type: 'RESET_FREE_PATTERN' })}
-          onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
-          onContinue={continueStage}
-          audioEnabled={state.settings.audioEnabled}
-          reducedMotion={reducedMotion}
-          maxTrackTokens={MAX_FREE_TRACK_TOKENS}
-        />
-      ) : null}
-      {state.stage === 'summary' ? (
-        <SummaryScreen
-          evidence={state.evidence}
-          journeyIndex={state.journeyIndex}
-          onNextJourney={() => dispatch({ type: 'NEXT_JOURNEY' })}
-          onReturnHome={() => dispatch({ type: 'RETURN_HOME' })}
-          audioEnabled={state.settings.audioEnabled}
-        />
-      ) : null}
+      <StageFocusRegion focusKey={stageFocusKey} label="현재 학습 단계">
+        {state.stage === 'start' ? (
+          <StartScreen
+            settings={state.settings}
+            onStart={startJourney}
+            onOpenSettings={() => setSettingsOpen(true)}
+            settingsTriggerRef={settingsTriggerRef}
+            audioEnabled={state.settings.audioEnabled}
+            journeyItems={selectJourneyProgress(state)}
+          />
+        ) : null}
+        {state.stage === 'start' && settingsOpen ? (
+          <AccessibilitySettings
+            effectiveReducedMotion={reducedMotion}
+            settings={state.settings}
+            onChange={updateSettings}
+            onClose={() => setSettingsOpen(false)}
+            onModalChange={setSettingsConfirmationOpen}
+          />
+        ) : null}
+        {state.stage === 'find' && mission?.kind === 'find' ? (
+          <FindUnitScreen
+            mission={mission}
+            feedback={state.feedback}
+            hintUsed={state.currentHintUsed}
+            onSubmit={(candidate) => dispatch({ type: 'SUBMIT_FIND', candidate })}
+            onHint={() => dispatch({ type: 'USE_HINT' })}
+            onContinue={continueStage}
+            audioEnabled={state.settings.audioEnabled}
+          />
+        ) : null}
+        {state.stage === 'continue' && mission?.kind === 'continue' ? (
+          <ContinuePatternScreen
+            mission={mission}
+            feedback={state.feedback}
+            onSubmit={(answer) => dispatch({ type: 'SUBMIT_CONTINUATION', answer })}
+            onContinue={continueStage}
+            audioEnabled={state.settings.audioEnabled}
+          />
+        ) : null}
+        {state.stage === 'repair' && mission?.kind === 'repair' ? (
+          <RepairPatternScreen
+            mission={mission}
+            feedback={state.feedback}
+            selectedIndex={state.selectedRepairIndex}
+            onSelectIndex={(index) => dispatch({ type: 'SELECT_REPAIR_INDEX', index })}
+            onSubmit={(replacement) => dispatch({ type: 'SUBMIT_REPAIR', replacement })}
+            onContinue={continueStage}
+            audioEnabled={state.settings.audioEnabled}
+          />
+        ) : null}
+        {state.stage === 'translate' && mission?.kind === 'translate' ? (
+          <TranslatePatternScreen
+            mission={mission}
+            feedback={state.feedback}
+            draftPairs={translationPairs}
+            onChangePair={(source, target) => setTranslationPairs((pairs) => [
+              ...pairs.filter((item) => item.source !== source),
+              { source, target },
+            ])}
+            onSubmit={(pairs, translated) => dispatch({ type: 'SUBMIT_TRANSLATION', pairs, translated })}
+            onContinue={continueStage}
+            audioEnabled={state.settings.audioEnabled}
+          />
+        ) : null}
+        {state.stage === 'create-unit' ? (
+          <CreatePatternScreen
+            mode="unit"
+            unit={state.freeUnit}
+            track={state.freeTrack}
+            feedback={state.feedback}
+            onAddToken={(token) => dispatch({ type: 'ADD_FREE_TOKEN', token })}
+            onRemoveToken={() => dispatch({ type: 'REMOVE_FREE_TOKEN' })}
+            onLockUnit={() => dispatch({ type: 'LOCK_FREE_UNIT' })}
+            onAppendUnit={() => dispatch({ type: 'APPEND_FREE_UNIT' })}
+            onReset={() => dispatch({ type: 'RESET_FREE_PATTERN' })}
+            onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
+            onContinue={continueStage}
+            audioEnabled={state.settings.audioEnabled}
+            reducedMotion={reducedMotion}
+            maxTrackTokens={MAX_FREE_TRACK_TOKENS}
+          />
+        ) : null}
+        {state.stage === 'create-track' ? (
+          <CreatePatternScreen
+            mode="track"
+            unit={state.freeUnit}
+            track={state.freeTrack}
+            feedback={state.feedback}
+            onAddToken={(token) => dispatch({ type: 'ADD_FREE_TOKEN', token })}
+            onRemoveToken={() => dispatch({ type: 'REMOVE_FREE_TOKEN' })}
+            onLockUnit={() => dispatch({ type: 'LOCK_FREE_UNIT' })}
+            onAppendUnit={() => dispatch({ type: 'APPEND_FREE_UNIT' })}
+            onReset={() => dispatch({ type: 'RESET_FREE_PATTERN' })}
+            onRun={() => dispatch({ type: 'SUBMIT_FREE_TRACK' })}
+            onContinue={continueStage}
+            audioEnabled={state.settings.audioEnabled}
+            reducedMotion={reducedMotion}
+            maxTrackTokens={MAX_FREE_TRACK_TOKENS}
+          />
+        ) : null}
+        {state.stage === 'summary' ? (
+          <SummaryScreen
+            evidence={state.evidence}
+            journeyIndex={state.journeyIndex}
+            onNextJourney={() => dispatch({ type: 'NEXT_JOURNEY' })}
+            onReturnHome={() => dispatch({ type: 'RETURN_HOME' })}
+            audioEnabled={state.settings.audioEnabled}
+          />
+        ) : null}
+      </StageFocusRegion>
     </AppShell>
   );
 }

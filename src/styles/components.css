@@ -5,6 +5,18 @@
   padding-block-end: calc(var(--space-page) + env(safe-area-inset-bottom, 0px));
 }
 
+.stage-focus-region:focus {
+  outline: var(--focus-ring);
+  outline-offset: 4px;
+}
+
+.pattern-board__empty-hint,
+.translation-progress,
+.create-track__progress {
+  color: var(--ink-muted);
+  font-weight: 700;
+}
+
 .learning-journey {
   margin: var(--space-3) 0;
 }

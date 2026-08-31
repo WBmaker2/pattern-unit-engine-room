@@ -13,9 +13,9 @@ describe('업데이트 내역', () => {
 
   it('최신 업데이트 날짜와 개선 요약이 기록된다', () => {
     expect(UPDATE_HISTORY[0]).toMatchObject({
-      date: '2026-08-30',
+      date: '2026-08-31',
       kind: '개선',
-      summary: '설정 닫기 포커스 복귀와 의미 토큰을 보강하고 모바일 가로 넘침을 확인했어요',
+      summary: '단계 전환 포커스·번역 진행·선로 안내를 보강했어요',
     });
   });
 
@@ -48,6 +48,11 @@ describe('업데이트 내역', () => {
 
   it('최신 개선 기록과 기존 기록의 순서를 지키며 중복이 없다', () => {
     expect(UPDATE_HISTORY).toEqual([
+      {
+        date: '2026-08-31',
+        kind: '개선',
+        summary: '단계 전환 포커스·번역 진행·선로 안내를 보강했어요',
+      },
       {
         date: '2026-08-30',
         kind: '개선',
@@ -83,6 +88,7 @@ describe('업데이트 내역', () => {
     const keys = UPDATE_HISTORY.map(({ date, kind, summary }) => `${date}:${kind}:${summary}`);
     expect(new Set(keys).size).toBe(keys.length);
     expect(UPDATE_HISTORY.map((entry) => entry.date)).toEqual([
+      '2026-08-31',
       '2026-08-30',
       '2026-08-29',
       '2026-08-28',
@@ -90,7 +96,7 @@ describe('업데이트 내역', () => {
       '2026-08-26',
       '2026-08-26',
     ]);
-    expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개선', '개선', '개선', '개선', '개발', '설계']);
+    expect(UPDATE_HISTORY.map((entry) => entry.kind)).toEqual(['개선', '개선', '개선', '개선', '개선', '개발', '설계']);
   });
 
   it('콘텐츠 footer의 업데이트 버튼이 inline 배치 계약을 지킨다', async () => {

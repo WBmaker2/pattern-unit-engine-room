@@ -4,6 +4,8 @@ import {
   COPY,
   formatFindCandidate,
   formatOriginalToken,
+  formatTrackProgress,
+  formatTranslationProgress,
   formatTokenShape,
   formatUnitChoice,
 } from '../../src/content/copy';
@@ -55,8 +57,10 @@ describe('학습 문구', () => {
       findInstruction: '가장 짧게 되풀이되는 한 묶음을 골라요.',
       continueInstruction: '한 묶음을 보고 다음 칸을 이어 보세요.',
       repairInstruction: '규칙을 깨뜨린 칸을 찾아 고쳐요.',
-      translateInstruction: '같은 순서를 새 모양으로 바꾸어 보세요.',
-      createInstruction: '2~3개로 내 한 묶음을 만들어요.',
+      translateInstruction: '원래 항과 새 모양을 하나씩 짝지어 보세요.',
+      createInstruction: '모양 2~3개를 골라 한 묶음을 만들어요.',
+      createTrackInstruction: '한 묶음을 두 번 이상 붙이면 운행할 수 있어요.',
+      freeUnitEmptyHint: '아래에서 모양을 눌러 한 묶음을 채워요.',
       retryNotShortest: '되풀이되지만 더 짧은 한 묶음이 있어요.',
       retryDoesNotRepeat: '이 묶음으로는 끝까지 되풀이되지 않아요.',
       findSuccess: '가장 짧은 한 묶음을 찾았어요.',
@@ -74,6 +78,7 @@ describe('학습 문구', () => {
       lockFreeUnit: '묶음 정하기',
       appendFreeUnit: '한 묶음 붙이기',
       freeTrackLimit: '선로는 12칸까지 만들 수 있어요.',
+      createTrackProgressLabel: '선로에 놓은 칸',
       resetFreePattern: '다시 만들기',
       runFreePattern: '운행하기',
       createSuccess: '내 규칙이 두 번 되풀이돼요.',
@@ -123,6 +128,11 @@ describe('학습 문구', () => {
     expect(formatFindCandidate(2, ['톱니바퀴', '나사못'])).toBe(
       '후보 3: 톱니바퀴, 나사못 두 칸',
     );
+  });
+
+  it('진행 수 formatter가 학습 대상의 이름과 현재 수를 함께 보여 준다', () => {
+    expect(formatTranslationProgress(1, 3)).toBe('고른 대응 1 / 3');
+    expect(formatTrackProgress(4, 12)).toBe('선로에 놓은 칸: 4 / 12');
   });
 
   it('안내 문구는 짧고 경쟁을 부추기지 않는다', () => {

@@ -27,6 +27,7 @@ export const COPY = Object.freeze({
   retryMappingNotBijective: '서로 다른 항에는 서로 다른 새 모양을 골라요.',
   retryOrderChanged: '새 모양의 순서를 다시 살펴봐요.',
   retryMissingMapping: '각 원래 항에 새 모양을 하나씩 골라요.',
+  translationProgressLabel: '고른 대응',
   translatedBoardLabel: '바꾼 규칙 배열',
   translationPairsLabel: '고른 대응',
   progressLabel: '현재 단계',
@@ -47,8 +48,10 @@ export const COPY = Object.freeze({
   findInstruction: '가장 짧게 되풀이되는 한 묶음을 골라요.',
   continueInstruction: '한 묶음을 보고 다음 칸을 이어 보세요.',
   repairInstruction: '규칙을 깨뜨린 칸을 찾아 고쳐요.',
-  translateInstruction: '같은 순서를 새 모양으로 바꾸어 보세요.',
-  createInstruction: '2~3개로 내 한 묶음을 만들어요.',
+  translateInstruction: '원래 항과 새 모양을 하나씩 짝지어 보세요.',
+  createInstruction: '모양 2~3개를 골라 한 묶음을 만들어요.',
+  createTrackInstruction: '한 묶음을 두 번 이상 붙이면 운행할 수 있어요.',
+  freeUnitEmptyHint: '아래에서 모양을 눌러 한 묶음을 채워요.',
   retryNotShortest: '되풀이되지만 더 짧은 한 묶음이 있어요.',
   retryDoesNotRepeat: '이 묶음으로는 끝까지 되풀이되지 않아요.',
   findSuccess: '가장 짧은 한 묶음을 찾았어요.',
@@ -66,6 +69,7 @@ export const COPY = Object.freeze({
   lockFreeUnit: '묶음 정하기',
   appendFreeUnit: '한 묶음 붙이기',
   freeTrackLimit: '선로는 12칸까지 만들 수 있어요.',
+  createTrackProgressLabel: '선로에 놓은 칸',
   resetFreePattern: '다시 만들기',
   runFreePattern: '운행하기',
   createSuccess: '내 규칙이 두 번 되풀이돼요.',
@@ -138,4 +142,12 @@ export function formatUnitChoice(labels: readonly string[]): string {
 
 export function formatFindCandidate(index: number, labels: readonly string[]): string {
   return `${COPY.candidatePrefix} ${index + 1}: ${formatUnitChoice(labels)}`;
+}
+
+export function formatTranslationProgress(current: number, total: number): string {
+  return `${COPY.translationProgressLabel} ${current} / ${total}`;
+}
+
+export function formatTrackProgress(current: number, total: number): string {
+  return `${COPY.createTrackProgressLabel}: ${current} / ${total}`;
 }
